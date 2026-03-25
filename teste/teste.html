@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Atendimento</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<div class="flex h-screen">
+
+  <!-- Lista de usuários -->
+  <div class="w-1/3 bg-white border-r overflow-y-auto">
+    <h2 class="p-4 font-bold text-lg border-b">Conversas</h2>
+    <div id="users">
+      <div class="p-4 hover:bg-gray-100 cursor-pointer" onclick="selectUser('João')">
+        João
+      </div>
+      <div class="p-4 hover:bg-gray-100 cursor-pointer" onclick="selectUser('Maria')">
+        Maria
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div class="flex-1 flex flex-col">
+
+    <!-- Header -->
+    <div class="p-4 bg-white border-b font-bold" id="chat-header">
+      Selecione uma conversa
+    </div>
+
+    <!-- Mensagens -->
+    <div class="flex-1 p-4 overflow-y-auto" id="chat-box">
+    </div>
+
+    <!-- Input -->
+    <div class="p-4 bg-white border-t flex gap-2">
+      <input id="message" class="flex-1 border rounded p-2" placeholder="Digite uma mensagem..." />
+      <button onclick="sendMessage()" class="bg-green-500 text-white px-4 rounded">Enviar</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+let currentUser = null;
+
+let messages = {
+  "João": [
+    { text: "Oi, preciso de ajuda", from: "user" }
+  ],
+  "Maria": [
+    { text: "Olá!", from: "user" }
+  ]
+};
+
+function selectUser(user) {
+  currentUser = user;
+  document.getElementById('chat-header').innerText = user;
+  renderMessages();
+}
+
+function renderMessages() {
+  const chatBox = document.getElementById('chat-box');
+  chatBox.innerHTML = '';
+
+  if (!currentUser) return;
+
+  messages[currentUser].forEach(msg => {
+    const div = document.createElement('div');
+    div.className = `mb-2 p-2 rounded max-w-xs ${
+      msg.from === 'user'
+        ? 'bg-gray-300'
+        : 'bg-green-300 ml-auto'
+    }`;
+    div.innerText = msg.text;
+    chatBox.appendChild(div);
+  });
+}
+
+function sendMessage() {
+  const input = document.getElementById('message');
+  const text = input.value;
+
+  if (!text || !currentUser) return;
+
+  messages[currentUser].push({ text, from: 'attendant' });
+  input.value = '';
+  renderMessages();
+}
+</script>
+
+</body>
+</html>
