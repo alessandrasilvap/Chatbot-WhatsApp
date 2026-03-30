@@ -1,9 +1,9 @@
-from flask import Flask, request, jsonify
-from menusSubmenus3 import texto_menu_principal, texto_submenu, obter_script
+from flask import Flask, request, jsonify, session, redirect, render_template
+from menusSubmenus3 import texto_menu_principal, texto_submenu, texto_sub_submenu, obter_script
 from bd3 import (
     criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento,
     obter_status_atendimento, listar_fila_handoff, assumir_atendimento,
-    obter_sessao, salvar_sessao, apagar_sessao
+    obter_sessao, salvar_sessao, apagar_sessao, get_conn, validar_login
 )
 from datetime import datetime, timedelta, time
 import os
@@ -12,7 +12,7 @@ import hashlib
 import requests
 from dotenv import load_dotenv
 
-# Carrega variáveis do .env (SEM isso, WA_ACCESS_TOKEN pode ficar vazio!)
+# Carrega variáveis do .env
 load_dotenv()
 
 # ============================================================
@@ -40,6 +40,7 @@ WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")  # pode ficar vazio (modo dev)
 WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN", "")
 WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID", "")
 WA_API_VERSION = os.getenv("WA_API_VERSION", "v24.0")
+app.secret_key = "xV7r7S9ACo8LJUJkoM3JhF1B9PyqdM_9dPgTeS2SJis"
 
 def verify_signature(req) -> bool:
     """
@@ -67,31 +68,51 @@ def verify_signature(req) -> bool:
 def extract_text_messages(payload: dict):
     """
     Extrai mensagens de texto do webhook e retorna lista:
-      [{"from":"...","id":"...","text":"..."}]
+      [{"from":"...", "id":"...", "text":"...", "telefone_bot": "...", "phone_number_id": "..."}]
     """
     results = []
     for e in payload.get("entry", []) or []:
         for c in (e.get("changes", []) or []):
             value = c.get("value", {}) or {}
+            
+            # Pegando as informações do número do bot
+            metadata = value.get("metadata") or {}
+            telefone_bot = str(metadata.get("display_phone_number") or "").strip()
+            phone_number_id = str(metadata.get("phone_number_id") or "").strip() # Pegando o ID
+            
             for m in (value.get("messages", []) or []):
                 if m.get("type") != "text":
                     continue
                 wa_from = str(m.get("from") or "").strip()
                 msg_id = str(m.get("id") or "").strip()
                 text = str(((m.get("text") or {}).get("body") or "")).strip()
+                
                 if wa_from and text:
-                    results.append({"from": wa_from, "id": msg_id, "text": text})
+                    results.append({
+                        "from": wa_from, 
+                        "id": msg_id, 
+                        "text": text, 
+                        "telefone_bot": telefone_bot,
+                        "phone_number_id": phone_number_id # Guardando o ID
+                    })
     return results
 
 # ============================================================
 # WhatsApp SEND (Cloud API)
 # ============================================================
-def send_whatsapp_text(to_wa_id: str, text: str):
-    if not WA_ACCESS_TOKEN or not WA_PHONE_NUMBER_ID:
-        print("❌ WA_ACCESS_TOKEN ou WA_PHONE_NUMBER_ID vazio no .env.")
+def send_whatsapp_text(to_wa_id: str, text: str, phone_number_id: str = None):
+    if not WA_ACCESS_TOKEN:
+        print("❌ WA_ACCESS_TOKEN vazio no .env.")
         return
 
-    url = f"https://graph.facebook.com/{WA_API_VERSION}/{WA_PHONE_NUMBER_ID}/messages"
+    # Se vier um ID específico (do webhook), usa ele. Se não vier, usa o padrão do .env!
+    sender_id = phone_number_id if phone_number_id else WA_PHONE_NUMBER_ID
+    
+    if not sender_id:
+        print("❌ Nenhum phone_number_id configurado para envio.")
+        return
+
+    url = f"https://graph.facebook.com/{WA_API_VERSION}/{sender_id}/messages"
     headers = {
         "Authorization": f"Bearer {WA_ACCESS_TOKEN}",
         "Content-Type": "application/json"
@@ -106,12 +127,11 @@ def send_whatsapp_text(to_wa_id: str, text: str):
     try:
         r = requests.post(url, headers=headers, json=payload, timeout=15)
         print(">>> SEND status:", r.status_code)
-        print(">>> SEND body:", r.text)
-
+        
         if r.status_code >= 300:
             print("❌ Erro ao enviar WhatsApp:", r.status_code, r.text)
         else:
-            print("✅ WhatsApp enviado para", to_wa_id)
+            print("✅ WhatsApp enviado para", to_wa_id, "pelo ID", sender_id)
     except Exception as e:
         print("❌ Exceção ao enviar WhatsApp:", e)
 
@@ -119,10 +139,10 @@ def send_whatsapp_text(to_wa_id: str, text: str):
 # CORE handler (motor do bot)
 # Agora retorna TEXTO (string), não jsonify.
 # ============================================================
-def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: str = None) -> str:
+def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: str = None, telefone_bot: str = None) -> str:
     if not em_horario_comercial(agora):
         return (
-            "⏰ Nosso atendimento funciona de segunda a sexta, das 09:00 às 18:00.\n"
+            "⏰ Nosso atendimento funciona de segunda a sexta, das 08:00 às 17:00.\n"
             "Por favor, envie sua mensagem novamente dentro do horário comercial."
         )
 
@@ -133,7 +153,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
     # Se não existe sessão, cria atendimento + sessão
     if not sessao:
-        atendimento_id = criar_atendimento(telefone)
+        atendimento_id = criar_atendimento(telefone, telefone_bot)
         registrar_evento(atendimento_id, "inicio_atendimento")
 
         # DEDUPE no BD
@@ -151,10 +171,11 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             telefone=telefone,
             atendimento_id=atendimento_id,
             etapa="nome",
-            ultimo_contato=agora
+            ultimo_contato=agora,
+            telefone_bot=telefone_bot
         )
 
-        return "Olá! 👋 Sou o atendente virtual. Por favor, informe seu *nome*."
+        return "Olá! 👋 Sou o atendente virtual do Canal I da COMLURB. Por favor, informe seu *nome*."
 
     atendimento_id = sessao["atendimento_id"]
 
@@ -192,6 +213,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         sub_id=sessao.get("sub_id"),
         atendente_chamado=sessao.get("atendente_chamado", 0),
         resumo_handoff_salvo=sessao.get("resumo_handoff_salvo", 0),
+        telefone_bot=telefone_bot
     )
 
     # Travar quando humano assumiu
@@ -202,7 +224,10 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             finalizar(atendimento_id)
             apagar_sessao(telefone)
             return "✅ Atendimento finalizado. Obrigada!"
-        return "📞 Você está com atendimento humano. Aguarde, por favor. (Digite 3 para finalizar)"
+        
+        # O robô não retorna NADA. Ele apenas fica em silêncio.
+        # A mensagem do usuário já foi registrada em 'atendimento_eventos' lá em cima no DEDUPE.
+        return ""
 
     etapa = sessao["etapa"]
 
@@ -226,6 +251,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             sub_id=sessao.get("sub_id"),
             atendente_chamado=sessao.get("atendente_chamado", 0),
             resumo_handoff_salvo=sessao.get("resumo_handoff_salvo", 0),
+            telefone_bot=telefone_bot
         )
 
         return f"Obrigada, {nome}! 😊 Agora, informe sua *matrícula* (apenas números)."
@@ -245,13 +271,16 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             etapa="menu_principal",
             ultimo_contato=agora,
             nome=sessao.get("nome"),
-            matricula=matricula
+            matricula=matricula,
+            telefone_bot=telefone_bot
         )
         return "Cadastro realizado com sucesso ✅\n\n" + texto_menu_principal()
 
     # Etapa: menu principal
     if etapa == "menu_principal":
-        if mensagem not in ["1", "2", "3"]:
+        # Ajustado para aceitar de 1 a 11
+        opcoes_validas = [str(i) for i in range(1, 12)]
+        if mensagem not in opcoes_validas:
             return "❌ Opção inválida.\n\n" + texto_menu_principal()
 
         menu_id = mensagem
@@ -269,63 +298,60 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             sub_id=None,
             atendente_chamado=sessao.get("atendente_chamado", 0),
             resumo_handoff_salvo=sessao.get("resumo_handoff_salvo", 0),
+            telefone_bot=telefone_bot
         )
         return texto_submenu(menu_id)
 
     # Etapa: submenu
     if etapa == "submenu":
         menu_id = sessao.get("menu_id")
-        if mensagem not in ["1", "2", "3"]:
-            return "❌ Opção inválida.\n\n" + texto_submenu(menu_id)
-
         sub_id = mensagem
+        
         registrar_evento(atendimento_id, "submenu_escolhido", f"{menu_id}:{sub_id}")
+        atualizar_atendimento(atendimento_id, sub_id=sub_id)
 
-        # Menu 3 -> 3 = voltar
-        if menu_id == "3" and sub_id == "3":
+        # --- TRATAMENTO ESPECIAL PARA O MENU 11 ---
+        if menu_id == "11":
+            # Busca o script diretamente (2 níveis apenas)
+            script = obter_script(menu_id, sub_id)
+            # Verifica se a resposta exige chamar o atendente
+            # É handoff SE o texto no banco for exatamente "HANDOFF" OU se for a opção 1 do Menu 11
+            is_handoff = (script.strip().upper() == "HANDOFF") or (menu_id == "11" and sub_id == "1")
+
+            if is_handoff:
+                marcar_handoff(atendimento_id)
+                registrar_evento(atendimento_id, "handoff")
+                salvar_sessao(
+                    telefone=telefone, atendimento_id=atendimento_id,
+                    etapa="handoff", ultimo_contato=agora,
+                    nome=sessao.get("nome"), matricula=sessao.get("matricula"),
+                    menu_id=menu_id, sub_id=sub_id, atendente_chamado=1, resumo_handoff_salvo=0,
+                    telefone_bot=telefone_bot
+                )
+                
+                # Se você escreveu um texto bonito no banco (como o do CPF), ele usa.
+                # Se no banco estiver só a palavra "HANDOFF" seca, ele usa o padrão.
+                if script and script.strip().upper() != "HANDOFF":
+                    return script
+                else:
+                    return "📞 Ok! Um atendente humano foi acionado.\n\n📌 Antes, diga-me em *1 frase* o que precisa."
+
+            # Se for resposta direta do Menu 11
             salvar_sessao(
-                telefone=telefone,
-                atendimento_id=atendimento_id,
-                etapa="menu_principal",
-                ultimo_contato=agora,
-                nome=sessao.get("nome"),
-                matricula=sessao.get("matricula"),
-                menu_id=None,
-                sub_id=None
+                telefone=telefone, atendimento_id=atendimento_id,
+                etapa="pos_resposta", ultimo_contato=agora,
+                nome=sessao.get("nome"), matricula=sessao.get("matricula"),
+                menu_id=menu_id, sub_id=sub_id,
+                telefone_bot=telefone_bot
             )
-            registrar_evento(atendimento_id, "voltar_menu")
-            return texto_menu_principal()
+            return (script or "Opção em desenvolvimento.") + "\n\nPosso ajudar em algo mais?\n1 - Voltar ao menu\n3 - Finalizar"
+        # -------------------------------------------
 
-        # Menu 3 -> 1 = handoff direto
-        if menu_id == "3" and sub_id == "1":
-            atualizar_atendimento(atendimento_id, sub_id=sub_id, resposta_bot="ACESSO_HANDOFF_DIRETO")
-            marcar_handoff(atendimento_id)
-            registrar_evento(atendimento_id, "handoff")
-
-            salvar_sessao(
-                telefone=telefone,
-                atendimento_id=atendimento_id,
-                etapa="handoff",
-                ultimo_contato=agora,
-                nome=sessao.get("nome"),
-                matricula=sessao.get("matricula"),
-                menu_id=menu_id,
-                sub_id=sub_id,
-                atendente_chamado=1,
-                resumo_handoff_salvo=0
-            )
-            return (
-                "📞 Ok! Um atendente humano foi acionado.\n\n"
-                "📌 Antes, me diga em *1 frase* o que você precisa (isso ajuda o atendente)."
-            )
-
-        script = obter_script(menu_id, sub_id)
-        atualizar_atendimento(atendimento_id, sub_id=sub_id, resposta_bot=script or "SCRIPT_NAO_ENCONTRADO")
-
+        # Para os outros menus (1 a 10), segue para o 3º nível (sub_submenu)
         salvar_sessao(
             telefone=telefone,
             atendimento_id=atendimento_id,
-            etapa="pos_resposta",
+            etapa="sub_submenu",
             ultimo_contato=agora,
             nome=sessao.get("nome"),
             matricula=sessao.get("matricula"),
@@ -333,18 +359,50 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             sub_id=sub_id,
             atendente_chamado=sessao.get("atendente_chamado", 0),
             resumo_handoff_salvo=sessao.get("resumo_handoff_salvo", 0),
+            telefone_bot=telefone_bot
+        )
+        return texto_sub_submenu(menu_id, sub_id)
+
+
+    # NOVO BLOCO: Etapa sub_submenu (Onde ele finalmente dá a resposta final)
+    if etapa == "sub_submenu":
+        menu_id = sessao.get("menu_id")
+        sub_id = sessao.get("sub_id")
+        sub_sub_id = mensagem
+
+        registrar_evento(atendimento_id, "sub_submenu_escolhido", f"{menu_id}:{sub_id}:{sub_sub_id}")
+
+        # Vai procurar a resposta passando as 3 chaves
+        script = obter_script(menu_id, sub_id, sub_sub_id)
+
+        # TRUQUE DO HANDOFF: Se a resposta for a palavra mágica, chama o humano
+        if script == "HANDOFF":
+            marcar_handoff(atendimento_id)
+            registrar_evento(atendimento_id, "handoff")
+            salvar_sessao(
+                telefone=telefone, atendimento_id=atendimento_id,
+                etapa="handoff", ultimo_contato=agora,
+                nome=sessao.get("nome"), matricula=sessao.get("matricula"),
+                menu_id=menu_id, sub_id=sub_id, atendente_chamado=1, resumo_handoff_salvo=0,
+                telefone_bot=telefone_bot
+            )
+            return "📞 Ok! Um atendente humano foi acionado.\n\n📌 Antes, diga-me em *1 frase* o que precisa."
+
+        # Se for uma resposta normal de texto
+        atualizar_atendimento(atendimento_id, resposta_bot=script or "SCRIPT_NAO_ENCONTRADO")
+
+        salvar_sessao(
+            telefone=telefone, atendimento_id=atendimento_id,
+            etapa="pos_resposta", ultimo_contato=agora,
+            nome=sessao.get("nome"), matricula=sessao.get("matricula"),
+            menu_id=menu_id, sub_id=sub_id, atendente_chamado=0, resumo_handoff_salvo=0,
+            telefone_bot=telefone_bot
         )
 
         if not script:
-            return (
-                "Não encontrei esse script ainda. Posso te ajudar em algo mais?\n"
-                "1 - Voltar ao menu\n2 - Chamar atendente\n3 - Finalizar"
-            )
+            return "Não encontrei essa informação ainda.\n\n1 - Voltar ao menu\n2 - Chamar atendente\n3 - Finalizar"
 
-        return (
-            script + "\n\nPosso ajudar em algo mais?\n"
-            "1 - Voltar ao menu\n2 - Chamar atendente\n3 - Finalizar"
-        )
+        return script + "\n\nPosso ajudar em algo mais?\n1 - Voltar ao menu\n2 - Chamar atendente\n3 - Finalizar"
 
     # Etapa: pos_resposta
     if etapa == "pos_resposta":
@@ -361,7 +419,8 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                 nome=sessao.get("nome"),
                 matricula=sessao.get("matricula"),
                 menu_id=None,
-                sub_id=None
+                sub_id=None,
+                telefone_bot=telefone_bot
             )
             return texto_menu_principal()
 
@@ -378,7 +437,8 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                 menu_id=sessao.get("menu_id"),
                 sub_id=sessao.get("sub_id"),
                 atendente_chamado=1,
-                resumo_handoff_salvo=0
+                resumo_handoff_salvo=0,
+                telefone_bot=telefone_bot
             )
             return (
                 "📞 Ok! Um atendente humano foi acionado.\n\n"
@@ -410,7 +470,8 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                 menu_id=sessao.get("menu_id"),
                 sub_id=sessao.get("sub_id"),
                 atendente_chamado=1,
-                resumo_handoff_salvo=1
+                resumo_handoff_salvo=1,
+                telefone_bot=telefone_bot
             )
             return "Perfeito — já enviei ao atendente. Aguarde um instante 🙏"
 
@@ -456,57 +517,154 @@ def webhook():
             telefone = m["from"]
             mensagem = m["text"]
             message_id = m["id"]
+            telefone_bot = m.get("telefone_bot", "")
+            phone_number_id = m.get("phone_number_id", "") # Pega o ID
 
             # Chama o motor de regras
-            txt = handle_incoming(telefone, mensagem, datetime.now(), message_id=message_id)
+            txt = handle_incoming(telefone, mensagem, datetime.now(), message_id=message_id, telefone_bot=telefone_bot)
 
             print(">>> RESPOSTA DO BOT:", txt)
 
             # Envia a resposta de volta se não for repetida
             if txt and "dedupe" not in txt.lower():
-                send_whatsapp_text(telefone, txt)
+                # Agora passamos o phone_number_id para a função de enviar!
+                send_whatsapp_text(telefone, txt, phone_number_id=phone_number_id)
 
         return "OK", 200
+    
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    erro = None
+    if request.method == 'POST':
+        usuario = request.form.get('usuario')
+        senha = request.form.get('senha')
+        
+        if validar_login(usuario, senha):
+            session['usuario_logado'] = usuario # Dá o "crachá" pro usuário
+            return redirect('/admin') # Manda ele pro painel
+        else:
+            erro = "Usuário ou senha incorretos."
+            
+    # Retorna a tela de login (tanto no GET quanto se der erro no POST)
+    return render_template('login.html', erro=erro)
+
+@app.route('/logout')
+def logout():
+    session.pop('usuario_logado', None) # Toma o crachá de volta
+    return redirect('/login')
 
 # ============================================================
 # ADMIN
 # ============================================================
+@app.route('/admin')
+def painel_admin():
+    # Se não tiver o crachá, vai pra rua (tela de login)!
+    if 'usuario_logado' not in session:
+        return redirect('/login')
+    
+    return render_template('painel.html')
+
 @app.get("/admin/fila")
 def admin_fila():
-    fila = listar_fila_handoff()
-    return jsonify({"fila": fila})
-
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Agora buscamos da tabela PRINCIPAL e trazemos o 'status' junto!
+        # Coloquei um limite de 50 para o painel não travar se você tiver 1000 clientes no futuro.
+        cursor.execute('''
+            SELECT id, telefone, nome, matricula, status
+            FROM atendimentos
+            WHERE status IN ('aguardando', 'em_atendimento_humano', 'encerrado', 'finalizado')
+               OR atendente_chamado = 1
+            ORDER BY 
+                CASE status 
+                    WHEN 'aguardando' THEN 1 
+                    WHEN 'em_atendimento_humano' THEN 2 
+                    ELSE 3 
+                END, 
+                id DESC
+            LIMIT 50
+        ''')
+        fila = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify({"fila": fila})
+    except Exception as e:
+        print("Erro ao buscar fila:", e)
+        return jsonify({"fila": []})
+    
 @app.post("/admin/assumir")
 def admin_assumir():
     dados = request.get_json(force=True) or {}
-    atendimento_id = int(dados["atendimento_id"])
-    atendente_nome = str(dados["atendente_nome"]).strip()
-
-    ok = assumir_atendimento(atendimento_id, atendente_nome)
-    if ok:
-        registrar_evento(atendimento_id, "atendente_assumiu", atendente_nome)
-        return jsonify({"ok": True})
-
-    return jsonify({"ok": False, "erro": "Não foi possível assumir (talvez já não esteja em handoff)."}), 400
+    atendimento_id = dados.get("atendimento_id")
+    if atendimento_id:
+        # Muda o status para travar o robô
+        atualizar_atendimento(atendimento_id, status="em_atendimento_humano")
+        registrar_evento(atendimento_id, "assumido_por_humano")
+    return jsonify({"ok": True})
 
 @app.post("/admin/mensagem")
 def admin_mensagem():
     dados = request.get_json(force=True) or {}
-    atendimento_id = int(dados["atendimento_id"])
-    atendente_nome = str(dados["atendente_nome"]).strip()
-    texto = str(dados["texto"]).strip()
+    atendimento_id = int(dados.get("atendimento_id", 0))
+    telefone = str(dados.get("telefone", "")).strip()
+    atendente_nome = str(dados.get("atendente_nome", "")).strip()
+    texto = str(dados.get("texto", "")).strip()
 
+    # 1. Registra no banco de dados o que o atendente digitou
     registrar_evento(atendimento_id, "msg_atendente", f"{atendente_nome}: {texto}")
+    
+    # 2. DISPARA PARA O WHATSAPP REAL DO CLIENTE
+    if telefone:
+        send_whatsapp_text(telefone, texto)
+
     return jsonify({"ok": True})
 
-@app.post("/admin/encerrar")
-def admin_encerrar():
-    dados = request.get_json(force=True) or {}
-    atendimento_id = int(dados["atendimento_id"])
-    motivo = str(dados.get("motivo", "Resolvido")).strip()
+@app.get("/admin/mensagens/<int:atendimento_id>")
+def admin_get_mensagens(atendimento_id):
+    conn = get_conn()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        # Busca as mensagens do usuário e do atendente no banco de dados
+        cursor.execute("""
+            SELECT tipo_evento, valor, data_evento 
+            FROM atendimento_eventos 
+            WHERE atendimento_id = %s 
+              AND tipo_evento IN ('msg_usuario', 'msg_atendente', 'resumo_handoff')
+            ORDER BY data_evento ASC
+        """, (atendimento_id,))
+        msgs = cursor.fetchall()
+        return jsonify({"mensagens": msgs})
+    except Exception as e:
+        print("Erro ao buscar mensagens:", e)
+        return jsonify({"mensagens": []})
+    finally:
+        cursor.close()
+        conn.close()
 
-    registrar_evento(atendimento_id, "encerrado_atendente", motivo)
-    finalizar(atendimento_id)
+@app.post("/admin/encerrar")
+def admin_encerrar_rota():
+    dados = request.get_json(force=True) or {}
+    atendimento_id = dados.get("atendimento_id")
+    if atendimento_id:
+        registrar_evento(atendimento_id, "finalizar")
+        finalizar(atendimento_id)
+        
+        # Descobre o telefone para apagar a sessão e avisar o usuário
+        conn = get_conn()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT telefone FROM sessao_usuario WHERE atendimento_id = %s", (atendimento_id,))
+        res = cursor.fetchone()
+        if res:
+            telefone = res['telefone']
+            apagar_sessao(telefone)
+            
+            # Avisa o cliente no WhatsApp que o humano encerrou
+            send_whatsapp_text(telefone, "✅ O atendente encerrou este atendimento.\n\nPosso ajudar em algo mais? Envie qualquer mensagem para iniciar um novo atendimento.")
+            
+        cursor.close()
+        conn.close()
     return jsonify({"ok": True})
 
 # ============================================================
