@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Atendimento - Canal I</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<div class="flex h-screen">
+
+  <div class="w-1/3 bg-white border-r flex flex-col shadow-lg z-10">
+    <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+        <h2 class="font-bold text-gray-700 text-lg">Fila de Espera</h2>
+        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full animate-pulse">Online</span>
+    </div>
+    <div id="lista-atendimentos" class="flex-1 overflow-y-auto p-2">
+      </div>
+  </div>
+
+  <div class="flex-1 flex flex-col relative bg-[#efeae2]">
+    
+    <div class="p-4 bg-white border-b shadow-sm flex justify-between items-center" id="chat-header">
+      <span class="font-bold text-gray-700">Selecione um atendimento ao lado</span>
+      <button id="btn-encerrar" onclick="encerrarAtendimento()" class="hidden bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow transition text-sm font-semibold">
+        Encerrar Atendimento
+      </button>
+    </div>
+
+    <div class="flex-1 p-6 overflow-y-auto flex flex-col gap-2" id="chat-box" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: cover; background-blend-mode: overlay; background-color: rgba(255,255,255,0.6);">
+        <div class="text-center text-gray-500 mt-10 bg-white/80 p-2 rounded w-max mx-auto text-sm shadow-sm">
+            Nenhuma conversa selecionada.
+        </div>
+    </div>
+
+    <div id="input-area" class="p-4 bg-gray-100 border-t gap-2 hidden flex">
+      <input id="msg-input" class="flex-1 border rounded-lg p-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400" placeholder="Digite uma mensagem..." />
+      <button onclick="enviarMensagem()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg shadow font-semibold transition">Enviar</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+    let atendimentoSelecionado = null;
+    let telefoneSelecionado = null; 
+    const atendenteNome = "Atendente Humano";
+    let loopMensagens = null;
+
+    async function atualizarFila() {
+        try {
+            const res = await fetch('/admin/fila');
+            const data = await res.json();
+            const lista = document.getElementById('lista-atendimentos');
+            lista.innerHTML = '';
+
+            data.fila.forEach(at => {
+                const div = document.createElement('div');
+                div.className = 'p-4 mb-2 hover:bg-gray-100 cursor-pointer rounded-lg border border-transparent hover:border-gray-200 transition bg-white shadow-sm flex justify-between items-center';
+                
+                // Mágica do Status Dinâmico!
+                let badge = `<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold">Aguardando</span>`;
+                
+                if (at.status === "em_atendimento_humano") {
+                    badge = `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-semibold">Em Atendimento</span>`;
+                } else if (at.status === "encerrado" || at.status === "finalizado") {
+                    badge = `<span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-semibold">Encerrado</span>`;
+                }
+
+                div.innerHTML = `
+                    <div>
+                        <div class="font-bold text-gray-800">${at.nome || at.telefone}</div>
+                        <div class="text-xs text-gray-500 mt-1">Matrícula: ${at.matricula || '---'}</div>
+                    </div>
+                    ${badge}
+                `;
+                
+                div.onclick = () => selecionarAtendimento(at.id, at.telefone, at.nome); 
+                lista.appendChild(div);
+            });
+        } catch (error) {
+            console.error("Erro ao buscar a fila:", error);
+        }
+    }
+
+    async function carregarMensagens(id) {
+        if (id !== atendimentoSelecionado) return;
+        try {
+            const res = await fetch(`/admin/mensagens/${id}`);
+            const data = await res.json();
+            
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = `<div class="text-center text-gray-500 text-xs mb-4 w-full bg-white/80 p-1 rounded-full w-max mx-auto">Histórico do Atendimento #${id}</div>`;
+            
+            data.mensagens.forEach(m => {
+                const wrapper = document.createElement('div');
+                wrapper.className = "flex w-full mb-1";
+
+                const balao = document.createElement('div');
+
+                if (m.tipo_evento === 'msg_usuario' || m.tipo_evento === 'resumo_handoff') {
+                    // Balão do Cliente (Esquerda, Branco)
+                    balao.className = "p-3 rounded-lg max-w-[75%] bg-white shadow-sm text-gray-800 rounded-tl-none border border-gray-100";
+                    balao.innerHTML = `<span class="text-xs text-blue-500 font-bold block mb-1">Cliente</span>${m.valor.replace(/\n/g, '<br>')}`;
+                    wrapper.appendChild(balao);
+                } else if (m.tipo_evento === 'msg_atendente') {
+                    // Balão do Atendente (Direita, Verde)
+                    let textoLimpo = m.valor.split(':').slice(1).join(':').trim();
+                    balao.className = "p-3 rounded-lg max-w-[75%] bg-[#dcf8c6] shadow-sm text-gray-800 rounded-tr-none";
+                    balao.innerHTML = `<span class="text-xs text-green-600 font-bold block mb-1">Você</span>${textoLimpo.replace(/\n/g, '<br>')}`;
+                    wrapper.classList.add("justify-end");
+                    wrapper.appendChild(balao);
+                }
+                chatBox.appendChild(wrapper);
+            });
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (error) {
+            console.error("Erro ao carregar mensagens:", error);
+        }
+    }
+
+    async function selecionarAtendimento(id, telefone, nome) {
+        atendimentoSelecionado = id;
+        telefoneSelecionado = telefone; 
+        
+        document.getElementById('input-area').classList.remove('hidden');
+        document.getElementById('btn-encerrar').classList.remove('hidden');
+        
+        // Atualiza o header com o nome do cliente
+        document.getElementById('chat-header').querySelector('span').innerHTML = `Atendendo: <strong>${nome || telefone}</strong>`;
+        document.getElementById('chat-box').innerHTML = "<div class='text-center mt-10 text-gray-500'>Carregando histórico...</div>";
+        
+        await fetch('/admin/assumir', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ atendimento_id: id, atendente_nome: atendenteNome })
+        });
+        
+        atualizarFila();
+        carregarMensagens(id);
+
+        if(loopMensagens) clearInterval(loopMensagens);
+        loopMensagens = setInterval(() => carregarMensagens(id), 3000);
+    }
+
+    async function enviarMensagem() {
+        const input = document.getElementById('msg-input');
+        if (!input.value || !atendimentoSelecionado) return;
+
+        const textoEnviado = input.value;
+        input.value = ''; 
+
+        await fetch('/admin/mensagem', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                atendimento_id: atendimentoSelecionado,
+                telefone: telefoneSelecionado, 
+                atendente_nome: atendenteNome,
+                texto: textoEnviado
+            })
+        });
+
+        carregarMensagens(atendimentoSelecionado);
+    }
+
+    async function encerrarAtendimento() {
+        if (!atendimentoSelecionado) return;
+
+        const confirmacao = confirm("Tem certeza que deseja ENCERRAR este atendimento?");
+        if (!confirmacao) return;
+
+        await fetch('/admin/encerrar', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ atendimento_id: atendimentoSelecionado })
+        });
+        
+        // Para de atualizar esse chat (pois acabou)
+        if(loopMensagens) clearInterval(loopMensagens); 
+        
+        // Esconde os botões de digitar e encerrar
+        document.getElementById('input-area').classList.add('hidden');
+        document.getElementById('btn-encerrar').classList.add('hidden');
+        
+        // Atualiza o cabeçalho para mostrar que foi encerrado
+        document.getElementById('chat-header').querySelector('span').innerHTML += " <span class='text-red-500 font-bold ml-2'>(Encerrado)</span>";
+        
+        // Adiciona um balão vermelho no fim do chat (SEM APAGAR O RESTO!)
+        const chatBox = document.getElementById('chat-box');
+        chatBox.innerHTML += "<div class='text-center mt-4 text-white bg-red-400 p-2 rounded-lg w-max mx-auto shadow-sm font-bold text-sm'>Atendimento Encerrado</div>";
+        chatBox.scrollTop = chatBox.scrollHeight;
+        
+        atualizarFila();
+    }
+
+    // Enter envia a mensagem
+    document.getElementById("msg-input")?.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            enviarMensagem();
+        }
+    });
+
+    setInterval(atualizarFila, 5000); 
+    atualizarFila();
+</script>
+</body>
+</html>
