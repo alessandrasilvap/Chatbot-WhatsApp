@@ -665,16 +665,7 @@ SCRIPTS = {
     # MENU 1 - SUBMENU 2: Desligamento por aposentadoria por invalidez
     ("1", "2", "1"): "É o processo para o empregado se desligar da empresa após receber aposentadoria por invalidez pelo INSS.",
     ("1", "2", "2"): (
-        "Você precisa entrar em contato com o Canal I para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
-        "📞 *Contato Canal I:*\n\n"
-        "☎️ *Telefones:*\n"
-        "- 99002-1021\n"
-        "- 99002-1023\n"
-        "- 99002-1166\n"
-        "- 99002-1168\n\n"
-        "📱 *WhatsApp:*\n"
-        "- 99002-1374\n"
-        "- 99002-1375"
+        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("1", "2", "3"): (
         "No dia do atendimento, leve:\n"
@@ -1085,16 +1076,7 @@ SCRIPTS = {
         "- Na sua gerência de lotação;\n"
         "- Na CAE – Central de Atendimento ao Empregado, na Rua Major Ávila, 358 – Tijuca (com agendamento prévio pelo Canal I);\n"
         "- Através do sistema Passaporte/atualização cadastral.\n\n"
-        "📞 *Telefones do Canal I:*\n"
-        "O Canal I pode ser acessado pelo CHAT do App Comlurb, por ligação ou por WhatsApp.\n\n"
-        "☎️ *Ligações:*\n"
-        "- 99002-1021\n"
-        "- 99002-1023\n"
-        "- 99002-1166\n"
-        "- 99002-1168\n\n"
-        "📱 *WhatsApp (mensagens):*\n"
-        "- 99002-1374\n"
-        "- 99002-1375"
+        "Você pode voltar ao menu e selecionar Falar com atendente para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("4", "1", "3"): (
         "Para atualizar o nome no cadastro, o empregado deve apresentar:\n"
@@ -1112,16 +1094,7 @@ SCRIPTS = {
         "- Na sua gerência de lotação; ou\n"
         "- Na CAE – Central de Atendimento ao Empregado, na Rua Major Ávila, 358 – Tijuca (com agendamento prévio pelo Canal I).\n\n"
         "🏦 *Atenção:* É necessário apresentar as informações da nova conta-corrente do Banco Santander.\n\n"
-        "📞 *Telefones do Canal I:*\n"
-        "O Canal I pode ser acessado pelo CHAT do App Comlurb, por ligação ou por WhatsApp.\n\n"
-        "☎️ *Ligações:*\n"
-        "- 99002-1021\n"
-        "- 99002-1023\n"
-        "- 99002-1166\n"
-        "- 99002-1168\n\n"
-        "📱 *WhatsApp (mensagens):*\n"
-        "- 99002-1374\n"
-        "- 99002-1375"
+        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("4", "2", "4"): "HANDOFF",
 
@@ -1167,20 +1140,7 @@ SCRIPTS = {
     # ====================================================
     # MENU 5 - SUBMENU 1: Declaração de tempo de serviço
     ("5", "1", "1"): "É o documento usado para comprovar o vínculo empregatício do empregado com a Comlurb, podendo ser apresentado em órgãos públicos, bancos e outras instituições.",
-    ("5", "1", "2"): (
-        "O pedido deve ser feito pelo Canal I – Canal de Informação ao Empregado.\n\n"
-        "O Canal I encaminha a solicitação para a GGA – Gerência de Canais de Atendimento, que emite o documento.\n\n"
-        "📞 *Telefones do Canal I:*\n"
-        "O Canal I pode ser acessado pelo CHAT do App Comlurb, por ligação ou WhatsApp.\n\n"
-        "☎️ *Ligações:*\n"
-        "- 99002-1021\n"
-        "- 99002-1023\n"
-        "- 99002-1166\n"
-        "- 99002-1168\n\n"
-        "📱 *WhatsApp (mensagens):*\n"
-        "- 99002-1374\n"
-        "- 99002-1375"
-    ),
+    ("5", "1", "2"): ("Você precisa voltar ao menu e selecionar *Falar com atendente* para solicitar a declaração."),
     ("5", "1", "3"): "A declaração é emitida em até *3 dias úteis*.",
     ("5", "1", "4"): (
         "Após a emissão, o documento pode ser retirado:\n"
@@ -1244,19 +1204,7 @@ SCRIPTS = {
 
     # MENU 5 - SUBMENU 4: Declaração para aquisição de casa própria
     ("5", "4", "1"): "É a declaração usada pelo empregado para processos de financiamento ou aquisição de casa própria.",
-    ("5", "4", "2"): (
-        "A solicitação deve ser feita pelo Canal I – Canal de Informação ao Empregado, que encaminha o pedido para a GGA – Gerência de Canais de Atendimento.\n\n"
-        "📞 *Telefones do Canal I:*\n"
-        "Você pode acessar o Canal I pelo CHAT do App Comlurb, por ligação ou WhatsApp.\n\n"
-        "☎️ *Ligações:*\n"
-        "- 99002-1021\n"
-        "- 99002-1023\n"
-        "- 99002-1166\n"
-        "- 99002-1168\n\n"
-        "📱 *WhatsApp (mensagens):*\n"
-        "- 99002-1374\n"
-        "- 99002-1375"
-    ),
+    ("5", "4", "2"): ("Você precisa voltar ao menu e selecionar *Falar com atendente* para solicitar a declaração."),
     ("5", "4", "3"): "A declaração é emitida em até *3 dias úteis*.",
     ("5", "4", "4"): (
         "📍 A retirada é feita na CAE – Central de Atendimento ao Empregado, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
@@ -1312,17 +1260,8 @@ SCRIPTS = {
         "⚠️ *Atenção:* Atividades eventuais ou esporádicas não dão direito ao PPP."
     ),
     ("5", "8", "3"): (
-        "O empregado ou ex-empregado deve agendar atendimento na CAE pelo Canal I.\n\n"
+        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
         "No dia agendado, deve comparecer à CAE - Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca, com os documentos necessários.\n\n"
-        "📞 *Telefones do Canal I:*\n"
-        "☎️ *Ligações:*\n"
-        "- 99002-1021\n"
-        "- 99002-1023\n"
-        "- 99002-1166\n"
-        "- 99002-1168\n\n"
-        "📱 *WhatsApp (mensagens):*\n"
-        "- 99002-1374\n"
-        "- 99002-1375"
     ),
     ("5", "8", "4"): (
         "📄 *Documentos necessários – Empregado:*\n"
@@ -1490,15 +1429,12 @@ SCRIPTS = {
         "- Além disso, a empregada pode solicitar prorrogação por mais *60 dias* após o período inicial."
     ),
     ("7", "2", "7"): (
-        "Para solicitar a prorrogação, a empregada ou representante deve:\n"
-        "1️⃣ Agendar atendimento pelo *Canal I*.\n"
-        "2️⃣ Comparecer à CAE (Rua Major Ávila, 358 – Tijuca) em até *3 dias* após o término dos 120 dias.\n\n"
+        "Para solicitar a prorrogação:\n"
+        ""Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n""
+        "A empregada ou representante deve comparecer à *CAE - Central de Atendimento ao Empregado* na Rua Major Ávila, 358 – Tijuca) em até *3 dias* após o término dos 120 dias.\n\n"
         "📑 *Documentos:*\n"
         "- Cópia da certidão de nascimento;\n"
-        "- Atestado do pediatra informando amamentação.\n\n"
-        "📞 *Canais I (WhatsApp/Ligações):*\n"
-        "99002-1021 | 99002-1023 | 99002-1166\n"
-        "99002-1168 | 99002-1374 | 99002-1375"
+        "- Atestado do pediatra informando amamentação."
     ),
     ("7", "2", "8"): "No primeiro dia após o término da licença, a empregada deve se apresentar à sua gerência de lotação para retorno ao trabalho.",
     ("7", "2", "9"): "🛡️ A empregada gestante não pode ser demitida sem justa causa até *6 meses após o parto*.",
@@ -1808,11 +1744,7 @@ SCRIPTS = {
     ("9", "4", "2"): "💰 *Consulta:* Você pode solicitar o extrato analítico do FGTS em qualquer agência da Caixa Econômica Federal ou pelo aplicativo 'FGTS' da Caixa.",
     ("9", "4", "3"): (
         "❓ *Dúvidas sobre depósitos:*\n"
-        "1. Agende atendimento pelo *Canal I*;\n"
-        "2. Compareça à CAE (Rua Major Ávila, 358 – Tijuca) com o extrato analítico.\n\n"
-        "📞 *Contatos Canal I:*\n"
-        "- Ligações: 99002-1021 | 1023 | 1166 | 1168\n"
-        "- WhatsApp: 99002-1374 | 1375"
+        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("9", "4", "4"): (
         "🔍 *Por que meu depósito não aparece?*\n"
