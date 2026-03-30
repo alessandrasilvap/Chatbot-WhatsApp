@@ -3,7 +3,7 @@ import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
 
-load_dotenv()  # carrega variáveis do arquivo .env
+load_dotenv()  # Carrega variáveis do arquivo .env
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
@@ -17,13 +17,13 @@ DB_CONFIG = {
 def get_conn():
     return mysql.connector.connect(**DB_CONFIG, connection_timeout=5)
 
-def criar_atendimento(telefone: str) -> int:
+def criar_atendimento(telefone: str, telefone_bot: str = None) -> int:
     conn = get_conn()
     cur = conn.cursor()
     try:
         cur.execute(
-            "INSERT INTO atendimentos (telefone, status, atendente_chamado) VALUES (%s, %s, %s)",
-            (telefone, 'em_atendimento', 0)
+            "INSERT INTO atendimentos (telefone, telefone_bot, status, atendente_chamado) VALUES (%s, %s, %s, %s)",
+            (telefone, telefone_bot, 'em_atendimento', 0)
         )
         conn.commit()
         return cur.lastrowid
@@ -116,7 +116,7 @@ def listar_fila_handoff(limit=50):
     cur = conn.cursor(dictionary=True)
     try:
         cur.execute("""
-            SELECT id, telefone, nome, matricula, menu_id, sub_id, data_inicio, status
+            SELECT id, telefone, nome, matricula, menu_id, sub_id, sub_sub_id, data_inicio, status
               FROM atendimentos
              WHERE status='handoff' AND atendente_chamado=1
              ORDER BY data_inicio ASC
@@ -163,28 +163,32 @@ def salvar_sessao(
     matricula=None,
     menu_id=None,
     sub_id=None,
+    sub_sub_id=None,
     atendente_chamado=0,
-    resumo_handoff_salvo=0
+    resumo_handoff_salvo=0,
+    telefone_bot=None
 ):
     conn = get_conn()
     cur = conn.cursor()
     try:
         cur.execute("""
             INSERT INTO sessao_usuario
-              (telefone, atendimento_id, etapa, nome, matricula, menu_id, sub_id, atendente_chamado, resumo_handoff_salvo, ultimo_contato)
+              (telefone, telefone_bot, atendimento_id, etapa, nome, matricula, menu_id, sub_id, sub_sub_id, atendente_chamado, resumo_handoff_salvo, ultimo_contato)
             VALUES
-              (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+              (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE
+              telefone_bot=VALUES(telefone_bot),
               atendimento_id=VALUES(atendimento_id),
               etapa=VALUES(etapa),
               nome=VALUES(nome),
               matricula=VALUES(matricula),
               menu_id=VALUES(menu_id),
               sub_id=VALUES(sub_id),
+              sub_sub_id=VALUES(sub_sub_id),
               atendente_chamado=VALUES(atendente_chamado),
               resumo_handoff_salvo=VALUES(resumo_handoff_salvo),
               ultimo_contato=VALUES(ultimo_contato)
-        """, (telefone, atendimento_id, etapa, nome, matricula, menu_id, sub_id, atendente_chamado, resumo_handoff_salvo, ultimo_contato))
+        """, (telefone, telefone_bot, atendimento_id, etapa, nome, matricula, menu_id, sub_id, sub_sub_id, atendente_chamado, resumo_handoff_salvo, ultimo_contato))
         conn.commit()
     finally:
         cur.close()
@@ -196,6 +200,18 @@ def apagar_sessao(telefone: str):
     try:
         cur.execute("DELETE FROM sessao_usuario WHERE telefone=%s", (telefone,))
         conn.commit()
+    finally:
+        cur.close()
+        conn.close()
+
+def validar_login(usuario: str, senha: str) -> bool:
+    conn = get_conn()
+    cur = conn.cursor(dictionary=True)
+    try:
+        cur.execute("SELECT * FROM atendentes WHERE usuario=%s AND senha=%s", (usuario, senha))
+        user = cur.fetchone()
+        # Se achou alguém, retorna True. Se não, retorna False.
+        return user is not None
     finally:
         cur.close()
         conn.close()
