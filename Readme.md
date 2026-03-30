@@ -2,7 +2,7 @@
 
 Este projeto é um chatbot integrado à API da Meta para atendimento automatizado via WhatsApp.
 
-Atualmente, o projeto está evoluindo para incluir um painel web simples, onde um atendente humano poderá responder os usuários manualmente, já que a API não permite que o número conectado seja utilizado diretamente no WhatsApp.
+Atualmente, o projeto já evoluiu incluindo um painel web simples, onde um atendente humano pode responder os usuários manualmente, já que a API não permite que o número conectado seja utilizado diretamente no WhatsApp.
 
 ---
 
@@ -20,7 +20,7 @@ Criar uma solução híbrida de atendimento:
 1. O usuário envia mensagem pelo WhatsApp
 2. A API da Meta recebe e envia para o backend
 3. O chatbot processa a mensagem (Python + Flask)
-4. (Em desenvolvimento) As mensagens também poderão ser visualizadas em um painel web para resposta manual
+4. As mensagens poderão ser visualizadas em um painel web para resposta manual
 
 ---
 
@@ -28,6 +28,7 @@ Criar uma solução híbrida de atendimento:
 
 * Python (Flask)
 * API da Meta (WhatsApp Cloud API)
+* Front-end (HTML, CSS e JavaScript)
 * MySQL
 * Power BI (para análise de dados)
 * AWS (planejado)
@@ -63,7 +64,7 @@ pip install -r requirements.txt
 # Configure o arquivo .env com suas credenciais
 
 # Execute o projeto
-python app.py
+python codigo3.py
 ```
 
 ---
@@ -81,8 +82,8 @@ python app.py
 
 * [x] Integração com API da Meta
 * [x] Estrutura inicial do chatbot
-* [ ] Interface web para atendimento humano
-* [ ] Integração com banco de dados completa
+* [x] Interface web para atendimento humano
+* [x] Integração com banco de dados completa
 * [ ] Deploy na AWS
 
 ---
