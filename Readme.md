@@ -47,7 +47,7 @@ Criar uma solução híbrida de atendimento:
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/seu-repositorio.git
+git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/alessandrasilvap/Chatbot-WhatsApp.git)
 
 # Entre na pasta
 cd seu-repositorio
