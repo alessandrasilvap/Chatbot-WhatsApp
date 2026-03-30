@@ -40,7 +40,7 @@ WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")  # pode ficar vazio (modo dev)
 WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN", "")
 WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID", "")
 WA_API_VERSION = os.getenv("WA_API_VERSION", "v24.0")
-app.secret_key = "xV7r7S9ACo8LJUJkoM3JhF1B9PyqdM_9dPgTeS2SJis"
+app.secret_key = ""
 
 def verify_signature(req) -> bool:
     """
