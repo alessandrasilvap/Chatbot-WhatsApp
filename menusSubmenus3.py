@@ -1430,7 +1430,7 @@ SCRIPTS = {
     ),
     ("7", "2", "7"): (
         "Para solicitar a prorrogação:\n"
-        ""Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n""
+        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
         "A empregada ou representante deve comparecer à *CAE - Central de Atendimento ao Empregado* na Rua Major Ávila, 358 – Tijuca) em até *3 dias* após o término dos 120 dias.\n\n"
         "📑 *Documentos:*\n"
         "- Cópia da certidão de nascimento;\n"
