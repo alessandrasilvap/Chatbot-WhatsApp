@@ -204,14 +204,27 @@ def apagar_sessao(telefone: str):
         cur.close()
         conn.close()
 
-def validar_login(usuario: str, senha: str) -> bool:
+def validar_login(usuario_digitado, senha_digitada):
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cursor = conn.cursor(dictionary=True)
     try:
-        cur.execute("SELECT * FROM atendentes WHERE usuario=%s AND senha=%s", (usuario, senha))
-        user = cur.fetchone()
-        # Se achou alguém, retorna True. Se não, retorna False.
-        return user is not None
+        # Busca apenas o usuário específico para evitar injeção de SQL
+        cursor.execute("SELECT senha FROM atendentes WHERE usuario = %s", (usuario_digitado,))
+        resultado = cursor.fetchone()
+        
+        if resultado:
+            senha_banco = resultado['senha']
+            
+            # Compara a senha digitada com a que está no banco
+            if senha_digitada == senha_banco:
+                return True
+                
+        return False
+        
+    except Exception as e:
+        print("Erro crítico ao validar login no banco de dados:", e)
+        return False
+        
     finally:
-        cur.close()
+        cursor.close()
         conn.close()
