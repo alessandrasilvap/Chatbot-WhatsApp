@@ -11,8 +11,14 @@
 
   <div class="w-1/3 bg-white border-r flex flex-col shadow-lg z-10">
     <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
-        <h2 class="font-bold text-gray-700 text-lg">Fila de Espera</h2>
-        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full animate-pulse">Online</span>
+        <div>
+            <h2 class="font-bold text-gray-700 text-lg">Fila de Espera</h2>
+            <span class="text-xs text-gray-500">Logado como: <strong>{{ usuario }}</strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full animate-pulse">Online</span>
+            <a href="/logout" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded transition font-semibold border border-red-200">Sair</a>
+        </div>
     </div>
     <div id="lista-atendimentos" class="flex-1 overflow-y-auto p-2">
       </div>
@@ -43,7 +49,7 @@
   <script>
     let atendimentoSelecionado = null;
     let telefoneSelecionado = null; 
-    const atendenteNome = "Atendente Humano";
+    const atendenteNome = {{ usuario }};
     let loopMensagens = null;
 
     async function atualizarFila() {
