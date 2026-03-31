@@ -2037,7 +2037,7 @@ SCRIPTS = {
 
 # Dicionário para transformar números normais em Emojis
 EMOJIS_NUMEROS = {
-    "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣",
+    "0": "0️⃣", "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣", "5": "5️⃣",
     "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣", "10": "🔟",
     "11": "1️⃣1️⃣", "12": "1️⃣2️⃣", "13": "1️⃣3️⃣"
 }
@@ -2057,8 +2057,10 @@ def texto_submenu(menu_id: str):
     for k, v in submenu.items():
         emoji = EMOJIS_NUMEROS.get(k, f"{k} -")
         linhas.append(f"{emoji} {v}")
+    
+    # Injeta a opção de voltar dinamicamente no final
+    linhas.append(f"\n{EMOJIS_NUMEROS['0']} Voltar ao menu principal")
     return "\n".join(linhas)
-
 
 def texto_sub_submenu(menu_id: str, sub_id: str):
     sub_submenu = SUBSUBMENUS.get((menu_id, sub_id), {})
@@ -2067,6 +2069,9 @@ def texto_sub_submenu(menu_id: str, sub_id: str):
     for k, v in sub_submenu.items():
         emoji = EMOJIS_NUMEROS.get(k, f"{k} -")
         linhas.append(f"{emoji} {v}")
+    
+    # Injeta a opção de voltar dinamicamente no final
+    linhas.append(f"\n{EMOJIS_NUMEROS['0']} Voltar ao menu anterior")
     return "\n".join(linhas)
 
 
@@ -2077,3 +2082,12 @@ def obter_script(menu_id: str, sub_id: str, sub_sub_id: str = None):
     
     # Se não tiver (caso do Menu 11), busca a tupla de 2 posições
     return SCRIPTS.get((menu_id, sub_id))
+
+def texto_opcoes_pos_script():
+    linhas = [
+        "\n*Posso ajudar em algo mais?*",
+        f"{EMOJIS_NUMEROS['1']} Voltar ao menu principal",
+        f"{EMOJIS_NUMEROS['2']} Chamar atendente",
+        f"{EMOJIS_NUMEROS['3']} Finalizar atendimento"
+    ]
+    return "\n".join(linhas)
