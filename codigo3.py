@@ -98,19 +98,19 @@ def extract_text_messages(payload: dict):
     return results
 
 # ============================================================
-# WhatsApp SEND (Cloud API)
+# WhatsApp SEND (Cloud API) - COM MONITORIZAÇÃO DE ERROS
 # ============================================================
-def send_whatsapp_text(to_wa_id: str, text: str, phone_number_id: str = None):
+def send_whatsapp_text(to_wa_id: str, text: str, phone_number_id: str = None) -> bool:
     if not WA_ACCESS_TOKEN:
         print("❌ WA_ACCESS_TOKEN vazio no .env.")
-        return
+        return False
 
-    # Se vier um ID específico (do webhook), usa ele. Se não vier, usa o padrão do .env!
+    # Se vier um ID específico (do webhook), usa-o. Se não vier, usa o padrão do .env
     sender_id = phone_number_id if phone_number_id else WA_PHONE_NUMBER_ID
     
     if not sender_id:
         print("❌ Nenhum phone_number_id configurado para envio.")
-        return
+        return False
 
     url = f"https://graph.facebook.com/{WA_API_VERSION}/{sender_id}/messages"
     headers = {
@@ -126,14 +126,34 @@ def send_whatsapp_text(to_wa_id: str, text: str, phone_number_id: str = None):
 
     try:
         r = requests.post(url, headers=headers, json=payload, timeout=15)
-        print(">>> SEND status:", r.status_code)
         
+        # Se a Meta devolver um código de erro (400, 401, 403, etc.)
         if r.status_code >= 300:
-            print("❌ Erro ao enviar WhatsApp:", r.status_code, r.text)
+            erro_json = r.json().get("error", {})
+            codigo_erro = erro_json.get("code", "N/A")
+            mensagem_erro = erro_json.get("message", r.text)
+            
+            print(f"❌ [ERRO META {codigo_erro}] Falha ao enviar para {to_wa_id}: {mensagem_erro}")
+            
+            # Tenta registar o erro diretamente na base de dados do atendimento atual
+            try:
+                from bd3 import obter_sessao, registrar_evento
+                sessao = obter_sessao(to_wa_id)
+                if sessao and sessao.get("atendimento_id"):
+                    # Grava o erro no histórico do cliente para o painel HTML ver depois!
+                    registrar_evento(sessao["atendimento_id"], "erro_envio_meta", f"Cod {codigo_erro}: {mensagem_erro}")
+            except Exception as bd_err:
+                print("❌ Erro ao tentar guardar o registo de falha na base de dados:", bd_err)
+                
+            return False
+            
         else:
             print("✅ WhatsApp enviado para", to_wa_id, "pelo ID", sender_id)
+            return True
+            
     except Exception as e:
-        print("❌ Exceção ao enviar WhatsApp:", e)
+        print("❌ Exceção crítica de rede ao enviar WhatsApp:", e)
+        return False
 
 # ============================================================
 # CORE handler (motor do bot)
