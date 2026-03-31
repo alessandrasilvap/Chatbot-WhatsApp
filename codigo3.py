@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, session, redirect, render_template
-from menusSubmenus3 import texto_menu_principal, texto_submenu, texto_sub_submenu, obter_script
+from menusSubmenus3 import texto_menu_principal, texto_submenu, texto_sub_submenu, obter_script, texto_opcoes_pos_script
 from bd3 import (
     criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento,
     obter_status_atendimento, listar_fila_handoff, assumir_atendimento,
@@ -306,16 +306,25 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
     if etapa == "submenu":
         menu_id = sessao.get("menu_id")
         sub_id = mensagem
+
+        # ---> LÓGICA DO BOTÃO VOLTAR (0) <---
+        if sub_id == "0":
+            registrar_evento(atendimento_id, "voltar_menu_principal")
+            salvar_sessao(
+                telefone=telefone, atendimento_id=atendimento_id,
+                etapa="menu_principal", ultimo_contato=agora,
+                nome=sessao.get("nome"), matricula=sessao.get("matricula"),
+                menu_id=None, sub_id=None, # Limpa as escolhas
+                telefone_bot=telefone_bot
+            )
+            return texto_menu_principal()
         
         registrar_evento(atendimento_id, "submenu_escolhido", f"{menu_id}:{sub_id}")
         atualizar_atendimento(atendimento_id, sub_id=sub_id)
 
         # --- TRATAMENTO ESPECIAL PARA O MENU 11 ---
         if menu_id == "11":
-            # Busca o script diretamente (2 níveis apenas)
             script = obter_script(menu_id, sub_id)
-            # Verifica se a resposta exige chamar o atendente
-            # É handoff SE o texto no banco for exatamente "HANDOFF" OU se for a opção 1 do Menu 11
             is_handoff = (script.strip().upper() == "HANDOFF") or (menu_id == "11" and sub_id == "1")
 
             if is_handoff:
@@ -329,8 +338,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                     telefone_bot=telefone_bot
                 )
                 
-                # Se você escreveu um texto bonito no banco (como o do CPF), ele usa.
-                # Se no banco estiver só a palavra "HANDOFF" seca, ele usa o padrão.
                 if script and script.strip().upper() != "HANDOFF":
                     return script
                 else:
@@ -344,7 +351,9 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                 menu_id=menu_id, sub_id=sub_id,
                 telefone_bot=telefone_bot
             )
-            return (script or "Opção em desenvolvimento.") + "\n\nPosso ajudar em algo mais?\n1 - Voltar ao menu\n3 - Finalizar"
+            # Aplicando a nova função com emojis aqui
+            texto_resposta = script or "Opção em desenvolvimento."
+            return f"{texto_resposta}\n{texto_opcoes_pos_script()}"
         # -------------------------------------------
 
         # Para os outros menus (1 a 10), segue para o 3º nível (sub_submenu)
@@ -363,12 +372,22 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         )
         return texto_sub_submenu(menu_id, sub_id)
 
-
     # NOVO BLOCO: Etapa sub_submenu (Onde ele finalmente dá a resposta final)
     if etapa == "sub_submenu":
         menu_id = sessao.get("menu_id")
         sub_id = sessao.get("sub_id")
         sub_sub_id = mensagem
+
+        if sub_sub_id == "0":
+            registrar_evento(atendimento_id, "voltar_submenu")
+            salvar_sessao(
+                telefone=telefone, atendimento_id=atendimento_id,
+                etapa="submenu", ultimo_contato=agora,
+                nome=sessao.get("nome"), matricula=sessao.get("matricula"),
+                menu_id=menu_id, sub_id=None, # Mantém o menu principal, limpa o submenu
+                telefone_bot=telefone_bot
+            )
+            return texto_submenu(menu_id)
 
         registrar_evento(atendimento_id, "sub_submenu_escolhido", f"{menu_id}:{sub_id}:{sub_sub_id}")
 
@@ -400,14 +419,14 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         )
 
         if not script:
-            return "Não encontrei essa informação ainda.\n\n1 - Voltar ao menu\n2 - Chamar atendente\n3 - Finalizar"
+            return f"Não encontrei essa informação ainda.\n{texto_opcoes_pos_script()}"
 
-        return script + "\n\nPosso ajudar em algo mais?\n1 - Voltar ao menu\n2 - Chamar atendente\n3 - Finalizar"
+        return f"{script}\n{texto_opcoes_pos_script()}"
 
     # Etapa: pos_resposta
     if etapa == "pos_resposta":
         if mensagem not in ["1", "2", "3"]:
-            return "❌ Opção inválida.\n1 - Voltar ao menu\n2 - Chamar atendente\n3 - Finalizar"
+            return f"❌ Opção inválida.\n{texto_opcoes_pos_script()}"
 
         if mensagem == "1":
             registrar_evento(atendimento_id, "voltar_menu")
