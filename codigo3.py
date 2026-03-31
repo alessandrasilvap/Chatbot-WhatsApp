@@ -425,7 +425,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
     # Etapa: pos_resposta
     if etapa == "pos_resposta":
-        if mensagem not in ["1", "2", "3"]:
+        if mensagem not in ["1", "2"]:
             return f"❌ Opção inválida.\n{texto_opcoes_pos_script()}"
 
         if mensagem == "1":
@@ -444,30 +444,10 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             return texto_menu_principal()
 
         if mensagem == "2":
-            marcar_handoff(atendimento_id)
-            registrar_evento(atendimento_id, "handoff")
-            salvar_sessao(
-                telefone=telefone,
-                atendimento_id=atendimento_id,
-                etapa="handoff",
-                ultimo_contato=agora,
-                nome=sessao.get("nome"),
-                matricula=sessao.get("matricula"),
-                menu_id=sessao.get("menu_id"),
-                sub_id=sessao.get("sub_id"),
-                atendente_chamado=1,
-                resumo_handoff_salvo=0,
-                telefone_bot=telefone_bot
-            )
-            return (
-                "📞 Ok! Um atendente humano foi acionado.\n\n"
-                "📌 Antes, me diga em *1 frase* o que você precisa (isso ajuda o atendente)."
-            )
-
-        registrar_evento(atendimento_id, "finalizar")
-        finalizar(atendimento_id)
-        apagar_sessao(telefone)
-        return "✅ Atendimento finalizado. Obrigada!"
+            registrar_evento(atendimento_id, "finalizar")
+            finalizar(atendimento_id)
+            apagar_sessao(telefone)
+            return "✅ Atendimento finalizado. Obrigada!"
 
     # Etapa: handoff
     if etapa == "handoff":
