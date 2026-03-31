@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Painel de Atendimento - Canal I</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="shortcut icon" href="../templates/logo-comlurb.gif" type="image/x-icon">
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -49,7 +50,7 @@
   <script>
     let atendimentoSelecionado = null;
     let telefoneSelecionado = null; 
-    const atendenteNome = {{ usuario }};
+    const atendenteNome = { usuario };
     let loopMensagens = null;
 
     async function atualizarFila() {
