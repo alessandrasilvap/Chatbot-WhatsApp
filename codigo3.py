@@ -573,7 +573,7 @@ def logout():
     return redirect('/login')
 
 # ============================================================
-# ADMIN
+# ADMIN - BLINDADO COM VERIFICAÇÃO DE SESSÃO
 # ============================================================
 @app.route('/admin')
 def painel_admin():
@@ -581,16 +581,19 @@ def painel_admin():
     if 'usuario_logado' not in session:
         return redirect('/login')
     
-    return render_template('painel.html')
+    # MUDANÇA: Passa o nome do usuário logado para o painel.html
+    return render_template('painel.html', usuario=session['usuario_logado'])
 
 @app.get("/admin/fila")
 def admin_fila():
+    # VERIFICAÇÃO DE SEGURANÇA
+    if 'usuario_logado' not in session:
+        return jsonify({"erro": "Não autorizado"}), 401
+
     try:
         conn = get_conn()
         cursor = conn.cursor(dictionary=True)
         
-        # Agora buscamos da tabela PRINCIPAL e trazemos o 'status' junto!
-        # Coloquei um limite de 50 para o painel não travar se você tiver 1000 clientes no futuro.
         cursor.execute('''
             SELECT id, telefone, nome, matricula, status
             FROM atendimentos
@@ -615,23 +618,32 @@ def admin_fila():
     
 @app.post("/admin/assumir")
 def admin_assumir():
+    # VERIFICAÇÃO DE SEGURANÇA
+    if 'usuario_logado' not in session:
+        return jsonify({"erro": "Não autorizado"}), 401
+
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
     if atendimento_id:
-        # Muda o status para travar o robô
         atualizar_atendimento(atendimento_id, status="em_atendimento_humano")
         registrar_evento(atendimento_id, "assumido_por_humano")
     return jsonify({"ok": True})
 
 @app.post("/admin/mensagem")
 def admin_mensagem():
+    # VERIFICAÇÃO DE SEGURANÇA
+    if 'usuario_logado' not in session:
+        return jsonify({"erro": "Não autorizado"}), 401
+
     dados = request.get_json(force=True) or {}
     atendimento_id = int(dados.get("atendimento_id", 0))
     telefone = str(dados.get("telefone", "")).strip()
-    atendente_nome = str(dados.get("atendente_nome", "")).strip()
     texto = str(dados.get("texto", "")).strip()
 
-    # 1. Registra no banco de dados o que o atendente digitou
+    # MUDANÇA CRÍTICA: Pega o nome do atendente direto da sessão segura, e não do HTML
+    atendente_nome = session['usuario_logado']
+
+    # 1. Registra no banco de dados o que o atendente digitou com o nome real dele
     registrar_evento(atendimento_id, "msg_atendente", f"{atendente_nome}: {texto}")
     
     # 2. DISPARA PARA O WHATSAPP REAL DO CLIENTE
@@ -642,10 +654,13 @@ def admin_mensagem():
 
 @app.get("/admin/mensagens/<int:atendimento_id>")
 def admin_get_mensagens(atendimento_id):
+    # VERIFICAÇÃO DE SEGURANÇA
+    if 'usuario_logado' not in session:
+        return jsonify({"erro": "Não autorizado"}), 401
+
     conn = get_conn()
     cursor = conn.cursor(dictionary=True)
     try:
-        # Busca as mensagens do usuário e do atendente no banco de dados
         cursor.execute("""
             SELECT tipo_evento, valor, data_evento 
             FROM atendimento_eventos 
@@ -664,13 +679,16 @@ def admin_get_mensagens(atendimento_id):
 
 @app.post("/admin/encerrar")
 def admin_encerrar_rota():
+    # VERIFICAÇÃO DE SEGURANÇA
+    if 'usuario_logado' not in session:
+        return jsonify({"erro": "Não autorizado"}), 401
+
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
     if atendimento_id:
         registrar_evento(atendimento_id, "finalizar")
         finalizar(atendimento_id)
         
-        # Descobre o telefone para apagar a sessão e avisar o usuário
         conn = get_conn()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT telefone FROM sessao_usuario WHERE atendimento_id = %s", (atendimento_id,))
@@ -678,8 +696,6 @@ def admin_encerrar_rota():
         if res:
             telefone = res['telefone']
             apagar_sessao(telefone)
-            
-            # Avisa o cliente no WhatsApp que o humano encerrou
             send_whatsapp_text(telefone, "✅ O atendente encerrou este atendimento.\n\nPosso ajudar em algo mais? Envie qualquer mensagem para iniciar um novo atendimento.")
             
         cursor.close()
