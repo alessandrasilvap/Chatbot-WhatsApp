@@ -2054,24 +2054,29 @@ def texto_menu_principal():
 def texto_submenu(menu_id: str):
     submenu = SUBMENUS.get(menu_id, {})
     linhas = [f"*{MENU_PRINCIPAL.get(menu_id, 'Opção')}*\nEscolha uma opção:\n"]
+    
+    # Injeta a opção de voltar dinamicamente no TOPO da lista
+    linhas.append(f"{EMOJIS_NUMEROS['0']} Voltar ao menu principal\n")
+    
     for k, v in submenu.items():
         emoji = EMOJIS_NUMEROS.get(k, f"{k} -")
         linhas.append(f"{emoji} {v}")
-    
-    # Injeta a opção de voltar dinamicamente no final
-    linhas.append(f"\n{EMOJIS_NUMEROS['0']} Voltar ao menu principal")
+        
     return "\n".join(linhas)
+
 
 def texto_sub_submenu(menu_id: str, sub_id: str):
     sub_submenu = SUBSUBMENUS.get((menu_id, sub_id), {})
     nome_submenu = SUBMENUS.get(menu_id, {}).get(sub_id, "Opção")
     linhas = [f"*{nome_submenu}*\nEscolha uma opção:\n"]
+    
+    # Injeta a opção de voltar dinamicamente no TOPO da lista
+    linhas.append(f"{EMOJIS_NUMEROS['0']} Voltar ao menu anterior\n")
+    
     for k, v in sub_submenu.items():
         emoji = EMOJIS_NUMEROS.get(k, f"{k} -")
         linhas.append(f"{emoji} {v}")
-    
-    # Injeta a opção de voltar dinamicamente no final
-    linhas.append(f"\n{EMOJIS_NUMEROS['0']} Voltar ao menu anterior")
+        
     return "\n".join(linhas)
 
 
@@ -2083,11 +2088,11 @@ def obter_script(menu_id: str, sub_id: str, sub_sub_id: str = None):
     # Se não tiver (caso do Menu 11), busca a tupla de 2 posições
     return SCRIPTS.get((menu_id, sub_id))
 
+
 def texto_opcoes_pos_script():
     linhas = [
         "\n*Posso ajudar em algo mais?*",
         f"{EMOJIS_NUMEROS['1']} Voltar ao menu principal",
-        f"{EMOJIS_NUMEROS['2']} Chamar atendente",
-        f"{EMOJIS_NUMEROS['3']} Finalizar atendimento"
+        f"{EMOJIS_NUMEROS['2']} Finalizar atendimento",
     ]
     return "\n".join(linhas)
