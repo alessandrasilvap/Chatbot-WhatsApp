@@ -39,10 +39,8 @@
     </div>
 
   </div>
-
 </div>
-
-<script>
+  <script>
     let atendimentoSelecionado = null;
     let telefoneSelecionado = null; 
     const atendenteNome = "Atendente Humano";
@@ -59,7 +57,6 @@
                 const div = document.createElement('div');
                 div.className = 'p-4 mb-2 hover:bg-gray-100 cursor-pointer rounded-lg border border-transparent hover:border-gray-200 transition bg-white shadow-sm flex justify-between items-center';
                 
-                // Mágica do Status Dinâmico!
                 let badge = `<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold">Aguardando</span>`;
                 
                 if (at.status === "em_atendimento_humano") {
@@ -76,7 +73,8 @@
                     ${badge}
                 `;
                 
-                div.onclick = () => selecionarAtendimento(at.id, at.telefone, at.nome); 
+                // CORREÇÃO CRÍTICA: Passando o status atual para a função
+                div.onclick = () => selecionarAtendimento(at.id, at.telefone, at.nome, at.status); 
                 lista.appendChild(div);
             });
         } catch (error) {
@@ -91,22 +89,19 @@
             const data = await res.json();
             
             const chatBox = document.getElementById('chat-box');
-            chatBox.innerHTML = `<div class="text-center text-gray-500 text-xs mb-4 w-full bg-white/80 p-1 rounded-full w-max mx-auto">Histórico do Atendimento #${id}</div>`;
+            chatBox.innerHTML = `<div class="text-center text-gray-500 text-xs mb-4 w-full bg-white/80 p-1 rounded-full w-max mx-auto shadow-sm">Histórico do Atendimento #${id}</div>`;
             
             data.mensagens.forEach(m => {
                 const wrapper = document.createElement('div');
                 wrapper.className = "flex w-full mb-1";
-
                 const balao = document.createElement('div');
 
                 if (m.tipo_evento === 'msg_usuario' || m.tipo_evento === 'resumo_handoff') {
-                    // Balão do Cliente (Esquerda, Branco)
                     balao.className = "p-3 rounded-lg max-w-[75%] bg-white shadow-sm text-gray-800 rounded-tl-none border border-gray-100";
                     balao.innerHTML = `<span class="text-xs text-blue-500 font-bold block mb-1">Cliente</span>${m.valor.replace(/\n/g, '<br>')}`;
                     wrapper.appendChild(balao);
                 } else if (m.tipo_evento === 'msg_atendente') {
-                    // Balão do Atendente (Direita, Verde)
-                    let textoLimpo = m.valor.split(':').slice(1).join(':').trim();
+                    let textoLimpo = m.valor.split(':').slice(1).join(':').trim() || m.valor;
                     balao.className = "p-3 rounded-lg max-w-[75%] bg-[#dcf8c6] shadow-sm text-gray-800 rounded-tr-none";
                     balao.innerHTML = `<span class="text-xs text-green-600 font-bold block mb-1">Você</span>${textoLimpo.replace(/\n/g, '<br>')}`;
                     wrapper.classList.add("justify-end");
@@ -121,28 +116,41 @@
         }
     }
 
-    async function selecionarAtendimento(id, telefone, nome) {
+    async function selecionarAtendimento(id, telefone, nome, status) {
         atendimentoSelecionado = id;
         telefoneSelecionado = telefone; 
         
-        document.getElementById('input-area').classList.remove('hidden');
-        document.getElementById('btn-encerrar').classList.remove('hidden');
-        
-        // Atualiza o header com o nome do cliente
-        document.getElementById('chat-header').querySelector('span').innerHTML = `Atendendo: <strong>${nome || telefone}</strong>`;
+        const isEncerrado = (status === "encerrado" || status === "finalizado");
+
+        // Atualiza o header. Se estiver encerrado, avisa visualmente.
+        document.getElementById('chat-header').querySelector('span').innerHTML = `Atendendo: <strong>${nome || telefone}</strong> ${isEncerrado ? "<span class='text-red-500 font-bold ml-2 text-sm'>(Somente Leitura)</span>" : ""}`;
         document.getElementById('chat-box').innerHTML = "<div class='text-center mt-10 text-gray-500'>Carregando histórico...</div>";
         
-        await fetch('/admin/assumir', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ atendimento_id: id, atendente_nome: atendenteNome })
-        });
+        if (isEncerrado) {
+            // Se já foi encerrado, esconde a área de input e o botão de encerrar.
+            document.getElementById('input-area').classList.add('hidden');
+            document.getElementById('btn-encerrar').classList.add('hidden');
+        } else {
+            // Se está ativo, mostra os controles e avisa o Python que estamos assumindo.
+            document.getElementById('input-area').classList.remove('hidden');
+            document.getElementById('btn-encerrar').classList.remove('hidden');
+            
+            await fetch('/admin/assumir', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ atendimento_id: id, atendente_nome: atendenteNome })
+            });
+        }
         
         atualizarFila();
         carregarMensagens(id);
 
         if(loopMensagens) clearInterval(loopMensagens);
-        loopMensagens = setInterval(() => carregarMensagens(id), 3000);
+        
+        // Se estiver encerrado, não precisa ficar atualizando o chat a cada 3 segundos
+        if (!isEncerrado) {
+            loopMensagens = setInterval(() => carregarMensagens(id), 3000);
+        }
     }
 
     async function enviarMensagem() {
@@ -178,17 +186,13 @@
             body: JSON.stringify({ atendimento_id: atendimentoSelecionado })
         });
         
-        // Para de atualizar esse chat (pois acabou)
         if(loopMensagens) clearInterval(loopMensagens); 
         
-        // Esconde os botões de digitar e encerrar
         document.getElementById('input-area').classList.add('hidden');
         document.getElementById('btn-encerrar').classList.add('hidden');
         
-        // Atualiza o cabeçalho para mostrar que foi encerrado
-        document.getElementById('chat-header').querySelector('span').innerHTML += " <span class='text-red-500 font-bold ml-2'>(Encerrado)</span>";
+        document.getElementById('chat-header').querySelector('span').innerHTML += " <span class='text-red-500 font-bold ml-2 text-sm'>(Encerrado)</span>";
         
-        // Adiciona um balão vermelho no fim do chat (SEM APAGAR O RESTO!)
         const chatBox = document.getElementById('chat-box');
         chatBox.innerHTML += "<div class='text-center mt-4 text-white bg-red-400 p-2 rounded-lg w-max mx-auto shadow-sm font-bold text-sm'>Atendimento Encerrado</div>";
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -196,7 +200,6 @@
         atualizarFila();
     }
 
-    // Enter envia a mensagem
     document.getElementById("msg-input")?.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
             event.preventDefault();
