@@ -4,6 +4,7 @@ from bd3 import (
     criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento,
     obter_status_atendimento, obter_sessao, salvar_sessao, apagar_sessao, get_conn, validar_login
 )
+import holidays
 from datetime import datetime, timedelta, time
 import os
 import hmac
@@ -24,9 +25,17 @@ DIAS_ATUAIS = {0, 1, 2, 3, 4}  # 0=segunda ... 4=sexta
 HORA_INICIO = time(8, 0)
 HORA_FIM = time(17, 0)
 
+feriados_rj = holidays.BR(state='RJ')
+
 def em_horario_comercial(agora: datetime) -> bool:
+    # Verifica se é fim de semana
     if agora.weekday() not in DIAS_ATUAIS:
         return False
+
+    # Verifica se a data atual cai em um feriado
+    if agora.date() in feriados_rj:
+        return False
+        
     return HORA_INICIO <= agora.time() <= HORA_FIM
 
 # ============================================================
@@ -161,8 +170,9 @@ def send_whatsapp_text(to_wa_id: str, text: str, phone_number_id: str = None) ->
 def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: str = None, telefone_bot: str = None) -> str:
     if not em_horario_comercial(agora):
         return (
-            "⏰ Nosso atendimento funciona de segunda a sexta, das 08:00 às 17:00.\n"
-            "Por favor, envie sua mensagem novamente dentro do horário comercial."
+            "⏰ *Nosso atendimento está offline no momento.*\n\n"
+            "Funcionamos de segunda a sexta, das 08:00 às 17:00 (exceto feriados).\n"
+            "Por favor, envie sua mensagem novamente dentro do nosso horário comercial para que possamos te ajudar!"
         )
 
     if not telefone:
