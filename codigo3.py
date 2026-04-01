@@ -18,7 +18,7 @@ load_dotenv()
 # ============================================================
 # CONFIG
 # ============================================================
-TIMEOUT_MINUTOS = 15
+TIMEOUT_MINUTOS = 10
 
 # Horário Comercial (aberto para teste)
 DIAS_ATUAIS = {0, 1, 2, 3, 4}  # 0=segunda ... 4=sexta
