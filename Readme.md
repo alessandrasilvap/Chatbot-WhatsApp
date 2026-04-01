@@ -78,13 +78,13 @@ python codigo3.py
 
 ## 🚧 Status do projeto
 
-🚧 Em desenvolvimento
+🚧 Em teste
 
 * [x] Integração com API da Meta
 * [x] Estrutura inicial do chatbot
 * [x] Interface web para atendimento humano
 * [x] Integração com banco de dados completa
-* [ ] Deploy na AWS
+* [x] Deploy na AWS
 
 ---
 
