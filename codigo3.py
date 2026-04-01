@@ -204,7 +204,12 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             telefone_bot=telefone_bot
         )
 
-        return "Olá! 👋 Sou o atendente virtual do Canal I da COMLURB. Por favor, informe seu *nome*."
+        return (
+            "Olá! 👋 Sou o assistente virtual do Canal I da COMLURB.\n\n"
+            "Estou aqui para ajudar a tirar suas dúvidas de forma rápida. Mas não se preocupe: se precisar, você poderá escolher falar com um Atendente Humano a qualquer momento.\n\n"
+            "⚠️ *Aviso rápido:* Para agilizar a fila de todos, conversas sem resposta por mais de 10 minutos são encerradas automaticamente.\n\n"
+            "Para começarmos, por favor, digite o seu *nome*."
+        )
 
     atendimento_id = sessao["atendimento_id"]
 
@@ -227,7 +232,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         apagar_sessao(telefone)
         return (
             "⏱️ Atendimento encerrado por inatividade.\n"
-            "Se precisar de ajuda novamente, envie qualquer mensagem para iniciar um novo atendimento."
+            "Como não tivemos resposta nos últimos 10 minutos, finalizamos esta sessão para liberar a fila. Se precisar de ajuda novamente, envie uma nova mensagem para iniciar um novo atendimento."
         )
 
     # Atualiza ultimo_contato
