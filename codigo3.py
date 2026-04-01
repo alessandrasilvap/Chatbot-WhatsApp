@@ -2,8 +2,7 @@ from flask import Flask, request, jsonify, session, redirect, render_template
 from menusSubmenus3 import texto_menu_principal, texto_submenu, texto_sub_submenu, obter_script, texto_opcoes_pos_script
 from bd3 import (
     criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento,
-    obter_status_atendimento, listar_fila_handoff, assumir_atendimento,
-    obter_sessao, salvar_sessao, apagar_sessao, get_conn, validar_login
+    obter_status_atendimento, obter_sessao, salvar_sessao, apagar_sessao, get_conn, validar_login
 )
 from datetime import datetime, timedelta, time
 import os
@@ -327,7 +326,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         menu_id = sessao.get("menu_id")
         sub_id = mensagem
 
-        # ---> LÓGICA DO BOTÃO VOLTAR (0) <---
+        # Lógica do botão voltar
         if sub_id == "0":
             registrar_evento(atendimento_id, "voltar_menu_principal")
             salvar_sessao(
@@ -342,7 +341,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         registrar_evento(atendimento_id, "submenu_escolhido", f"{menu_id}:{sub_id}")
         atualizar_atendimento(atendimento_id, sub_id=sub_id)
 
-        # --- TRATAMENTO ESPECIAL PARA O MENU 11 ---
+        # Tratamento especial para o Menu 11
         if menu_id == "11":
             script = obter_script(menu_id, sub_id)
             is_handoff = (script.strip().upper() == "HANDOFF") or (menu_id == "11" and sub_id == "1")
@@ -374,7 +373,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             # Aplicando a nova função com emojis aqui
             texto_resposta = script or "Opção em desenvolvimento."
             return f"{texto_resposta}\n{texto_opcoes_pos_script()}"
-        # -------------------------------------------
 
         # Para os outros menus (1 a 10), segue para o 3º nível (sub_submenu)
         salvar_sessao(
@@ -392,7 +390,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         )
         return texto_sub_submenu(menu_id, sub_id)
 
-    # NOVO BLOCO: Etapa sub_submenu (Onde ele finalmente dá a resposta final)
+    # Etapa sub_submenu
     if etapa == "sub_submenu":
         menu_id = sessao.get("menu_id")
         sub_id = sessao.get("sub_id")
@@ -414,7 +412,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         # Vai procurar a resposta passando as 3 chaves
         script = obter_script(menu_id, sub_id, sub_sub_id)
 
-        # TRUQUE DO HANDOFF: Se a resposta for a palavra mágica, chama o humano
+        # Se a resposta for a palavra mágica, chama o humano
         if script == "HANDOFF":
             marcar_handoff(atendimento_id)
             registrar_evento(atendimento_id, "handoff")
@@ -581,12 +579,12 @@ def painel_admin():
     if 'usuario_logado' not in session:
         return redirect('/login')
     
-    # MUDANÇA: Passa o nome do usuário logado para o painel.html
+    # Passa o nome do usuário logado para o painel.html
     return render_template('painel.html', usuario=session['usuario_logado'])
 
 @app.get("/admin/fila")
 def admin_fila():
-    # VERIFICAÇÃO DE SEGURANÇA
+    # Verificação de segurança
     if 'usuario_logado' not in session:
         return jsonify({"erro": "Não autorizado"}), 401
 
@@ -618,7 +616,7 @@ def admin_fila():
     
 @app.post("/admin/assumir")
 def admin_assumir():
-    # VERIFICAÇÃO DE SEGURANÇA
+    # Verificação de segurança
     if 'usuario_logado' not in session:
         return jsonify({"erro": "Não autorizado"}), 401
 
@@ -631,7 +629,7 @@ def admin_assumir():
 
 @app.post("/admin/mensagem")
 def admin_mensagem():
-    # VERIFICAÇÃO DE SEGURANÇA
+    # Verificação de segurança
     if 'usuario_logado' not in session:
         return jsonify({"erro": "Não autorizado"}), 401
 
@@ -640,13 +638,13 @@ def admin_mensagem():
     telefone = str(dados.get("telefone", "")).strip()
     texto = str(dados.get("texto", "")).strip()
 
-    # MUDANÇA CRÍTICA: Pega o nome do atendente direto da sessão segura, e não do HTML
+    # Pega o nome do atendente direto da sessão segura, e não do HTML
     atendente_nome = session['usuario_logado']
 
-    # 1. Registra no banco de dados o que o atendente digitou com o nome real dele
+    # Registra no banco de dados o que o atendente digitou com o nome real dele
     registrar_evento(atendimento_id, "msg_atendente", f"{atendente_nome}: {texto}")
     
-    # 2. DISPARA PARA O WHATSAPP REAL DO CLIENTE
+    # Dispara para o WhatsApp real do cliente
     if telefone:
         send_whatsapp_text(telefone, texto)
 
@@ -654,7 +652,7 @@ def admin_mensagem():
 
 @app.get("/admin/mensagens/<int:atendimento_id>")
 def admin_get_mensagens(atendimento_id):
-    # VERIFICAÇÃO DE SEGURANÇA
+    # Verificação de segurança
     if 'usuario_logado' not in session:
         return jsonify({"erro": "Não autorizado"}), 401
 
@@ -679,7 +677,7 @@ def admin_get_mensagens(atendimento_id):
 
 @app.post("/admin/encerrar")
 def admin_encerrar_rota():
-    # VERIFICAÇÃO DE SEGURANÇA
+    # Verificação de segurança
     if 'usuario_logado' not in session:
         return jsonify({"erro": "Não autorizado"}), 401
 
