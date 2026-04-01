@@ -18,16 +18,16 @@ load_dotenv()
 # ============================================================
 # CONFIG
 # ============================================================
-TIMEOUT_MINUTOS = 5
+TIMEOUT_MINUTOS = 15
 
 # Horário Comercial (aberto para teste)
 DIAS_ATUAIS = {0, 1, 2, 3, 4}  # 0=segunda ... 4=sexta
-HORA_INICIO = time(0, 0)
-HORA_FIM = time(18, 0)
+HORA_INICIO = time(8, 0)
+HORA_FIM = time(17, 0)
 
 def em_horario_comercial(agora: datetime) -> bool:
     if agora.weekday() not in DIAS_ATUAIS:
-        return True
+        return False
     return HORA_INICIO <= agora.time() <= HORA_FIM
 
 # ============================================================
