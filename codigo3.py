@@ -18,6 +18,7 @@ load_dotenv()
 # ============================================================
 # CONFIG
 # ============================================================
+# Tempo de inatividade
 TIMEOUT_MINUTOS = 10
 
 # Horário Comercial (aberto para teste)
@@ -25,9 +26,19 @@ DIAS_ATUAIS = {0, 1, 2, 3, 4}  # 0=segunda ... 4=sexta
 HORA_INICIO = time(8, 0)
 HORA_FIM = time(17, 0)
 
+# Feriados do Rio de Janeiro
 feriados_rj = holidays.BR(state='RJ')
 
+# Recessos do Rio de Janeiro "AAAA-MM-DD"
+recessos_comlurb = ["2026-04-02"]
+
 def em_horario_comercial(agora: datetime) -> bool:
+    hoje_texto = agora.strftime("%Y-%m-%d")
+
+    # Verifica se é recesso
+    if hoje_texto in recessos_comlurb:
+        return False
+
     # Verifica se é fim de semana
     if agora.weekday() not in DIAS_ATUAIS:
         return False
@@ -35,7 +46,7 @@ def em_horario_comercial(agora: datetime) -> bool:
     # Verifica se a data atual cai em um feriado
     if agora.date() in feriados_rj:
         return False
-        
+            
     return HORA_INICIO <= agora.time() <= HORA_FIM
 
 # ============================================================
