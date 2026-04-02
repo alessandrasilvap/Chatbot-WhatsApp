@@ -30,7 +30,7 @@ HORA_FIM = time(17, 0)
 feriados_rj = holidays.BR(state='RJ')
 
 # Recessos do Rio de Janeiro "AAAA-MM-DD"
-recessos_comlurb = ["2026-04-02"]
+recessos_comlurb = ["2026-04-02", "2026-04-20"]
 
 def em_horario_comercial(agora: datetime) -> bool:
     hoje_texto = agora.strftime("%Y-%m-%d")
