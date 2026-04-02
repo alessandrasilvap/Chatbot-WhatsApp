@@ -31,7 +31,7 @@ Criar uma solução híbrida de atendimento:
 * Front-end (HTML, CSS e JavaScript)
 * MySQL
 * Power BI (para análise de dados)
-* AWS (planejado)
+* Google Cloud
 
 ---
 
@@ -84,7 +84,7 @@ python codigo3.py
 * [x] Estrutura inicial do chatbot
 * [x] Interface web para atendimento humano
 * [x] Integração com banco de dados completa
-* [x] Deploy na AWS
+* [x] Deploy no Google Cloud
 
 ---
 
