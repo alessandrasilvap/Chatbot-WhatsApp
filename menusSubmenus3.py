@@ -10,7 +10,6 @@ MENU_PRINCIPAL = {
     "8": "Jornada, frequência e pagamentos adicionais",
     "9": "Pagamentos, descontos e consignações",
     "10": "Saúde, segurança e medicina do trabalho",
-    "11": "Outros assuntos"
 }
 
 
@@ -106,12 +105,6 @@ SUBMENUS = {
         "6": "Aposentado afastado por doença",
         "7": "Auxílio-doença",
         "8": "Retorno ao trabalho após alta do INSS"
-    },
-
-    "11": { # Outros
-        "1": "Falar com um atendente (Chat Humano)",
-        "2": "Registrar uma solicitação/chamado",
-        "3": "Voltar ao Menu Principal"
     },
 }
 
@@ -2019,19 +2012,6 @@ SCRIPTS = {
         "2. *Inapto:* Indica novo afastamento ou outro encaminhamento necessário."
     ),
     ("10", "8", "5"): "HANDOFF",
-
-    # ==========================================
-    # MENU 11 - Outros Assuntos
-    ("11", "1"): (
-        "📞 *Transferindo para Atendimento Humano...*\n\n"
-        "Aguarde um momento. Nossos atendentes funcionam de segunda a sexta, das 08h às 17h.\n"
-        "Por favor, digite seu *CPF* e o *Assunto* para agilizar o atendimento."
-    ),
-    ("11", "2"): (
-        "📝 *Abertura de Solicitação:*\n\n"
-        "Vamos implementar isso na próxima etapa.\n"
-    ),
-    ("11", "3"): "Voltando ao menu principal..."
 }
 
 
@@ -2056,7 +2036,7 @@ def texto_submenu(menu_id: str):
     linhas = [f"*{MENU_PRINCIPAL.get(menu_id, 'Opção')}*\nEscolha uma opção:\n"]
     
     # Injeta a opção de voltar dinamicamente no TOPO da lista
-    linhas.append(f"{EMOJIS_NUMEROS['0']} Voltar ao menu principal\n")
+    linhas.append(f"{EMOJIS_NUMEROS['0']} Voltar ao menu principal")
     
     for k, v in submenu.items():
         emoji = EMOJIS_NUMEROS.get(k, f"{k} -")
@@ -2071,7 +2051,7 @@ def texto_sub_submenu(menu_id: str, sub_id: str):
     linhas = [f"*{nome_submenu}*\nEscolha uma opção:\n"]
     
     # Injeta a opção de voltar dinamicamente no TOPO da lista
-    linhas.append(f"{EMOJIS_NUMEROS['0']} Voltar ao menu anterior\n")
+    linhas.append(f"{EMOJIS_NUMEROS['0']} Voltar ao menu anterior")
     
     for k, v in sub_submenu.items():
         emoji = EMOJIS_NUMEROS.get(k, f"{k} -")
@@ -2081,13 +2061,7 @@ def texto_sub_submenu(menu_id: str, sub_id: str):
 
 
 def obter_script(menu_id: str, sub_id: str, sub_sub_id: str = None):
-    # Se tiver sub_sub_id, busca a tupla de 3 posições
-    if sub_sub_id:
-        return SCRIPTS.get((menu_id, sub_id, sub_sub_id))
-    
-    # Se não tiver (caso do Menu 11), busca a tupla de 2 posições
-    return SCRIPTS.get((menu_id, sub_id))
-
+    return SCRIPTS.get((menu_id, sub_id, sub_sub_id))
 
 def texto_opcoes_pos_script():
     linhas = [

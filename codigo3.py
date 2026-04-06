@@ -55,7 +55,7 @@ def em_horario_comercial(agora: datetime) -> bool:
 app = Flask(__name__)
 
 WA_VERIFY_TOKEN = os.getenv("WA_VERIFY_TOKEN", "")
-WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")  # pode ficar vazio (modo dev)
+WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")  # Pode ficar vazio (modo dev)
 WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN", "")
 WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID", "")
 WA_API_VERSION = os.getenv("WA_API_VERSION", "v24.0")
@@ -67,7 +67,7 @@ def verify_signature(req) -> bool:
     Se WA_APP_SECRET estiver vazio, fica em modo dev e aceita.
     """
     if not WA_APP_SECRET:
-        return True  # modo dev
+        return True  # Modo dev
 
     sig = req.headers.get("X-Hub-Signature-256", "")
     if not sig.startswith("sha256="):
@@ -183,7 +183,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         return (
             "⏰ *Nosso atendimento está offline no momento.*\n\n"
             "Funcionamos de segunda a sexta, das 08:00 às 17:00 (exceto feriados).\n"
-            "Por favor, envie sua mensagem novamente dentro do nosso horário comercial para que possamos te ajudar!"
+            "Por favor, envie sua mensagem novamente dentro desse período para que possamos te ajudar!"
         )
 
     if not telefone:
@@ -217,8 +217,8 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
         return (
             "Olá! 👋 Sou o assistente virtual do Canal I da COMLURB.\n\n"
-            "Estou aqui para ajudar a tirar suas dúvidas de forma rápida. Mas não se preocupe: se precisar, você poderá escolher falar com um Atendente Humano a qualquer momento.\n\n"
-            "⚠️ *Aviso rápido:* Para agilizar a fila de todos, conversas sem resposta por mais de 10 minutos são encerradas automaticamente.\n\n"
+            "Estou aqui para ajudar a tirar suas dúvidas de forma rápida. Mas não se preocupe: se precisar, você poderá escolher falar com um atendente da equipe do Canal I.\n\n"
+            "⚠️ *Aviso:* Para agilizar o atendimento de todos, conversas sem interação por mais de 10 minutos são encerradas automaticamente.\n\n"
             "Para começarmos, por favor, digite o seu *nome*."
         )
 
@@ -323,8 +323,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
     # Etapa: menu principal
     if etapa == "menu_principal":
-        # Ajustado para aceitar de 1 a 11
-        opcoes_validas = [str(i) for i in range(1, 12)]
+        opcoes_validas = [str(i) for i in range(1, 11)]
         if mensagem not in opcoes_validas:
             return "❌ Opção inválida.\n\n" + texto_menu_principal()
 
@@ -367,40 +366,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         registrar_evento(atendimento_id, "submenu_escolhido", f"{menu_id}:{sub_id}")
         atualizar_atendimento(atendimento_id, sub_id=sub_id)
 
-        # Tratamento especial para o Menu 11
-        if menu_id == "11":
-            script = obter_script(menu_id, sub_id)
-            is_handoff = (script.strip().upper() == "HANDOFF") or (menu_id == "11" and sub_id == "1")
-
-            if is_handoff:
-                marcar_handoff(atendimento_id)
-                registrar_evento(atendimento_id, "handoff")
-                salvar_sessao(
-                    telefone=telefone, atendimento_id=atendimento_id,
-                    etapa="handoff", ultimo_contato=agora,
-                    nome=sessao.get("nome"), matricula=sessao.get("matricula"),
-                    menu_id=menu_id, sub_id=sub_id, atendente_chamado=1, resumo_handoff_salvo=0,
-                    telefone_bot=telefone_bot
-                )
-                
-                if script and script.strip().upper() != "HANDOFF":
-                    return script
-                else:
-                    return "📞 Ok! Um atendente humano foi acionado.\n\n📌 Antes, diga-me em *1 frase* o que precisa."
-
-            # Se for resposta direta do Menu 11
-            salvar_sessao(
-                telefone=telefone, atendimento_id=atendimento_id,
-                etapa="pos_resposta", ultimo_contato=agora,
-                nome=sessao.get("nome"), matricula=sessao.get("matricula"),
-                menu_id=menu_id, sub_id=sub_id,
-                telefone_bot=telefone_bot
-            )
-            # Aplicando a nova função com emojis aqui
-            texto_resposta = script or "Opção em desenvolvimento."
-            return f"{texto_resposta}\n{texto_opcoes_pos_script()}"
-
-        # Para os outros menus (1 a 10), segue para o 3º nível (sub_submenu)
+        # Para os menus de 1 a 10
         salvar_sessao(
             telefone=telefone,
             atendimento_id=atendimento_id,
@@ -521,7 +487,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             )
             return "Perfeito — já enviei ao atendente. Aguarde um instante 🙏"
 
-        return "📞 Você está aguardando um atendente humano. Se quiser, digite 3 para finalizar."
+        return "📞 Você está aguardando um atendente da equipe do Canal I. Se quiser, digite 3 para finalizar."
 
     return "Algo inesperado aconteceu 😅"
 
@@ -530,7 +496,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 # ============================================================
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
-    # 1. A Meta usa GET apenas uma vez para verificar se a URL é sua
+    # A Meta usa GET apenas uma vez para verificar se a URL é sua
     if request.method == "GET":
         mode = request.args.get("hub.mode")
         token = request.args.get("hub.verify_token")
@@ -543,7 +509,7 @@ def webhook():
             print("❌ Falha na verificação. Token incorreto.")
             return "Falha na verificacao", 403
 
-    # 2. A Meta usa POST toda vez que um usuário mandar mensagem
+    # A Meta usa POST toda vez que um usuário mandar mensagem
     if request.method == "POST":
         print(">>> WEBHOOK CHEGOU: MENSAGEM RECEBIDA!")
         
@@ -722,7 +688,7 @@ def admin_encerrar_rota():
         if res:
             telefone = res['telefone']
             apagar_sessao(telefone)
-            send_whatsapp_text(telefone, "✅ O atendente encerrou este atendimento.\n\nPosso ajudar em algo mais? Envie qualquer mensagem para iniciar um novo atendimento.")
+            send_whatsapp_text(telefone, "✅ Atendimento encerrado.\n\nPosso ajudar em algo mais? Envie qualquer mensagem para iniciar um novo atendimento.")
             
         cursor.close()
         conn.close()
