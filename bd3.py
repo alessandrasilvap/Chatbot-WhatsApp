@@ -114,14 +114,18 @@ def registrar_evento(atendimento_id: int, tipo_evento: str, valor=None, external
 def listar_fila_handoff(limit=50):
     conn = get_conn()
     cur = conn.cursor(dictionary=True)
+    data_teste = "2026-04-06 00:00:00"
     try:
+        # Comentando alinha 'AND data_inicio >= %s' todas as conversas antigas "reaparecem"
         cur.execute("""
             SELECT id, telefone, nome, matricula, menu_id, sub_id, sub_sub_id, data_inicio, status
-              FROM atendimentos
-             WHERE status='handoff' AND atendente_chamado=1
-             ORDER BY data_inicio ASC
-             LIMIT %s
-        """, (limit,))
+            FROM atendimentos
+            WHERE (status='handoff' OR status='em_atendimento_humano')
+            AND atendente_chamado=1
+            AND data_inicio >= %s
+            ORDER BY data_inicio ASC
+            LIMIT %s
+        """, (data_teste, limit))
         return cur.fetchall()
     finally:
         cur.close()
