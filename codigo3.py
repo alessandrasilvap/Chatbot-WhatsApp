@@ -503,6 +503,9 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
         if not sessao.get("resumo_handoff_salvo"):
             registrar_evento(atendimento_id, "resumo_handoff", mensagem)
+            
+            atualizar_atendimento(atendimento_id, status="aguardando")
+            
             salvar_sessao(
                 telefone=telefone,
                 atendimento_id=atendimento_id,
@@ -622,7 +625,6 @@ def admin_fila():
             SELECT id, telefone, nome, matricula, status
             FROM atendimentos
             WHERE status IN ('aguardando', 'em_atendimento_humano', 'encerrado', 'finalizado')
-               OR atendente_chamado = 1
             ORDER BY 
                 CASE status 
                     WHEN 'aguardando' THEN 1 
