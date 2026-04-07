@@ -306,6 +306,9 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         if not mensagem.isdigit():
             return "❌ Matrícula inválida. Informe apenas *números*."
 
+        if len(mensagem) != 6:
+            return "❌ Matrícula inválida. Informe sua matrícula de 6 dígitos, por favor."
+
         matricula = mensagem
         atualizar_atendimento(atendimento_id, matricula=matricula)
         registrar_evento(atendimento_id, "informou_matricula", matricula)
