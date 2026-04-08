@@ -496,6 +496,42 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
     return "Algo inesperado aconteceu 😅"
 
+@app.route('/')
+@app.route('/login')
+def tela_login():
+    return render_template('login.html')
+
+@app.route('/painel')
+def tela_painel():
+    return render_template('painel.html')
+
+# ============================================================
+# ROTAS DO PAINEL WEB
+# ============================================================
+
+@app.route('/', methods=['GET'])
+@app.route('/login', methods=['GET', 'POST'])
+def tela_login():
+    if request.method == 'POST':
+        # Captura o que foi digitado no HTML
+        usuario = request.form.get('usuario') # ou 'username' (depende de como está no seu HTML)
+        senha = request.form.get('senha')     # ou 'password'
+        
+        # Chama a sua função que já existe para checar no banco
+        if validar_login(usuario, senha):
+            # Se a senha estiver certa, libera a entrada
+            return redirect('/painel')
+        else:
+            return "❌ Credenciais inválidas. Volte e tente novamente."
+            
+    # Se for apenas GET (acessar o site), mostra a tela de login
+    return render_template('login.html')
+
+@app.route('/painel')
+def tela_painel():
+    # Aqui depois precisaremos colocar a trava de segurança (sessão) que você mencionou antes!
+    return render_template('painel.html')
+
 # ============================================================
 # WEBHOOK META (REFATORADO COM THREADS)
 # ============================================================
