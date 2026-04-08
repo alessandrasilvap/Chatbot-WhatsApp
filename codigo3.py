@@ -397,6 +397,10 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         # Vai procurar a resposta passando as 3 chaves
         script = obter_script(menu_id, sub_id, sub_sub_id)
 
+        if not script:
+            registrar_evento(atendimento_id, "erro_digitacao", f"Input invalido: {sub_sub_id}")
+            return f"❌ Opção inválida. Por favor, digite apenas o número correspondente à opção desejada.\n\n{texto_sub_submenu(menu_id, sub_id)}"
+
         # Se a resposta for a palavra mágica, chama o humano
         if script == "HANDOFF":
             marcar_handoff(atendimento_id)
@@ -411,7 +415,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             return "📞 Ok! Um atendente humano foi acionado.\n\n📌 Antes, diga-me em *1 frase* o que precisa."
 
         # Se for uma resposta normal de texto
-        atualizar_atendimento(atendimento_id, resposta_bot=script or "SCRIPT_NAO_ENCONTRADO")
+        atualizar_atendimento(atendimento_id, resposta_bot=script)
 
         salvar_sessao(
             telefone=telefone, atendimento_id=atendimento_id,
@@ -420,9 +424,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             menu_id=menu_id, sub_id=sub_id, atendente_chamado=0, resumo_handoff_salvo=0,
             telefone_bot=telefone_bot
         )
-
-        if not script:
-            return f"Não encontrei essa informação ainda.\n{texto_opcoes_pos_script()}"
 
         return f"{script}\n{texto_opcoes_pos_script()}"
 
