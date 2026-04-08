@@ -344,6 +344,9 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         menu_id = sessao.get("menu_id")
         sub_id = mensagem
 
+        if not sub_id.isdigit():
+            return f"❌ Opção inválida. Digite apenas o número:\n\n{texto_submenu(menu_id)}"
+
         # Lógica do botão voltar
         if sub_id == "0":
             registrar_evento(atendimento_id, "voltar_menu_principal")
@@ -355,6 +358,11 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                 telefone_bot=telefone_bot
             )
             return texto_menu_principal()
+
+        script_teste = obter_script(menu_id, sub_id, "1") # Tenta o primeiro item
+        if not script_teste and sub_id != "0":
+             # Se não achou nada, é porque o número digitado não existe para este menu
+             return f"❌ Opção inválida.\n\n{texto_submenu(menu_id)}"
         
         registrar_evento(atendimento_id, "submenu_escolhido", f"{menu_id}:{sub_id}")
         atualizar_atendimento(atendimento_id, sub_id=sub_id)
@@ -381,6 +389,9 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         sub_id = sessao.get("sub_id")
         sub_sub_id = mensagem
 
+        if not sub_sub_id.isdigit():
+            return f"❌ Opção inválida. Digite apenas o número:\n\n{texto_sub_submenu(menu_id, sub_id)}"
+
         if sub_sub_id == "0":
             registrar_evento(atendimento_id, "voltar_submenu")
             salvar_sessao(
@@ -399,7 +410,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
         if not script:
             registrar_evento(atendimento_id, "erro_digitacao", f"Input invalido: {sub_sub_id}")
-            return f"❌ Opção inválida. Por favor, digite apenas o número correspondente à opção desejada.\n\n{texto_sub_submenu(menu_id, sub_id)}"
+            return f"❌ Opção inválida.\n\n{texto_sub_submenu(menu_id, sub_id)}"
 
         # Se a resposta for a palavra mágica, chama o humano
         if script == "HANDOFF":
