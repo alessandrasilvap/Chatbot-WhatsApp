@@ -1,7 +1,8 @@
 import os
 import mysql.connector
-from mysql.connector import Error
+from mysql.connector import pooling, Error
 from dotenv import load_dotenv
+from werkzeug.security import check_password_hash, generate_password_hash
 
 load_dotenv()  # Carrega variáveis do arquivo .env
 
@@ -13,9 +14,25 @@ DB_CONFIG = {
     "database": os.getenv("DB_NAME", "bot_atendimento"),
 }
 
+try:
+    db_pool = pooling.MySQLConnectionPool(
+        pool_name="comlurb_pool",
+        pool_size=15, # Mantém 15 conexões prontas para uso simultâneo
+        pool_reset_session=True,
+        **DB_CONFIG
+    )
+    print("✅ Pool de banco de dados iniciado com sucesso.")
+except Error as e:
+    print(f"❌ ERRO CRÍTICO ao criar o pool de conexões: {e}")
+    raise
 
 def get_conn():
-    return mysql.connector.connect(**DB_CONFIG, connection_timeout=5)
+    """Pega uma conexão já aberta do Pool instantaneamente."""
+    try:
+        return db_pool.get_connection()
+    except Error as e:
+        print(f"❌ Erro ao obter conexão do pool: {e}")
+        raise
 
 def criar_atendimento(telefone: str, telefone_bot: str = None) -> int:
     conn = get_conn()
@@ -114,18 +131,18 @@ def registrar_evento(atendimento_id: int, tipo_evento: str, valor=None, external
 def listar_fila_handoff(limit=50):
     conn = get_conn()
     cur = conn.cursor(dictionary=True)
-    data_teste = "2026-04-06 00:00:00"
+    # Busca do .env, se não existir, usa uma data muito antiga para não quebrar nada
+    data_corte = os.getenv("DATA_CORTE_PRODUCAO", "2000-01-01 00:00:00")
     try:
-        # Comentando alinha 'AND data_inicio >= %s' todas as conversas antigas "reaparecem"
         cur.execute("""
             SELECT id, telefone, nome, matricula, menu_id, sub_id, sub_sub_id, data_inicio, status
             FROM atendimentos
-            WHERE (status='handoff' OR status='em_atendimento_humano')
-            AND atendente_chamado=1
+            WHERE status IN ('handoff', 'em_atendimento_humano')
+            AND atendente_chamado = 1
             AND data_inicio >= %s
             ORDER BY data_inicio ASC
             LIMIT %s
-        """, (data_teste, limit))
+        """, (data_corte, limit))
         return cur.fetchall()
     finally:
         cur.close()
@@ -212,15 +229,13 @@ def validar_login(usuario_digitado, senha_digitada):
     conn = get_conn()
     cursor = conn.cursor(dictionary=True)
     try:
-        # Busca apenas o usuário específico para evitar injeção de SQL
         cursor.execute("SELECT senha FROM atendentes WHERE usuario = %s", (usuario_digitado,))
         resultado = cursor.fetchone()
         
         if resultado:
-            senha_banco = resultado['senha']
-            
-            # Compara a senha digitada com a que está no banco
-            if senha_digitada == senha_banco:
+            senha_banco_hasheada = resultado['senha']
+            # Isso compara a senha digitada em texto com o hash embaralhado do banco
+            if check_password_hash(senha_banco_hasheada, senha_digitada):
                 return True
                 
         return False

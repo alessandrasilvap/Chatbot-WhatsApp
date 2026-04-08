@@ -11,6 +11,7 @@ import hmac
 import hashlib
 import requests
 from dotenv import load_dotenv
+import threading
 
 # Carrega variáveis do .env
 load_dotenv()
@@ -234,17 +235,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             raise
     else:
         registrar_evento(atendimento_id, "msg_usuario", mensagem)
-
-    # Timeout
-    ultimo = sessao.get("ultimo_contato") or agora
-    if agora - ultimo > timedelta(minutes=TIMEOUT_MINUTOS):
-        registrar_evento(atendimento_id, "timeout_finalizado")
-        finalizar(atendimento_id)
-        apagar_sessao(telefone)
-        return (
-            "⏱️ Atendimento encerrado por inatividade.\n"
-            "Como não tivemos resposta nos últimos 10 minutos, finalizamos esta sessão para liberar a fila. Se precisar de ajuda novamente, envie uma nova mensagem para iniciar um novo atendimento."
-        )
 
     # Atualiza ultimo_contato
     salvar_sessao(
@@ -495,8 +485,30 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
     return "Algo inesperado aconteceu 😅"
 
 # ============================================================
-# WEBHOOK META
+# WEBHOOK META (REFATORADO COM THREADS)
 # ============================================================
+
+def processar_mensagem_background(m):
+    """
+    Esta função roda em segundo plano. Ela lida com o processamento
+    pesado sem bloquear o servidor Flask.
+    """
+    telefone = m["from"]
+    mensagem = m["text"]
+    message_id = m["id"]
+    telefone_bot = m.get("telefone_bot", "")
+    phone_number_id = m.get("phone_number_id", "")
+
+    # Chama o motor de regras
+    txt = handle_incoming(telefone, mensagem, datetime.now(), message_id=message_id, telefone_bot=telefone_bot)
+
+    print(f">>> RESPOSTA DO BOT PARA {telefone}: {txt}")
+
+    # Envia a resposta de volta se não for repetida
+    if txt and "dedupe" not in txt.lower():
+        send_whatsapp_text(telefone, txt, phone_number_id=phone_number_id)
+
+
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     # A Meta usa GET apenas uma vez para verificar se a URL é sua
@@ -521,52 +533,17 @@ def webhook():
             return "Invalid signature", 403
 
         payload = request.get_json(silent=True) or {}
-
-        print("\n>>> PAYLOAD BRUTO DA META:", payload, "\n")
-        print(">>> KEYS payload:", list(payload.keys()))
-
         msgs = extract_text_messages(payload)
         print(">>> Mensagens extraidas:", msgs)
 
+        # Para cada mensagem, cria uma Thread isolada para processar
         for m in msgs:
-            telefone = m["from"]
-            mensagem = m["text"]
-            message_id = m["id"]
-            telefone_bot = m.get("telefone_bot", "")
-            phone_number_id = m.get("phone_number_id", "") # Pega o ID
+            thread = threading.Thread(target=processar_mensagem_background, args=(m,))
+            thread.start()
 
-            # Chama o motor de regras
-            txt = handle_incoming(telefone, mensagem, datetime.now(), message_id=message_id, telefone_bot=telefone_bot)
-
-            print(">>> RESPOSTA DO BOT:", txt)
-
-            # Envia a resposta de volta se não for repetida
-            if txt and "dedupe" not in txt.lower():
-                # Agora passamos o phone_number_id para a função de enviar!
-                send_whatsapp_text(telefone, txt, phone_number_id=phone_number_id)
-
+        # O FLASK RETORNA 200 OK IMEDIATAMENTE PARA A META, 
+        # ENQUANTO AS THREADS TRABALHAM NOS BASTIDORES!
         return "OK", 200
-    
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    erro = None
-    if request.method == 'POST':
-        usuario = request.form.get('usuario')
-        senha = request.form.get('senha')
-        
-        if validar_login(usuario, senha):
-            session['usuario_logado'] = usuario # Dá o "crachá" pro usuário
-            return redirect('/admin') # Manda ele pro painel
-        else:
-            erro = "Usuário ou senha incorretos."
-            
-    # Retorna a tela de login (tanto no GET quanto se der erro no POST)
-    return render_template('login.html', erro=erro)
-
-@app.route('/logout')
-def logout():
-    session.pop('usuario_logado', None) # Toma o crachá de volta
-    return redirect('/login')
 
 # ============================================================
 # ADMIN - BLINDADO COM VERIFICAÇÃO DE SESSÃO
