@@ -522,7 +522,7 @@ def tela_login():
             # Se a senha estiver certa, libera a entrada
             return redirect('/painel')
         else:
-            return "❌ Credenciais inválidas. Volte e tente novamente."
+            return render_template('login.html', erro="Usuário ou senha incorretos")
             
     # Se for apenas GET (acessar o site), mostra a tela de login
     return render_template('login.html')
