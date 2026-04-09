@@ -22,7 +22,7 @@ load_dotenv()
 # Tempo de inatividade
 TIMEOUT_MINUTOS = 10
 
-# Horário Comercial (aberto para teste)
+# Horário Comercial
 DIAS_ATUAIS = {0, 1, 2, 3, 4}  # 0=segunda ... 4=sexta
 HORA_INICIO = time(8, 0)
 HORA_FIM = time(17, 0)
@@ -49,6 +49,28 @@ def em_horario_comercial(agora: datetime) -> bool:
         return False
             
     return HORA_INICIO <= agora.time() <= HORA_FIM
+
+# ============================================================
+# CACHE DE DEDUPLICAÇÃO (MEMÓRIA ANTI-REPETIÇÃO)
+# ============================================================
+MENSAGENS_PROCESSADAS = {}
+
+def is_duplicada(message_id: str, agora: datetime) -> bool:
+    if not message_id:
+        return False
+        
+    # Limpa da memória mensagens que chegaram há mais de 2 horas para não pesar o servidor
+    chaves_velhas = [k for k, v in MENSAGENS_PROCESSADAS.items() if (agora - v).total_seconds() > 7200]
+    for k in chaves_velhas:
+        del MENSAGENS_PROCESSADAS[k]
+
+    # Se a mensagem já passou por aqui, bloqueia!
+    if message_id in MENSAGENS_PROCESSADAS:
+        return True
+
+    # Se é nova, registra no escudo
+    MENSAGENS_PROCESSADAS[message_id] = agora
+    return False
 
 # ============================================================
 # APP / ENV
@@ -546,9 +568,16 @@ def processar_mensagem_background(m):
     message_id = m["id"]
     telefone_bot = m.get("telefone_bot", "")
     phone_number_id = m.get("phone_number_id", "")
+    
+    agora = datetime.now()
+
+    # Verifica se a Meta está reenviando uma mensagem antiga
+    if is_duplicada(message_id, agora):
+        print(f">>> [DEDUPE] Webhook repetido da Meta bloqueado: {message_id}")
+        return
 
     # Chama o motor de regras
-    txt = handle_incoming(telefone, mensagem, datetime.now(), message_id=message_id, telefone_bot=telefone_bot)
+    txt = handle_incoming(telefone, mensagem, agora, message_id=message_id, telefone_bot=telefone_bot)
 
     print(f">>> RESPOSTA DO BOT PARA {telefone}: {txt}")
 
