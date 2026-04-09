@@ -536,12 +536,13 @@ def tela_painel():
 def tela_login():
     if request.method == 'POST':
         # Captura o que foi digitado no HTML
-        usuario = request.form.get('usuario') # ou 'username' (depende de como está no seu HTML)
-        senha = request.form.get('senha')     # ou 'password'
+        usuario = request.form.get('usuario')
+        senha = request.form.get('senha')
         
         # Chama a sua função que já existe para checar no banco
         if validar_login(usuario, senha):
             # Se a senha estiver certa, libera a entrada
+            session['usuario_logado'] = usuario
             return redirect('/painel')
         else:
             return render_template('login.html', erro="Usuário ou senha incorretos")
