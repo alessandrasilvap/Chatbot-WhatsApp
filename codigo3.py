@@ -518,15 +518,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
     return "Algo inesperado aconteceu 😅"
 
-@app.route('/')
-@app.route('/login')
-def tela_login():
-    return render_template('login.html')
-
-@app.route('/painel')
-def tela_painel():
-    return render_template('painel.html')
-
 # ============================================================
 # ROTAS DO PAINEL WEB
 # ============================================================
@@ -543,17 +534,12 @@ def tela_login():
         if validar_login(usuario, senha):
             # Se a senha estiver certa, libera a entrada
             session['usuario_logado'] = usuario
-            return redirect('/painel')
+            return redirect('/admin')
         else:
             return render_template('login.html', erro="Usuário ou senha incorretos")
             
     # Se for apenas GET (acessar o site), mostra a tela de login
     return render_template('login.html')
-
-@app.route('/painel')
-def tela_painel():
-    # Aqui depois precisaremos colocar a trava de segurança (sessão) que você mencionou antes!
-    return render_template('painel.html')
 
 # ============================================================
 # WEBHOOK META (REFATORADO COM THREADS)
