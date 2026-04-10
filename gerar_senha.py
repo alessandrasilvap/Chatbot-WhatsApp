@@ -14,3 +14,5 @@ print(hash_gerado)
     # INSERT INTO atendentes (usuario, senha) 
         # VALUES ('admin', 'scrypt:32768:8:1$KxY...$9b2...');
 # Já o usuário apenas dgita '123' no campo senha
+
+# senha: scrypt:32768:8:1$ayOlInQpFUBSEvqi$9efdf0fdfb14b412d1f4c21f9771626ff4aeb76624edcd8c79397ccea1d71fa9d98f1d9913c335cfe944bbfcdbdecdc93b7621857ca8fb99d5c119cae1745754
