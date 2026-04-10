@@ -14,7 +14,7 @@ TIMEOUT_MINUTOS = 10
 
 def enviar_mensagem_timeout(telefone_destino, telefone_bot_origem):
     # O bot que envia a mensagem é o que estava atendendo o cliente
-    sender_id = telefone_bot_origem if telefone_bot_origem else WA_PHONE_NUMBER_ID
+    sender_id = WA_PHONE_NUMBER_ID
     
     url = f"https://graph.facebook.com/{WA_API_VERSION}/{sender_id}/messages"
     headers = {
