@@ -34,7 +34,11 @@ def enviar_mensagem_timeout(telefone_destino, telefone_bot_origem):
     }
     
     try:
-        requests.post(url, headers=headers, json=payload, timeout=10)
+        resposta = requests.post(url, headers=headers, json=payload, timeout=10)
+        if resposta.status_code != 200:
+            print(f"❌ Erro da API do WhatsApp: {resposta.status_code} - {resposta.text}")
+        else:
+            print(f"✅ Mensagem de timeout entregue com sucesso!")
     except Exception as e:
         print(f"❌ Erro de rede ao enviar timeout para {telefone_destino}: {e}")
 
