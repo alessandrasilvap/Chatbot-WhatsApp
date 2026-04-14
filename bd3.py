@@ -17,7 +17,7 @@ DB_CONFIG = {
 try:
     db_pool = pooling.MySQLConnectionPool(
         pool_name="comlurb_pool",
-        pool_size=15, # Mantém 15 conexões prontas para uso simultâneo
+        pool_size=32, # Aumentado para suportar picos de concorrência (Escalabilidade)
         pool_reset_session=True,
         **DB_CONFIG
     )
