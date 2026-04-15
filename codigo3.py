@@ -31,7 +31,7 @@ HORA_FIM = time(17, 0)
 feriados_rj = holidays.BR(state='RJ')
 
 # Recessos do Rio de Janeiro "AAAA-MM-DD"
-recessos_comlurb = ["2026-04-02", "2026-04-20"]
+recessos_comlurb = ["2026-04-02", "2026-04-24"]
 
 def em_horario_comercial(agora: datetime) -> bool:
     hoje_texto = agora.strftime("%Y-%m-%d")
@@ -239,7 +239,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         )
 
         return (
-            "Olá! 👋 Sou o assistente virtual do Canal I da COMLURB.\n\n"
+            "Olá! 👋 Sou a assistente virtual do Canal I da COMLURB.\n\n"
             "Estou aqui para ajudar a tirar suas dúvidas de forma rápida. Mas não se preocupe: se precisar, você poderá escolher falar com um atendente da equipe do Canal I.\n\n"
             "⚠️ *Aviso:* Para agilizar o atendimento de todos, conversas sem interação por mais de 10 minutos são encerradas automaticamente.\n\n"
             "Para começarmos, por favor, digite o seu *nome*."
@@ -445,7 +445,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                 menu_id=menu_id, sub_id=sub_id, atendente_chamado=1, resumo_handoff_salvo=0,
                 telefone_bot=telefone_bot
             )
-            return "📞 Ok! Um atendente humano foi acionado.\n\n📌 Antes, diga-me em *1 frase* o que precisa."
+            return "📞 Ok! Um atendente da equipe do Canal I foi acionado.\n\n📌 Antes, diga-me em *1 frase* o que precisa."
 
         # Se for uma resposta normal de texto
         atualizar_atendimento(atendimento_id, resposta_bot=script)
