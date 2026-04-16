@@ -462,7 +462,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
     # Etapa: pos_resposta
     if etapa == "pos_resposta":
-        if mensagem not in ["1", "2"]:
+        if mensagem not in ["0", "1", "2"]:
             return f"❌ Opção inválida.\n{texto_opcoes_pos_script()}"
 
         if mensagem == "1":
@@ -476,6 +476,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                 matricula=sessao.get("matricula"),
                 menu_id=None,
                 sub_id=None,
+                sub_sub_id=None,
                 telefone_bot=telefone_bot
             )
             return texto_menu_principal()
@@ -485,6 +486,22 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             finalizar(atendimento_id)
             apagar_sessao(telefone)
             return "✅ Atendimento finalizado. Obrigada!"
+
+        if mensagem == "0":
+            registrar_evento(atendimento_id, "voltar_menu_anterior")
+            salvar_sessao(
+                telefone=telefone,
+                atendimento_id=atendimento_id,
+                etapa="sub_submenu",
+                ultimo_contato=agora,
+                nome=sessao.get("nome"),
+                matricula=sessao.get("matricula"),
+                menu_id=sessao.get("menu_id"),
+                sub_id=sessao.get("sub_id"),
+                sub_sub_id=None,
+                telefone_bot=telefone_bot
+            )
+            return texto_sub_submenu(sessao.get("menu_id"), sessao.get("sub_id"))
 
     # Etapa: handoff
     if etapa == "handoff":
