@@ -1,6 +1,6 @@
 import os
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 import requests
 from dotenv import load_dotenv
 from bd3 import get_conn, finalizar, registrar_evento, apagar_sessao
@@ -12,75 +12,124 @@ WA_API_VERSION = os.getenv("WA_API_VERSION", "v24.0")
 WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID", "")
 TIMEOUT_MINUTOS = 10
 
-def enviar_mensagem_timeout(telefone_destino, telefone_bot_origem):
-    # O bot que envia a mensagem é o que estava atendendo o cliente
-    sender_id = WA_PHONE_NUMBER_ID
-    
-    url = f"https://graph.facebook.com/{WA_API_VERSION}/{sender_id}/messages"
+def enviar_mensagem_whatsapp(telefone_destino, texto):
+    """Função genérica e reaproveitável para enviar mensagens via Graph API"""
+    url = f"https://graph.facebook.com/{WA_API_VERSION}/{WA_PHONE_NUMBER_ID}/messages"
     headers = {
         "Authorization": f"Bearer {WA_ACCESS_TOKEN}",
         "Content-Type": "application/json"
     }
-    texto = (
-        "⏱️ *Atendimento encerrado por inatividade.*\n\n"
-        "Como não tivemos resposta nos últimos 10 minutos, finalizamos esta sessão para liberar a fila. "
-        "Se precisar de ajuda novamente, envie uma nova mensagem para iniciar um novo atendimento."
-    )
     payload = {
         "messaging_product": "whatsapp",
         "to": telefone_destino,
         "type": "text",
         "text": {"body": texto}
     }
-    
     try:
         resposta = requests.post(url, headers=headers, json=payload, timeout=10)
         if resposta.status_code != 200:
-            print(f"❌ Erro da API do WhatsApp: {resposta.status_code} - {resposta.text}")
-        else:
-            print(f"✅ Mensagem de timeout entregue com sucesso!")
+            print(f"❌ Erro da API da Meta: {resposta.status_code} - {resposta.text}")
     except Exception as e:
-        print(f"❌ Erro de rede ao enviar timeout para {telefone_destino}: {e}")
+        print(f"❌ Erro de rede ao enviar mensagem para {telefone_destino}: {e}")
 
 def varrer_inativos():
+    """Varre APENAS inativos que estão no bot. Ignora quem está na fila ou com atendente."""
     conn = get_conn()
     cur = conn.cursor(dictionary=True)
     try:
-        agora = datetime.now()
-        limite_tempo = agora - timedelta(minutes=TIMEOUT_MINUTOS)
-        
-        # Busca todo mundo que passou de 10 minutos sem falar nada
+        # Repare no SQL inteligente: cruza sessao com atendimentos
         cur.execute("""
-            SELECT telefone, atendimento_id, telefone_bot 
-            FROM sessao_usuario 
-            WHERE ultimo_contato < %s
-        """, (limite_tempo,))
+            SELECT s.telefone, s.atendimento_id 
+            FROM sessao_usuario s
+            INNER JOIN atendimentos a ON s.atendimento_id = a.id
+            WHERE s.ultimo_contato <= NOW() - INTERVAL %s MINUTE
+              AND a.status = 'em_atendimento'
+              AND s.atendente_chamado = 0
+        """, (TIMEOUT_MINUTOS,))
         
         inativos = cur.fetchall()
 
         for sessao in inativos:
             telefone = sessao['telefone']
             atendimento_id = sessao['atendimento_id']
-            telefone_bot = sessao['telefone_bot']
 
-            print(f"[{agora.strftime('%H:%M:%S')}] 🧹 Encerrando sessão inativa: {telefone}")
-
-            # 1. Avisa o cliente pelo WhatsApp Oficial
-            enviar_mensagem_timeout(telefone, telefone_bot)
-
-            # 2. Registra e apaga do banco de dados
-            registrar_evento(atendimento_id, "timeout_finalizado", "Worker Automático")
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] 🧹 Encerrando sessão inativa: {telefone}")
+            
+            texto_timeout = (
+                "⏱️ *Atendimento encerrado por inatividade.*\n\n"
+                "Como não tivemos resposta nos últimos 10 minutos, encerramos esta sessão. "
+                "Se precisar de ajuda novamente, envie uma nova mensagem."
+            )
+            enviar_mensagem_whatsapp(telefone, texto_timeout)
+            
+            registrar_evento(atendimento_id, "timeout_finalizado", "Worker Inatividade")
             finalizar(atendimento_id)
             apagar_sessao(telefone)
 
     except Exception as e:
-        print(f"❌ Erro ao varrer banco: {e}")
+        print(f"❌ Erro ao varrer inativos: {e}")
     finally:
         cur.close()
-        conn.close() # Devolve a conexão pro Pool!
+        conn.close()
+
+def limpar_fila_fim_expediente():
+    """Roda às 17h para limpar a fila de quem não foi atendido."""
+    conn = get_conn()
+    cur = conn.cursor(dictionary=True)
+    try:
+        cur.execute("""
+            SELECT s.telefone, s.atendimento_id 
+            FROM sessao_usuario s
+            INNER JOIN atendimentos a ON s.atendimento_id = a.id
+            WHERE a.status = 'handoff'
+        """)
+        abandonados = cur.fetchall()
+
+        for sessao in abandonados:
+            telefone = sessao['telefone']
+            atendimento_id = sessao['atendimento_id']
+            
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] 🏢 Limpando fila (Fim de expediente): {telefone}")
+            
+            texto_fim_expediente = (
+                "Pedimos desculpas, mas nosso expediente encerrou e não conseguimos "
+                "conectar você a um atendente a tempo.\n\n"
+                "🕒 Nosso horário é de *Segunda a Sexta, das 08h às 17h*.\n"
+                "Por favor, retorne o contato dentro deste horário no próximo dia útil para falarmos com você!"
+            )
+            enviar_mensagem_whatsapp(telefone, texto_fim_expediente)
+            
+            registrar_evento(atendimento_id, "expediente_encerrado_na_fila", "Worker Horário")
+            finalizar(atendimento_id)
+            apagar_sessao(telefone)
+            
+    except Exception as e:
+        print(f"❌ Erro ao limpar fila no fim do expediente: {e}")
+    finally:
+        cur.close()
+        conn.close()
 
 if __name__ == "__main__":
-    print("🚀 Worker de Timeout iniciado e monitorando o banco a cada 60 segundos...")
+    print("🚀 Worker Automático iniciado! Monitorando inatividade e horário comercial...")
+    
+    ja_limpou_fila_hoje = False
+
     while True:
+        agora = datetime.now()
+        
+        # 1. Rotina de Inatividade (Roda sempre a cada minuto)
         varrer_inativos()
-        time.sleep(60) # Pausa por 1 minuto antes de checar de novo
+        
+        # 2. Rotina de Fim de Expediente (Roda só às 17:00, dias de semana)
+        # Verifica se é dia de semana (0=Segunda ... 4=Sexta)
+        if agora.weekday() < 5:
+            if agora.hour == 17 and agora.minute == 0:
+                if not ja_limpou_fila_hoje:
+                    limpar_fila_fim_expediente()
+                    ja_limpou_fila_hoje = True
+            
+            # Reseta a flag para o dia seguinte
+            if agora.hour == 18:
+                ja_limpou_fila_hoje = False
+
+        time.sleep(60)
