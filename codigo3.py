@@ -109,25 +109,27 @@ def verify_signature(req) -> bool:
 
 def extract_text_messages(payload: dict):
     """
-    Extrai mensagens de texto do webhook e retorna lista:
-      [{"from":"...", "id":"...", "text":"...", "telefone_bot": "...", "phone_number_id": "..."}]
+    Extrai mensagens do webhook. Se não for texto, cria uma tag especial.
     """
     results = []
     for e in payload.get("entry", []) or []:
         for c in (e.get("changes", []) or []):
             value = c.get("value", {}) or {}
             
-            # Pegando as informações do número do bot
             metadata = value.get("metadata") or {}
             telefone_bot = str(metadata.get("display_phone_number") or "").strip()
-            phone_number_id = str(metadata.get("phone_number_id") or "").strip() # Pegando o ID
+            phone_number_id = str(metadata.get("phone_number_id") or "").strip()
             
             for m in (value.get("messages", []) or []):
-                if m.get("type") != "text":
-                    continue
+                msg_type = m.get("type", "")
                 wa_from = str(m.get("from") or "").strip()
                 msg_id = str(m.get("id") or "").strip()
-                text = str(((m.get("text") or {}).get("body") or "")).strip()
+                
+                # Se for texto, pega o body. Se for mídia, cria a tag interna
+                if msg_type == "text":
+                    text = str(((m.get("text") or {}).get("body") or "")).strip()
+                else:
+                    text = f"__MEDIA__{msg_type.upper()}"
                 
                 if wa_from and text:
                     results.append({
@@ -135,7 +137,7 @@ def extract_text_messages(payload: dict):
                         "id": msg_id, 
                         "text": text, 
                         "telefone_bot": telefone_bot,
-                        "phone_number_id": phone_number_id # Guardando o ID
+                        "phone_number_id": phone_number_id
                     })
     return results
 
@@ -282,9 +284,23 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             apagar_sessao(telefone)
             return "✅ Atendimento finalizado. Obrigada!"
         
-        # O robô não retorna NADA. Ele apenas fica em silêncio.
-        # A mensagem do usuário já foi registrada em 'atendimento_eventos' lá em cima no DEDUPE.
-        return ""
+        # Se o cliente mandar áudio/foto no meio do atendimento humano:
+        if mensagem.startswith("__MEDIA__"):
+            aviso_painel = f"⚠️ [SISTEMA: O cliente enviou um arquivo de mídia pelo WhatsApp. Painel exibe apenas texto.]"
+            registrar_evento(atendimento_id, "msg_usuario", aviso_painel)
+            return "" # Bot continua em silêncio
+            
+        return "" # O robô não retorna NADA para textos normais. Fica em silêncio.
+
+    # =========================================================
+    # BARREIRA DO BOT CONTRA ÁUDIOS E FIGURINHAS
+    if mensagem.startswith("__MEDIA__"):
+        return (
+            "❌ *Formato não suportado.*\n\n"
+            "Sou uma assistente virtual focada em texto. Não consigo ouvir áudios, nem visualizar imagens, figurinhas ou documentos.\n\n"
+            "Por favor, *digite* a sua resposta para continuarmos."
+        )
+    # =========================================================
 
     etapa = sessao["etapa"]
 
