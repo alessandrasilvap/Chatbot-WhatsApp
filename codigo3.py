@@ -706,10 +706,23 @@ def admin_fila():
         fila = cursor.fetchall()
         cursor.close()
         conn.close()
-        return jsonify({"fila": fila})
+
+        # ==========================================
+        # NOVIDADE: Calculando os contadores no Python
+        # ==========================================
+        qtd_aguardando = sum(1 for a in fila if a['status'] == 'aguardando')
+        qtd_em_atendimento = sum(1 for a in fila if a['status'] == 'em_atendimento_humano')
+
+        # Enviando a fila e os contadores para o HTML
+        return jsonify({
+            "fila": fila,
+            "qtd_aguardando": qtd_aguardando,
+            "qtd_em_atendimento": qtd_em_atendimento
+        })
+        
     except Exception as e:
         print("Erro ao buscar fila:", e)
-        return jsonify({"fila": []})
+        return jsonify({"fila": [], "qtd_aguardando": 0, "qtd_em_atendimento": 0})
     
 @app.post("/admin/assumir")
 def admin_assumir():
