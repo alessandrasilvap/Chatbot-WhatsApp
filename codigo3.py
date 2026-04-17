@@ -601,37 +601,8 @@ def tela_login():
     return render_template('login.html')
 
 # ============================================================
-# WEBHOOK META (REFATORADO COM THREADS)
+# WEBHOOK META
 # ============================================================
-
-def processar_mensagem_background(m):
-    """
-    Esta função roda em segundo plano. Ela lida com o processamento
-    pesado sem bloquear o servidor Flask.
-    """
-    telefone = m["from"]
-    mensagem = m["text"]
-    message_id = m["id"]
-    telefone_bot = m.get("telefone_bot", "")
-    phone_number_id = m.get("phone_number_id", "")
-    
-    agora = datetime.now()
-
-    # Verifica se a Meta está reenviando uma mensagem antiga
-    if is_duplicada(message_id, agora):
-        print(f">>> [DEDUPE] Webhook repetido da Meta bloqueado: {message_id}")
-        return
-
-    # Chama o motor de regras
-    txt = handle_incoming(telefone, mensagem, agora, message_id=message_id, telefone_bot=telefone_bot)
-
-    print(f">>> RESPOSTA DO BOT PARA {telefone}: {txt}")
-
-    # Envia a resposta de volta se não for repetida
-    if txt and "dedupe" not in txt.lower():
-        send_whatsapp_text(telefone, txt, phone_number_id=phone_number_id)
-
-
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     # A Meta usa GET apenas uma vez para verificar se a URL é sua
