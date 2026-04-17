@@ -33,18 +33,17 @@ def enviar_mensagem_whatsapp(telefone_destino, texto):
         print(f"❌ Erro de rede ao enviar mensagem para {telefone_destino}: {e}")
 
 def varrer_inativos():
-    """Varre APENAS inativos que estão no bot. Ignora quem está na fila ou com atendente."""
+    """Varre inativos que estão nos menus do bot. Ignora quem está na fila (aguardando) ou com atendente."""
     conn = get_conn()
     cur = conn.cursor(dictionary=True)
     try:
-        # Repare no SQL inteligente: cruza sessao com atendimentos
+        # Pega inativos que NÃO estão aguardando e NÃO estão em atendimento humano
         cur.execute("""
             SELECT s.telefone, s.atendimento_id 
             FROM sessao_usuario s
             INNER JOIN atendimentos a ON s.atendimento_id = a.id
             WHERE s.ultimo_contato <= NOW() - INTERVAL %s MINUTE
-              AND a.status = 'em_atendimento'
-              AND s.atendente_chamado = 0
+              AND a.status NOT IN ('aguardando', 'em_atendimento_humano')
         """, (TIMEOUT_MINUTOS,))
         
         inativos = cur.fetchall()
@@ -77,11 +76,12 @@ def limpar_fila_fim_expediente():
     conn = get_conn()
     cur = conn.cursor(dictionary=True)
     try:
+        # Busca quem está com status 'aguardando'
         cur.execute("""
             SELECT s.telefone, s.atendimento_id 
             FROM sessao_usuario s
             INNER JOIN atendimentos a ON s.atendimento_id = a.id
-            WHERE a.status = 'handoff'
+            WHERE a.status = 'aguardando'
         """)
         abandonados = cur.fetchall()
 
@@ -121,14 +121,12 @@ if __name__ == "__main__":
         varrer_inativos()
         
         # 2. Rotina de Fim de Expediente (Roda só às 17:00, dias de semana)
-        # Verifica se é dia de semana (0=Segunda ... 4=Sexta)
         if agora.weekday() < 5:
             if agora.hour == 17 and agora.minute == 0:
                 if not ja_limpou_fila_hoje:
                     limpar_fila_fim_expediente()
                     ja_limpou_fila_hoje = True
             
-            # Reseta a flag para o dia seguinte
             if agora.hour == 18:
                 ja_limpou_fila_hoje = False
 
