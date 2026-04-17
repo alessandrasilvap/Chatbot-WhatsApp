@@ -642,6 +642,9 @@ def webhook():
 # ============================================================
 # ADMIN - BLINDADO COM VERIFICAÇÃO DE SESSÃO
 # ============================================================
+# Lista de usuários que podem acessar a tela histórico
+USUARIOS_ADMIN = ['admin', 'chefe1', 'chefe2']
+
 @app.route('/admin')
 def painel_admin():
     # Se não tiver o crachá, vai pra rua (tela de login)!
@@ -665,6 +668,8 @@ def admin_fila():
             SELECT id, telefone, nome, matricula, status
             FROM atendimentos
             WHERE status IN ('aguardando', 'em_atendimento_humano', 'encerrado', 'finalizado')
+                AND MONTH(data_inicio) = MONTH(CURRENT_DATE()) 
+                AND YEAR(data_inicio) = YEAR(CURRENT_DATE())
             ORDER BY 
                 CASE status 
                     WHEN 'aguardando' THEN 1 
@@ -672,7 +677,7 @@ def admin_fila():
                     ELSE 3 
                 END, 
                 id DESC
-            LIMIT 50
+            LIMIT 100
         ''')
         fila = cursor.fetchall()
         cursor.close()
@@ -780,6 +785,58 @@ def admin_encerrar_rota():
         cursor.close()
         conn.close()
     return jsonify({"ok": True})
+
+@app.route('/admin/historico')
+def tela_historico():
+    # Só entra quem é da lista USUARIOS_ADMIN
+    if 'usuario_logado' not in session or session['usuario_logado'] not in USUARIOS_ADMIN:
+        return "❌ Acesso Negado: Área exclusiva para coordenação.", 403
+    return render_template('historico.html', usuario=session['usuario_logado'])
+
+@app.get("/admin/api/historico")
+def api_historico():
+    if 'usuario_logado' not in session or session['usuario_logado'] not in USUARIOS_ADMIN:
+        return jsonify({"erro": "Não autorizado"}), 401
+
+    # Filtros que virão do formulário da nova tela
+    data_de = request.args.get('de')
+    data_ate = request.args.get('ate')
+    busca = request.args.get('busca', '')
+
+    if not data_de or not data_ate:
+        return jsonify({"historico": []})
+
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Busca no passado sem limite de mês, apenas pelo intervalo escolhido
+        sql = """
+            SELECT id, telefone, nome, matricula, status, data_inicio, atendente_nome
+            FROM atendimentos
+            WHERE data_inicio BETWEEN %s AND %s
+        """
+        params = [f"{data_de} 00:00:00", f"{data_ate} 23:59:59"]
+
+        if busca:
+            sql += " AND (nome LIKE %s OR telefone LIKE %s OR matricula LIKE %s)"
+            params.extend([f"%{busca}%", f"%{busca}%", f"%{busca}%"])
+        
+        sql += " ORDER BY data_inicio DESC LIMIT 500"
+        
+        cursor.execute(sql, params)
+        resultados = cursor.fetchall()
+        
+        for r in resultados:
+            if r['data_inicio']:
+                r['data_inicio'] = r['data_inicio'].strftime('%d/%m/%Y %H:%M')
+
+        cursor.close()
+        conn.close()
+        return jsonify({"historico": resultados})
+    except Exception as e:
+        print("Erro ao processar histórico:", e)
+        return jsonify({"historico": []})
 
 # ============================================================
 # SIMULADO
