@@ -835,11 +835,7 @@ def tela_historico():
 
 @app.get("/admin/api/historico")
 @admin_required
-@admin_required
 def api_historico():
-    if 'usuario_logado' not in session or session['usuario_logado'] not in USUARIOS_ADMIN:
-        return jsonify({"erro": "Não autorizado"}), 401
-
     # Filtros que virão do formulário da nova tela
     data_de = request.args.get('de')
     data_ate = request.args.get('ate')
