@@ -9,16 +9,31 @@
 <body class="bg-gray-100 font-sans">
     <div class="flex h-screen">
         <div class="w-1/3 bg-white border-r flex flex-col shadow-lg z-10">
-            <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
-                <div>
-                    <h2 class="font-bold text-gray-700 text-lg">Fila de Espera</h2>
-                    <span class="text-xs text-gray-500">Logado como: <strong>{{ usuario }}</strong></span>
+            
+            <div class="p-4 bg-gray-50 border-b flex flex-col gap-3">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="font-bold text-gray-700 text-lg">Fila de Espera</h2>
+                        <span class="text-xs text-gray-500">Logado como: <strong>{{ usuario }}</strong></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full animate-pulse">Online</span>
+                        <a href="/logout" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded transition font-semibold border border-red-200">Sair</a>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full animate-pulse">Online</span>
-                    <a href="/logout" class="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded transition font-semibold border border-red-200">Sair</a>
+                
+                <div class="flex gap-2">
+                    <div class="bg-yellow-50 text-yellow-800 text-xs px-2 py-2 rounded-lg font-semibold border border-yellow-200 flex-1 flex justify-between items-center shadow-sm">
+                        <span>Aguardando:</span>
+                        <span id="contador-aguardando" class="font-bold text-base bg-yellow-200 px-2 rounded">0</span>
+                    </div>
+                    <div class="bg-blue-50 text-blue-800 text-xs px-2 py-2 rounded-lg font-semibold border border-blue-200 flex-1 flex justify-between items-center shadow-sm">
+                        <span>Atendimento:</span>
+                        <span id="contador-atendimento" class="font-bold text-base bg-blue-200 px-2 rounded">0</span>
+                    </div>
                 </div>
             </div>
+
             <div id="lista-atendimentos" class="flex-1 overflow-y-auto p-2"></div>
         </div>
 
@@ -43,16 +58,22 @@
             </div>
         </div>
     </div>
+    
     <script>
         let atendimentoSelecionado = null;
         let telefoneSelecionado = null; 
-        const atendenteNome = { usuario };
+        const atendenteNome = "{{ usuario }}";
         let loopMensagens = null;
 
         async function atualizarFila() {
             try {
                 const res = await fetch('/admin/fila');
                 const data = await res.json();
+                
+                // === NOVIDADE: ATUALIZANDO OS CONTADORES ===
+                document.getElementById('contador-aguardando').innerText = data.qtd_aguardando || 0;
+                document.getElementById('contador-atendimento').innerText = data.qtd_em_atendimento || 0;
+
                 const lista = document.getElementById('lista-atendimentos');
                 lista.innerHTML = '';
 
@@ -76,7 +97,6 @@
                         ${badge}
                     `;
                     
-                    // Passando o status atual para a função
                     div.onclick = () => selecionarAtendimento(at.id, at.telefone, at.nome, at.status); 
                     lista.appendChild(div);
                 });
@@ -125,16 +145,13 @@
             
             const isEncerrado = (status === "encerrado" || status === "finalizado");
 
-            // Atualiza o header. Se estiver encerrado, avisa visualmente.
             document.getElementById('chat-header').querySelector('span').innerHTML = `Atendendo: <strong>${nome || telefone}</strong> ${isEncerrado ? "<span class='text-red-500 font-bold ml-2 text-sm'>(Somente Leitura)</span>" : ""}`;
             document.getElementById('chat-box').innerHTML = "<div class='text-center mt-10 text-gray-500'>Carregando histórico...</div>";
             
             if (isEncerrado) {
-                // Se já foi encerrado, esconde a área de input e o botão de encerrar.
                 document.getElementById('input-area').classList.add('hidden');
                 document.getElementById('btn-encerrar').classList.add('hidden');
             } else {
-                // Se está ativo, mostra os controles e avisa o Python que estamos assumindo.
                 document.getElementById('input-area').classList.remove('hidden');
                 document.getElementById('btn-encerrar').classList.remove('hidden');
                 
@@ -150,7 +167,6 @@
 
             if(loopMensagens) clearInterval(loopMensagens);
             
-            // Se estiver encerrado, não precisa ficar atualizando o chat a cada 3 segundos
             if (!isEncerrado) {
                 loopMensagens = setInterval(() => carregarMensagens(id), 3000);
             }
