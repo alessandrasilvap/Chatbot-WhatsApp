@@ -197,44 +197,46 @@
         }
 
         async function enviarMensagem() {
-    const input = document.getElementById('msg-input');
-    const btn = document.querySelector("#input-area button"); // Seleciona o botão de enviar
-    
-    if (!input.value || !atendimentoSelecionado) return;
-
-    const textoEnviado = input.value;
-    
-    // FEEDBACK VISUAL: Desativa o campo e o botão enquanto envia
-    input.disabled = true;
-    btn.disabled = true;
-    btn.innerText = "Enviando...";
-    btn.classList.add("opacity-50", "cursor-not-allowed");
-
-    try {
-        await fetch('/admin/mensagem', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                atendimento_id: atendimentoSelecionado,
-                telefone: telefoneSelecionado, 
-                atendente_nome: atendenteNome,
-                texto: textoEnviado
-            })
-        });
-
-        input.value = ''; // Limpa o campo
-        carregarMensagens(atendimentoSelecionado);
-    } catch (error) {
-        alert("Erro ao enviar mensagem. Tente novamente.");
-    } finally {
-        // VOLTA AO NORMAL: Reativa tudo
-        input.disabled = false;
-        btn.disabled = false;
-        btn.innerText = "Enviar";
-        btn.classList.remove("opacity-50", "cursor-not-allowed");
-        input.focus(); // Devolve o cursor para o campo
-    }
-}
+          const input = document.getElementById('msg-input');
+          const btn = document.querySelector("#input-area button"); 
+          
+          if (!input.value || !atendimentoSelecionado) return;
+      
+          const textoEnviado = input.value;
+          
+          input.disabled = true; // Trava o campo de texto
+          btn.disabled = true;   // Trava o botão
+          const textoOriginalBtn = btn.innerText;
+          btn.innerText = "Enviando..."; // Muda o texto do botão
+          btn.style.opacity = "0.5";
+      
+          try {
+              const response = await fetch('/admin/mensagem', {
+                  method: 'POST',
+                  headers: {'Content-Type': 'application/json'},
+                  body: JSON.stringify({
+                      atendimento_id: atendimentoSelecionado,
+                      telefone: telefoneSelecionado, 
+                      texto: textoEnviado
+                  })
+              });
+      
+              if (response.ok) {
+                  input.value = ''; // Limpa o campo se deu certo
+                  carregarMensagens(atendimentoSelecionado); // Atualiza o chat
+              } else {
+                  alert("Erro ao enviar. Tente novamente.");
+              }
+          } catch (error) {
+              console.error("Erro na requisição:", error);
+          } finally {
+              input.disabled = false;
+              btn.disabled = false;
+              btn.innerText = textoOriginalBtn;
+              btn.style.opacity = "1";
+              input.focus(); // Coloca o cursor de volta no campo
+          }
+      }
 
         async function encerrarAtendimento() {
             if (!atendimentoSelecionado) return;
