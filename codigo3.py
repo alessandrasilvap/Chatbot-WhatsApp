@@ -13,6 +13,7 @@ import hmac
 import hashlib
 import requests
 from dotenv import load_dotenv
+from functools import wraps
 
 # Carrega variáveis do .env
 load_dotenv()
@@ -94,6 +95,15 @@ WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN", "")
 WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID", "")
 WA_API_VERSION = os.getenv("WA_API_VERSION", "v24.0")
 app.secret_key = ""
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Verifica se o usuário está logado E se o nome dele está na lista de admins
+        if 'usuario_logado' not in session or session['usuario_logado'] not in USUARIOS_ADMIN:
+            return "❌ Acesso Negado: Esta área é exclusiva para a coordenação.", 403
+        return f(*args, **kwargs)
+    return decorated_function
 
 def verify_signature(req) -> bool:
     """
@@ -818,13 +828,14 @@ def admin_encerrar_rota():
     return jsonify({"ok": True})
 
 @app.route('/admin/historico')
+@admin_required
 def tela_historico():
     # Só entra quem é da lista USUARIOS_ADMIN
-    if 'usuario_logado' not in session or session['usuario_logado'] not in USUARIOS_ADMIN:
-        return "❌ Acesso Negado: Área exclusiva para coordenação.", 403
     return render_template('historico.html', usuario=session['usuario_logado'])
 
 @app.get("/admin/api/historico")
+@admin_required
+@admin_required
 def api_historico():
     if 'usuario_logado' not in session or session['usuario_logado'] not in USUARIOS_ADMIN:
         return jsonify({"erro": "Não autorizado"}), 401
