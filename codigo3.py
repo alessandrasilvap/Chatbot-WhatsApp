@@ -540,8 +540,16 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
         if not sessao.get("resumo_handoff_salvo"):
             registrar_evento(atendimento_id, "resumo_handoff", mensagem)
-            
             atualizar_atendimento(atendimento_id, status="aguardando")
+            
+            posicao_fila = bd3.contar_fila_espera_humana()
+            
+            if posicao_fila <= 1:
+                msg_espera = "Perfeito — já enviei ao atendente. 🚀 Você é o próximo da fila! Aguarde um instante 🙏"
+            else:
+                pessoas_na_frente = posicao_fila - 1
+                msg_espera = f"Perfeito — já enviei ao atendente. 👩‍💻\n\nNeste momento, existem *{pessoas_na_frente} pessoa(s)* na sua frente. Aguarde um instante 🙏"
+            # -------------------------------------
             
             salvar_sessao(
                 telefone=telefone,
@@ -556,7 +564,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                 resumo_handoff_salvo=1,
                 telefone_bot=telefone_bot
             )
-            return "Perfeito — já enviei ao atendente. Aguarde um instante 🙏"
+            return msg_espera
 
         return "📞 Você está aguardando um atendente da equipe do Canal I. Se quiser, digite 3 para finalizar."
 
