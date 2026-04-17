@@ -4,6 +4,8 @@ from bd3 import (
     criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento,
     obter_status_atendimento, obter_sessao, salvar_sessao, apagar_sessao, get_conn, validar_login
 )
+from redis import Redis
+from rq import Queue
 import holidays
 from datetime import datetime, timedelta, time
 import os
@@ -11,10 +13,19 @@ import hmac
 import hashlib
 import requests
 from dotenv import load_dotenv
-import threading
 
 # Carrega variáveis do .env
 load_dotenv()
+
+# ============================================================
+# CONFIGURAÇÃO DA FILA DE ALTA PERFORMANCE (REDIS + RQ)
+# ============================================================
+try:
+    redis_conn = Redis(host='localhost', port=6379)
+    fila_zap = Queue('fila_zap', connection=redis_conn)
+    print("✅ Conectado à Fila do Redis com sucesso.")
+except Exception as e:
+    print(f"❌ ERRO CRÍTICO ao conectar no Redis: {e}")
 
 # ============================================================
 # CONFIG
@@ -633,10 +644,10 @@ def webhook():
         msgs = extract_text_messages(payload)
         print(">>> Mensagens extraidas:", msgs)
 
-        # Para cada mensagem, cria uma Thread isolada para processar
+        # Joga a mensagem na Fila do Redis instantaneamente
         for m in msgs:
-            thread = threading.Thread(target=processar_mensagem_background, args=(m,))
-            thread.start()
+            fila_zap.enqueue('codigo3.processar_mensagem_background', m)
+            print(f">>> Mensagem de {m.get('from')} enfileirada no Redis com sucesso!")
 
         # O FLASK RETORNA 200 OK IMEDIATAMENTE PARA A META, 
         # ENQUANTO AS THREADS TRABALHAM NOS BASTIDORES!
