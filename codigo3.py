@@ -696,11 +696,8 @@ def painel_admin():
     return render_template('painel.html', usuario=session['usuario_logado'])
 
 @app.get("/admin/fila")
+@admin_required
 def admin_fila():
-    # Verificação de segurança
-    if 'usuario_logado' not in session:
-        return jsonify({"erro": "Não autorizado"}), 401
-
     try:
         conn = get_conn()
         cursor = conn.cursor(dictionary=True)
@@ -717,7 +714,7 @@ def admin_fila():
                     WHEN 'em_atendimento_humano' THEN 2 
                     ELSE 3 
                 END, 
-                id DESC
+                data_inicio ASC
             LIMIT 100
         ''')
         fila = cursor.fetchall()
@@ -742,11 +739,8 @@ def admin_fila():
         return jsonify({"fila": [], "qtd_aguardando": 0, "qtd_em_atendimento": 0})
     
 @app.post("/admin/assumir")
+@admin_required
 def admin_assumir():
-    # Verificação de segurança
-    if 'usuario_logado' not in session:
-        return jsonify({"erro": "Não autorizado"}), 401
-
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
     if atendimento_id:
@@ -755,11 +749,8 @@ def admin_assumir():
     return jsonify({"ok": True})
 
 @app.post("/admin/mensagem")
+@admin_required
 def admin_mensagem():
-    # Verificação de segurança
-    if 'usuario_logado' not in session:
-        return jsonify({"erro": "Não autorizado"}), 401
-
     dados = request.get_json(force=True) or {}
     atendimento_id = int(dados.get("atendimento_id", 0))
     telefone = str(dados.get("telefone", "")).strip()
@@ -778,11 +769,8 @@ def admin_mensagem():
     return jsonify({"ok": True})
 
 @app.get("/admin/mensagens/<int:atendimento_id>")
+@admin_required
 def admin_get_mensagens(atendimento_id):
-    # Verificação de segurança
-    if 'usuario_logado' not in session:
-        return jsonify({"erro": "Não autorizado"}), 401
-
     conn = get_conn()
     cursor = conn.cursor(dictionary=True)
     try:
