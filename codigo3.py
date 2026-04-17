@@ -603,6 +603,37 @@ def tela_login():
 # ============================================================
 # WEBHOOK META
 # ============================================================
+def processar_mensagem_background(m):
+    """
+    Esta função é o 'motor' que a fila chama. 
+    Ela recebe a mensagem e executa a lógica do bot.
+    """
+    with app.app_context():
+        try:
+            telefone = m.get('from')
+            texto = m.get('text')
+            msg_id = m.get('id')
+            telefone_bot = m.get('telefone_bot')
+            phone_number_id = m.get('phone_number_id')
+            
+            agora = datetime.now()
+
+            # Chama o motor principal (handle_incoming) que você já tem no código
+            resposta = handle_incoming(
+                telefone=telefone, 
+                mensagem=texto, 
+                agora=agora, 
+                message_id=msg_id, 
+                telefone_bot=telefone_bot
+            )
+
+            # Se o bot decidiu responder algo, envia para o WhatsApp
+            if resposta:
+                send_whatsapp_text(telefone, resposta, phone_number_id=phone_number_id)
+                
+        except Exception as e:
+            print(f"❌ Erro no processamento em background: {e}")
+            
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     # A Meta usa GET apenas uma vez para verificar se a URL é sua
@@ -632,7 +663,7 @@ def webhook():
 
         # Joga a mensagem na Fila do Redis instantaneamente
         for m in msgs:
-            fila_zap.enqueue('processar_mensagem_background', m)
+            fila_zap.enqueue('codigo3.processar_mensagem_background', m)
             print(f">>> Mensagem de {m.get('from')} enfileirada no Redis com sucesso!")
 
         # O FLASK RETORNA 200 OK IMEDIATAMENTE PARA A META, 
