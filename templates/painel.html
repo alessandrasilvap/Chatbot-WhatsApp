@@ -32,6 +32,15 @@
                         <span id="contador-atendimento" class="font-bold text-base bg-blue-200 px-2 rounded">0</span>
                     </div>
                 </div>
+
+                <div class="flex gap-2 mt-1">
+                    <input type="text" id="filtro-texto" onkeyup="renderizarFila()" placeholder="Buscar nome ou telefone..." class="flex-1 border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500">
+                    <select id="filtro-status" onchange="renderizarFila()" class="border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-green-500 bg-white">
+                        <option value="todos">Todos os Status</option>
+                        <option value="aguardando">Aguardando</option>
+                        <option value="em_atendimento_humano">Em Atendimento</option>
+                    </select>
+                </div>
             </div>
 
             <div id="lista-atendimentos" class="flex-1 overflow-y-auto p-2"></div>
@@ -64,45 +73,60 @@
         let telefoneSelecionado = null; 
         const atendenteNome = "{{ usuario }}";
         let loopMensagens = null;
+        let dadosFilaGlobais = [];
 
         async function atualizarFila() {
             try {
                 const res = await fetch('/admin/fila');
                 const data = await res.json();
                 
-                // === NOVIDADE: ATUALIZANDO OS CONTADORES ===
                 document.getElementById('contador-aguardando').innerText = data.qtd_aguardando || 0;
                 document.getElementById('contador-atendimento').innerText = data.qtd_em_atendimento || 0;
 
-                const lista = document.getElementById('lista-atendimentos');
-                lista.innerHTML = '';
-
-                data.fila.forEach(at => {
-                    const div = document.createElement('div');
-                    div.className = 'p-4 mb-2 hover:bg-gray-100 cursor-pointer rounded-lg border border-transparent hover:border-gray-200 transition bg-white shadow-sm flex justify-between items-center';
-                    
-                    let badge = `<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold">Aguardando</span>`;
-                    
-                    if (at.status === "em_atendimento_humano") {
-                        badge = `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-semibold">Em Atendimento</span>`;
-                    } else if (at.status === "encerrado" || at.status === "finalizado") {
-                        badge = `<span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-semibold">Encerrado</span>`;
-                    }
-
-                    div.innerHTML = `
-                        <div>
-                            <div class="font-bold text-gray-800">${at.nome || at.telefone}</div>
-                            <div class="text-xs text-gray-500 mt-1">Matrícula: ${at.matricula || '---'}</div>
-                        </div>
-                        ${badge}
-                    `;
-                    
-                    div.onclick = () => selecionarAtendimento(at.id, at.telefone, at.nome, at.status); 
-                    lista.appendChild(div);
-                });
+                dadosFilaGlobais = data.fila; // Guarda a fila do servidor
+                renderizarFila(); // Chama a função que desenha a tela com os filtros
             } catch (error) {
                 console.error("Erro ao buscar a fila:", error);
             }
+        }
+
+        // Nova função que desenha a fila respeitando a barra de pesquisa!
+        function renderizarFila() {
+            const textoFiltro = document.getElementById('filtro-texto').value.toLowerCase();
+            const statusFiltro = document.getElementById('filtro-status').value;
+            const lista = document.getElementById('lista-atendimentos');
+            lista.innerHTML = '';
+
+            dadosFilaGlobais.forEach(at => {
+                // 1. Aplica o filtro de Status
+                if (statusFiltro !== 'todos' && at.status !== statusFiltro) return;
+                
+                // 2. Aplica o filtro de Texto (Nome, Telefone ou Matrícula)
+                const busca = `${at.nome || ''} ${at.telefone || ''} ${at.matricula || ''}`.toLowerCase();
+                if (textoFiltro && !busca.includes(textoFiltro)) return;
+
+                const div = document.createElement('div');
+                div.className = 'p-4 mb-2 hover:bg-gray-100 cursor-pointer rounded-lg border border-transparent hover:border-gray-200 transition bg-white shadow-sm flex justify-between items-center';
+                
+                let badge = `<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold">Aguardando</span>`;
+                
+                if (at.status === "em_atendimento_humano") {
+                    badge = `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-semibold">Em Atendimento</span>`;
+                } else if (at.status === "encerrado" || at.status === "finalizado") {
+                    badge = `<span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-semibold">Encerrado</span>`;
+                }
+
+                div.innerHTML = `
+                    <div>
+                        <div class="font-bold text-gray-800">${at.nome || at.telefone}</div>
+                        <div class="text-xs text-gray-500 mt-1">Matrícula: ${at.matricula || '---'}</div>
+                    </div>
+                    ${badge}
+                `;
+                
+                div.onclick = () => selecionarAtendimento(at.id, at.telefone, at.nome, at.status); 
+                lista.appendChild(div);
+            });
         }
 
         async function carregarMensagens(id) {
