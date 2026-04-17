@@ -197,25 +197,44 @@
         }
 
         async function enviarMensagem() {
-            const input = document.getElementById('msg-input');
-            if (!input.value || !atendimentoSelecionado) return;
+    const input = document.getElementById('msg-input');
+    const btn = document.querySelector("#input-area button"); // Seleciona o botão de enviar
+    
+    if (!input.value || !atendimentoSelecionado) return;
 
-            const textoEnviado = input.value;
-            input.value = ''; 
+    const textoEnviado = input.value;
+    
+    // FEEDBACK VISUAL: Desativa o campo e o botão enquanto envia
+    input.disabled = true;
+    btn.disabled = true;
+    btn.innerText = "Enviando...";
+    btn.classList.add("opacity-50", "cursor-not-allowed");
 
-            await fetch('/admin/mensagem', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    atendimento_id: atendimentoSelecionado,
-                    telefone: telefoneSelecionado, 
-                    atendente_nome: atendenteNome,
-                    texto: textoEnviado
-                })
-            });
+    try {
+        await fetch('/admin/mensagem', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                atendimento_id: atendimentoSelecionado,
+                telefone: telefoneSelecionado, 
+                atendente_nome: atendenteNome,
+                texto: textoEnviado
+            })
+        });
 
-            carregarMensagens(atendimentoSelecionado);
-        }
+        input.value = ''; // Limpa o campo
+        carregarMensagens(atendimentoSelecionado);
+    } catch (error) {
+        alert("Erro ao enviar mensagem. Tente novamente.");
+    } finally {
+        // VOLTA AO NORMAL: Reativa tudo
+        input.disabled = false;
+        btn.disabled = false;
+        btn.innerText = "Enviar";
+        btn.classList.remove("opacity-50", "cursor-not-allowed");
+        input.focus(); // Devolve o cursor para o campo
+    }
+}
 
         async function encerrarAtendimento() {
             if (!atendimentoSelecionado) return;
