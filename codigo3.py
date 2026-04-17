@@ -803,28 +803,40 @@ def admin_get_mensagens(atendimento_id):
         conn.close()
 
 @app.post("/admin/encerrar")
+@admin_required
 def admin_encerrar_rota():
-    # Verificação de segurança
-    if 'usuario_logado' not in session:
-        return jsonify({"erro": "Não autorizado"}), 401
-
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
+    
+    # Pegamos o nome de quem está logado agora
+    nome_atendente = session.get('usuario_logado', 'Desconhecido')
+
     if atendimento_id:
-        registrar_evento(atendimento_id, "finalizar")
-        finalizar(atendimento_id)
+        registrar_evento(atendimento_id, "finalizar", valor=f"Encerrado por {nome_atendente}")
         
         conn = get_conn()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
+        sql_update = """
+            UPDATE atendimentos 
+            SET status = 'finalizado', 
+                atendente_nome = %s, 
+                data_fim = NOW() 
+            WHERE id = %s
+        """
+        cursor.execute(sql_update, (nome_atendente, atendimento_id))
+        conn.commit() 
+
+        # Código de apagar sessão e enviar WhatsApp continua igual...
         cursor.execute("SELECT telefone FROM sessao_usuario WHERE atendimento_id = %s", (atendimento_id,))
         res = cursor.fetchone()
         if res:
-            telefone = res['telefone']
+            telefone = res[0] # Se não for dictionary=True, usa índice
             apagar_sessao(telefone)
-            send_whatsapp_text(telefone, "✅ Atendimento encerrado.\n\nPosso ajudar em algo mais? Envie qualquer mensagem para iniciar um novo atendimento.")
+            send_whatsapp_text(telefone, "✅ Atendimento encerrado.\n\nPosso ajudar em algo mais?")
             
         cursor.close()
         conn.close()
+        
     return jsonify({"ok": True})
 
 @app.route('/admin/historico')
