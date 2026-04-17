@@ -120,9 +120,9 @@ if __name__ == "__main__":
         # 1. Rotina de Inatividade (Roda sempre a cada minuto)
         varrer_inativos()
         
-        # 2. Rotina de Fim de Expediente (Roda só às 17:00, dias de semana)
+        # 2. Rotina de Fim de Expediente (Roda só às 17:01, dias de semana)
         if agora.weekday() < 5:
-            if agora.hour == 17 and agora.minute == 0:
+            if agora.hour == 17 and agora.minute == 1:
                 if not ja_limpou_fila_hoje:
                     limpar_fila_fim_expediente()
                     ja_limpou_fila_hoje = True
