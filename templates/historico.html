@@ -109,7 +109,11 @@
                         <td class="p-4">${at.data_inicio}</td>
                         <td class="p-4 font-bold">${at.nome || 'Não identificado'}</td>
                         <td class="p-4 text-xs font-mono">${at.telefone}</td>
-                        <td class="p-4">${at.atendente_nome || '<span class="text-gray-300">Só Bot</span>'}</td>
+                        <td class="p-4">
+                            ${(at.atendente_nome && at.atendente_nome !== 'None') 
+                                ? `<span class="font-semibold text-blue-700">${at.atendente_nome}</span>` 
+                                : '<span class="text-gray-400 italic text-xs">Só Bot</span>'}
+                        </td>
                         <td class="p-4"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${at.status === 'finalizado' ? 'bg-gray-100 text-gray-600' : 'bg-green-100 text-green-700'}">${at.status}</span></td>
                         <td class="p-4 text-center">
                             <button onclick="verConversa(${at.id}, '${at.nome || at.telefone}')" class="text-blue-600 hover:underline font-semibold">Ver Conversa</button>
