@@ -247,3 +247,19 @@ def validar_login(usuario_digitado, senha_digitada):
     finally:
         cursor.close()
         conn.close()
+        
+def contar_fila_espera_humana() -> int:
+    """Conta quantas pessoas estão aguardando na fila de handoff."""
+    conn = get_conn()
+    cur = conn.cursor()
+    try:
+        # Conta todos que estão no status 'handoff'
+        cur.execute("SELECT COUNT(*) FROM atendimentos WHERE status = 'handoff'")
+        row = cur.fetchone()
+        return row[0] if row else 0
+    except Exception as e:
+        print(f"❌ Erro ao contar fila de handoff: {e}")
+        return 0
+    finally:
+        cur.close()
+        conn.close()
