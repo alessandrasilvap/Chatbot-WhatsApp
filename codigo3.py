@@ -632,7 +632,7 @@ def webhook():
 
         # Joga a mensagem na Fila do Redis instantaneamente
         for m in msgs:
-            fila_zap.enqueue('codigo3.processar_mensagem_background', m)
+            fila_zap.enqueue('processar_mensagem_background', m)
             print(f">>> Mensagem de {m.get('from')} enfileirada no Redis com sucesso!")
 
         # O FLASK RETORNA 200 OK IMEDIATAMENTE PARA A META, 
