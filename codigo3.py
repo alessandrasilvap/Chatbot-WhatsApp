@@ -703,7 +703,7 @@ def admin_fila():
         cursor = conn.cursor(dictionary=True)
         
         cursor.execute('''
-            SELECT id, telefone, nome, matricula, status
+            SELECT id, telefone, nome, matricula, status, DATE_FORMAT(data_inicio, '%Y-%m-%d %H:%i:%s') as data_inicio
             FROM atendimentos
             WHERE status IN ('aguardando', 'em_atendimento_humano', 'encerrado', 'finalizado')
                 AND MONTH(data_inicio) = MONTH(CURRENT_DATE()) 
