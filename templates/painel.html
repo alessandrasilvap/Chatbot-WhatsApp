@@ -106,7 +106,7 @@
 
                 // 3. Cálculo do tempo de espera
                 const agora = new Date();
-                const inicio = new Date(at.data_inicio);
+                const inicio = new Date(at.data_inicio.replace(" ", "T"));
                 const diffMinutos = Math.floor((agora - inicio) / 60000);
 
                 // 4. Lógica de Alerta Visual
