@@ -1,7 +1,7 @@
 # ESTE ARQUIVO NÃO VAI PARA A NUVEM, É APENAS UM GERADOR DE SENHA
 from werkzeug.security import generate_password_hash
 
-senha_que_o_atendente_quer = "123"
+senha_que_o_atendente_quer = ""
 hash_gerado = generate_password_hash(senha_que_o_atendente_quer)
 
 # Ao rodar, o terminal cuspirá um texto logo
