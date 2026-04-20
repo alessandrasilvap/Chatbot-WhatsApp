@@ -211,9 +211,9 @@ SUBSUBMENUS = {
     # MENU 3
     ("3", "1"): {
         "1": "O que é o PCCS",
-        "2": "Progressão salarial",
+        "2": "Evolução salarial na função-cargo (Progressão Horizontal)",
         "3": "Contagem de tempo",
-        "4": "Suspensão disciplinar",
+        "4": "Evolução Funcional na carreira (Progressão Vertical)",
         "5": "Atualizações do plano",
         "6": "Falar com atendente"
     },
@@ -222,9 +222,8 @@ SUBSUBMENUS = {
         "2": "Frequência da avaliação",
         "3": "Quem avalia",
         "4": "Acesso ao resultado",
-        "5": "Discordância do resultado",
-        "6": "ADI+ e demissão",
-        "7": "Falar com atendente"
+        "5": "ADI+ e demissão",
+        "6": "Falar com atendente"
     },
     ("3", "3"): {
         "1": "O que é a CRDD",
@@ -276,11 +275,7 @@ SUBSUBMENUS = {
     },
     ("5", "2"): {
         "1": "Para onde encaminhar o pedido",
-        "2": "Período DLU",
-        "3": "Período SURSAN",
-        "4": "Período CELURB",
-        "5": "Período COMLURB",
-        "6": "Falar com atendente"
+        "2": "Falar com atendente",
     },
     ("5", "3"): {
         "1": "O que é a declaração",
@@ -323,7 +318,7 @@ SUBSUBMENUS = {
         "4": "Documentos necessários – Empregado",
         "5": "O que deve constar na Comunicação Interna",
         "6": "Documentos necessários – Ex-empregado",
-        "7": "Onde o documento é entregue",
+        "7": "Onde retirar o documento",
         "8": "Empregados cedidos a outros órgãos",
         "9": "Falar com atendentes"
     },
@@ -355,14 +350,13 @@ SUBSUBMENUS = {
     # MENU 7
     ("7", "1"): {
         "1": "Perda do período aquisitivo",
-        "2": "Exceções à perda",
-        "3": "Suspensão do contrato",
-        "4": "Redução dos dias por faltas",
-        "5": "Pagamento das férias",
-        "6": "Venda de férias",
-        "7": "Fracionamento das férias",
-        "8": "Como solicitar ou agendar",
-        "9": "Falar com atendente"
+        "2": "Suspensão do contrato",
+        "3": "Redução dos dias por faltas",
+        "4": "Pagamento das férias",
+        "5": "Venda de férias",
+        "6": "Fracionamento das férias",
+        "7": "Como solicitar ou agendar",
+        "8": "Falar com atendente"
     },
     ("7", "2"): {
         "1": "Quem tem direito",
@@ -877,7 +871,7 @@ SCRIPTS = {
         "  • Ordem judicial;\n"
         "  • Formulário “Declaração de ciência de benefício pago para pensionista” (disponível em normativa da Comlurb).\n\n"
         "📨 *Como enviar:*\n"
-        "Envie a documentação pela sua gerência de lotação para a GGP-RI (Gerência Adjunta de Remuneração Indireta) ou você pode voltar ao menu e selecionar Falar com atendente para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente, na CAE."
+        "Envie a documentação pela sua gerência de lotação para a GGP-RI (Gerência Adjunta de Remuneração Indireta) ou você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente, na CAE."
     ),
     ("2", "5", "4"): (
         "⚠️ *Não é automático!*\n\n"
@@ -911,8 +905,8 @@ SCRIPTS = {
     ("2", "5", "9"): (
         "Você pode cancelar o benefício.\n\n"
         "Basta comunicar à GGP, enviando por malote para GGP-RI, uma Carta de próprio punho solicitando a suspensão ou agendar um atendimento na CAE.\n\n"
-        "Para agendar um atendimento na CAE:\n"
-        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
+        "Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
     ),
     ("2", "5", "10"): "HANDOFF",
 
@@ -920,7 +914,7 @@ SCRIPTS = {
     ("2", "6", "1"): (
         "O plano de saúde é *opcional*.\n"
         "A inclusão é feita no momento da admissão, caso você escolha participar; Ou poderá solicitar, preenchendo o formulário de inclusão na sua gerência de lotação ou na CAE, com agendamento prévio com o Canal I.\n\n"
-        "Para agendar um atendimento na CAE:\n"
+        "Para agendar um atendimento:\n"
         "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
     ),
     ("2", "6", "2"): (
@@ -981,51 +975,42 @@ SCRIPTS = {
     # MENU 3 - SUBMENU 1: Plano de Carreiras, Cargos e Salários (PCCS)
     ("3", "1", "1"): (
         "O PCCS é o plano que organiza:\n"
+        "- Carreiras;\n"
         "- Cargos;\n"
         "- Salários;\n"
-        "- Crescimento na carreira.\n\n"
-        "Ele define como funciona a evolução profissional dentro da Comlurb."
+        "- Evolução salarial na função-cargo (Progressão Horizontal);\n"
+        "- Evolução funcional na carreira (Progressão Vertical-PV).\n\n"
+        "Ele define as atividades de cada função-cargo, quais as condições para o seu desempenho e como funciona a evolução profissional, funcional e salarial, dentro da carreira na Comlurb."
     ),
-    ("3", "1", "2"): "Atualmente, você pode ter aumento de *1 referência salarial* a cada *730 dias* de trabalho efetivo.",
+    ("3", "1", "2"): "Atualmente, você pode ter aumento, de acordo com a contagem de tempo, de 1 (uma) referência salarial a cada *730 dias* efetivamente trabalhados.",
     ("3", "1", "3"): (
-        "A contagem considera apenas o tempo realmente trabalhado.\n\n"
-        "🚫 *Não entram na contagem:*\n"
+        "A contagem considera apenas o tempo efetivamente trabalhado, qualquer tipo de AUSÊNCIA atrasa a contagem, com exceção da licença maternidade, sendo:\n"
         "- Faltas;\n"
-        "- Atestados médicos;\n"
-        "- Afastamentos."
+        "- Atestados médicos, Licenças e outros Afastamentos;\n\n"
+        "Se houver suspensão disciplinar a contagem do tempo é zerada. Após a suspensão, a partir do retorno ao trabalho, recomeça um novo período de contagem."
     ),
-    ("3", "1", "4"): "⚠️ *Atenção:* Se houver suspensão disciplinar, a contagem do tempo é *zerada*. Um novo período começa a partir do retorno ao trabalho.",
+    ("3", "1", "4"): (
+        "É a mudança do Empregado de uma função-cargo para outra imediatamente superior, do cargo-nível de uma mesma carreira, desde que atendidas as seguintes condições obrigatórias:\n"
+        "- Abertura de vaga(s) na função do cargo nível de acesso para que haja Progressão Vertical;\n"
+        "- Somente participa do processo de progressão aquele Empregado que atenda aos requisitos da função do cargo-nível de acesso, critérios de qualificação técnica e dos processos de avaliação, definidos pela Empresa, para a função-cargo através de instrumento normativo especifico (Ordem de Serviço da Presidência da Empresa)."
+    ),
     ("3", "1", "5"): (
         "Durante o acordo coletivo 2025/2026, a empresa pode realizar estudos para melhorar e modernizar o PCCS.\n\n"
-        "Existe previsão de progressão horizontal por mérito para Garis de 2ª classe (Gari I).\n\n"
-        "⚠️ *Importante:* Essa progressão *não* terá pagamento retroativo."
+        "Existe previsão de Progressão Horizontal por Mérito somente para Garis da 2ª classe (Gari do Nível-I da carreira atual).\n\n"
+        "⚠️ *Importante:* Essa Progressão por Mérito não terá pagamento retroativo, e somente será considerada a partir da aprovação e implantação do processo, com a definição das condições dos critérios de contagem."
     ),
     ("3", "1", "6"): "HANDOFF",
 
     # MENU 3 - SUBMENU 2: Avaliação de Desempenho Individual (ADI+)
     ("3", "2", "1"): "A ADI+ visa identificar, medir e gerir o desempenho dos empregados da Comlurb para desenvolver pessoas e alavancar resultados.",
-    ("3", "2", "2"): "A ADI+ é realizada a cada trimestre, seguindo as normas internas da empresa.",
-    ("3", "2", "3"): "A avaliação é feita pela chefia imediata.",
-    ("3", "2", "4"): "Você pode consultar o resultado diretamente no Aplicativo Comlurb.",
+    ("3", "2", "2"): "A ADI+ é realizada a cada *trimestre*, seguindo as normas internas da empresa.",
+    ("3", "2", "3"): "A avaliação é feita pela *chefia imediata*.",
+    ("3", "2", "4"): "Você pode consultar o resultado diretamente no *Aplicativo Comlurb*.",
     ("3", "2", "5"): (
-        "Se o empregado não concordar com a avaliação, pode registrar sua discordância no Canal I – Canal de Informação ao Empregado.\n\n"
-        "A gerência responsável analisará o caso e enviará uma resposta por escrito em até 15 dias.\n\n"
-        "📞 *Telefones do Canal I:*\n"
-        "O Canal I pode ser acessado pelo CHAT do App Comlurb, por ligação ou por WhatsApp.\n\n"
-        "☎️ *Ligações:*\n"
-        "- 99002-1021\n"
-        "- 99002-1023\n"
-        "- 99002-1166\n"
-        "- 99002-1168\n\n"
-        "📱 *WhatsApp (mensagens):*\n"
-        "- 99002-1374\n"
-        "- 99002-1375"
-    ),
-    ("3", "2", "6"): (
         "A ADI+ *não pode* ser usada como único motivo para demissão.\n\n"
         "O objetivo dela é ajudar no desenvolvimento, no aprendizado e na melhoria do desempenho."
     ),
-    ("3", "2", "7"): "HANDOFF",
+    ("3", "2", "6"): "HANDOFF",
 
     # MENU 3 - SUBMENU 3: Comissão de Revisão Demissional e Disciplinar (CRDD)
     ("3", "3", "1"): (
@@ -1035,23 +1020,23 @@ SCRIPTS = {
     ),
     ("3", "3", "2"): "Qualquer empregado que não concordar com sua demissão ou com uma punição aplicada pode pedir revisão da decisão.",
     ("3", "3", "3"): (
-        "O pedido deve ser protocolado na FDC – Divisão de Expedição e Documentação, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
+        "O pedido deve ser protocolado na *FDC – Divisão de Expedição e Documentação*, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
         "⏰ O protocolo funciona de segunda a sexta-feira, das 9h às 16h.\n\n"
-        "📝 *Importante:* É necessário entregar uma carta explicando o motivo da discordância, endereçada à Comissão de Revisão Disciplinar e Demissional (CRDD)."
+        "📝 *Importante:* É necessário entregar uma *carta* explicando o motivo da discordância, endereçada à *Comissão de Revisão Disciplinar e Demissional (CRDD)*."
     ),
     ("3", "3", "4"): (
         "⏳ *Os prazos são:*\n"
-        "- *Revisão de demissão:* até 5 dias corridos após o desligamento.\n"
-        "- *Revisão de punição:* até 10 dias corridos após a aplicação."
+        "- *Revisão de demissão:* até *5 dias corridos* após o desligamento.\n"
+        "- *Revisão de punição:* até *10 dias corridos* após a aplicação."
     ),
     ("3", "3", "5"): (
         "Assim que o empregado solicita a revisão da demissão:\n\n"
-        "⏸️ O prazo para homologação da rescisão fica suspenso até a decisão da comissão."
+        "⏸️ O prazo para homologação da rescisão fica *suspenso* até a decisão da comissão."
     ),
-    ("3", "3", "6"): "✅ Se a comissão aprovar a revisão, a demissão é cancelada.",
+    ("3", "3", "6"): "Se a comissão aprovar a revisão, a demissão é *cancelada*.",
     ("3", "3", "7"): (
         "❌ Se a revisão for negada, a demissão continua válida desde o dia do desligamento.\n\n"
-        "A contagem do prazo para homologação volta a correr a partir da publicação da decisão da comissão."
+        "A contagem do prazo para homologação volta a correr a partir da *publicação da decisão* da comissão."
     ),
     ("3", "3", "8"): "A comissão deve decidir em até *60 dias* após o pedido, salvo situações excepcionais justificadas.",
     ("3", "3", "9"): "HANDOFF",
@@ -1071,7 +1056,8 @@ SCRIPTS = {
         "- Na sua gerência de lotação;\n"
         "- Na CAE – Central de Atendimento ao Empregado, na Rua Major Ávila, 358 – Tijuca (com agendamento prévio pelo Canal I);\n"
         "- Através do sistema Passaporte/atualização cadastral.\n\n"
-        "Você pode voltar ao menu e selecionar Falar com atendente para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
+        "Para agendar um atendimento:\n"
+        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("4", "1", "3"): (
         "Para atualizar o nome no cadastro, o empregado deve apresentar:\n"
@@ -1082,19 +1068,20 @@ SCRIPTS = {
     ("4", "1", "4"): "HANDOFF",
 
     # MENU 4 - SUBMENU 2: Alteração de conta bancária para recebimento de salário
-    ("4", "2", "1"): "O salário dos empregados da Comlurb é pago através de conta-corrente do *Banco Santander*, que é o banco credenciado pela empresa.",
+    ("4", "2", "1"): "O salário dos empregados da Comlurb é pago através de *conta-corrente do Banco Santander*, que é o banco credenciado pela empresa.",
     ("4", "2", "2"): "Não. Para receber o salário, a conta deve ser obrigatoriamente do *Banco Santander*.",
     ("4", "2", "3"): (
         "Se o empregado precisar alterar a conta, deve solicitar a atualização dos dados bancários:\n"
         "- Na sua gerência de lotação; ou\n"
-        "- Na CAE – Central de Atendimento ao Empregado, na Rua Major Ávila, 358 – Tijuca (com agendamento prévio pelo Canal I).\n\n"
+        "- Na CAE – Central de Atendimento ao Empregado.\n\n"
         "🏦 *Atenção:* É necessário apresentar as informações da nova conta-corrente do Banco Santander.\n\n"
+        "Para agendar um atendimento:\n"
         "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("4", "2", "4"): "HANDOFF",
 
     # MENU 4 - SUBMENU 3: Informe de rendimentos para imposto de renda
-    ("4", "3", "1"): "É o documento usado pelo empregado para fazer a declaração anual do Imposto de Renda.",
+    ("4", "3", "1"): "É o documento usado pelo empregado para fazer a *declaração anual do Imposto de Renda*.",
     ("4", "3", "2"): (
         "No informe você encontra:\n"
         "- Valores recebidos no ano;\n"
@@ -1103,7 +1090,7 @@ SCRIPTS = {
         "- Outras informações necessárias para a declaração."
     ),
     ("4", "3", "3"): (
-        "O documento deve ser consultado pelos canais digitais disponibilizados pela Comlurb:\n\n"
+        "O documento deve ser consultado pelos *canais digitais* disponibilizados pela Comlurb:\n\n"
         "📱 *App Comlurb*; ou\n"
         "💻 No *Passaporte*, acessando a aba “Minha Comlurb”."
     ),
@@ -1119,7 +1106,9 @@ SCRIPTS = {
     ("4", "4", "2"): (
         "A atualização cadastral pode ser feita:\n"
         "- Na sua gerência de lotação; ou\n"
-        "- Na CAE – Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca."
+        "- Na CAE – Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca.\n\n"
+        "Para agendar um atendimento:\n"
+        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("4", "4", "3"): "Sim. O empregado deve apresentar um documento que comprove a nova informação, como comprovante de residência.",
     ("4", "4", "4"): (
@@ -1144,38 +1133,29 @@ SCRIPTS = {
         "📍 A retirada é feita na CAE - Central de Atendimento ao Empregado, na Rua Major Ávila, 358 – Tijuca."
     ),
     ("5", "1", "5"): (
-        "Ex-empregados devem solicitar a declaração por meio de processo administrativo na FDC – Protocolo, na sede da Comlurb (Rua Major Ávila, 358 – Tijuca).\n\n"
-        "⏰ O protocolo funciona de segunda a sexta-feira, das 9h às 16h."
+        "Ex-empregados devem solicitar a declaração por meio de *processo administrativo* na *FDC – Protocolo*, na sede da Comlurb (Rua Major Ávila, 358 – Tijuca).\n\n"
+        "⏰ O protocolo funciona de *segunda a sexta-feira*, das *9h às 16h*."
     ),
     ("5", "1", "6"): "HANDOFF",
 
     # MENU 5 - SUBMENU 2: Vínculos anteriores à Comlurb
     ("5", "2", "1"): (
-        "O local de solicitação depende do período em que ocorreu o vínculo.\n\n"
-        "Cada época tem um órgão responsável diferente."
+        "O local de solicitação depende do período em que ocorreu o vínculo.\n"
+        "Cada época tem um órgão responsável diferente.\n\n"
+        "Para vínculos até 05/01/1970, o pedido deve ser feito na:\n"
+        "- Secretaria Municipal de Obras.\n"
+        "- Rua Afonso Cavalcanti, 455 – 9º andar – Cidade Nova.\n\n"
+        "Para vínculos de 06/01/1970 a 16/09/1973, procurar:\n"
+        "- Secretaria Municipal de Obras; Ou\n"
+        "- Secretaria Municipal de Administração."
+        "- Rua Afonso Cavalcanti, 455 – Cidade Nova\n\n"
+        "Para vínculos até 05/06/1975, procurar:\n"
+        "- Secretaria Municipal de Administração.\n"
+        "- Rua Afonso Cavalcanti, 455 – Bloco 2 – Cidade Nova.\n\n"
+        "Para vínculos a partir de 06/06/1975, a solicitação deve ser feita diretamente na *Comlurb*, por meio de *processo administrativo* na *FDC – Protocolo*, na sede da Comlurb - Rua Major Ávila, 358 – Tijuca.\n"
+        "⏰ O protocolo funciona de *segunda a sexta-feira*, das *9h às 16h*."
     ),
-    ("5", "2", "2"): (
-        "Para vínculos até *05/01/1970*, o pedido deve ser feito na:\n\n"
-        "🏛️ *Secretaria Municipal de Obras*\n"
-        "📍 Rua Afonso Cavalcanti, 455 – 9º andar – Cidade Nova"
-    ),
-    ("5", "2", "3"): (
-        "Para vínculos de *06/01/1970 a 16/09/1973*, procurar:\n\n"
-        "🏛️ *Secretaria Municipal de Obras*; ou\n"
-        "🏛️ *Secretaria Municipal de Administração*\n"
-        "📍 Rua Afonso Cavalcanti, 455 – Cidade Nova"
-    ),
-    ("5", "2", "4"): (
-        "Para vínculos até *05/06/1975*, procurar:\n\n"
-        "🏛️ *Secretaria Municipal de Administração*\n"
-        "📍 Rua Afonso Cavalcanti, 455 – Bloco 2 – Cidade Nova"
-    ),
-    ("5", "2", "5"): (
-        "Para vínculos a partir de *06/06/1975*, a solicitação deve ser feita diretamente na Comlurb, por meio de processo administrativo na FDC – Protocolo, na sede da empresa.\n\n"
-        "📍 *Endereço:* Rua Major Ávila, 358 – Tijuca\n"
-        "⏰ *Horário:* O protocolo funciona de segunda a sexta-feira, das 9h às 16h."
-    ),
-    ("5", "2", "6"): "HANDOFF",
+    ("5", "2", "2"): "HANDOFF",
 
     # MENU 5 - SUBMENU 3: Declaração “se vivo fosse” e revisão de pensão
     ("5", "3", "1"): "É uma declaração usada para comprovar dados funcionais ou solicitar revisão de pensão junto a órgãos previdenciários ou entidades de aposentados e pensionistas.",
@@ -1187,44 +1167,47 @@ SCRIPTS = {
         "- E outras instituições semelhantes."
     ),
     ("5", "3", "3"): (
-        "O pedido deve ser feito diretamente no *órgão responsável*.\n\n"
+        "O pedido deve ser feito *diretamente no órgão responsável*.\n"
         "Esse órgão abrirá um processo administrativo e enviará o pedido à Comlurb para análise."
     ),
-    ("5", "3", "4"): "O acompanhamento deve ser feito pela FDC – Protocolo, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.",
+    ("5", "3", "4"): (
+        "O acompanhamento deve ser feito pela *FDC – Protocolo*, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
+        "⏰ O protocolo funciona de *segunda a sexta-feira*, das *9h às 16h*."
+    ),
     ("5", "3", "5"): (
-        "Quando estiver pronta, a declaração pode ser retirada na FDC – Protocolo, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
-        "⏰ O protocolo funciona de segunda a sexta-feira, das 9h às 16h."
+        "Quando estiver pronta, a declaração pode ser retirada na *FDC – Protocolo*, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
+        "⏰ O protocolo funciona de *segunda a sexta-feira*, das *9h às 16h*."
     ),
     ("5", "3", "6"): "HANDOFF",
 
     # MENU 5 - SUBMENU 4: Declaração para aquisição de casa própria
-    ("5", "4", "1"): "É a declaração usada pelo empregado para processos de financiamento ou aquisição de casa própria.",
-    ("5", "4", "2"): ("Você precisa voltar ao menu e selecionar *Falar com atendente* para solicitar a declaração."),
+    ("5", "4", "1"): "É a declaração usada pelo empregado para processos de *financiamento* ou *aquisição de casa própria*.",
+    ("5", "4", "2"): "Você precisa voltar ao menu e selecionar *Falar com atendente* para solicitar a declaração.",
     ("5", "4", "3"): "A declaração é emitida em até *3 dias úteis*.",
     ("5", "4", "4"): (
-        "📍 A retirada é feita na CAE – Central de Atendimento ao Empregado, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
+        "📍 A retirada é feita na *CAE – Central de Atendimento ao Empregado*, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
         "👤 Pode ser retirada pelo empregado ou por um familiar identificado."
     ),
     ("5", "4", "5"): "HANDOFF",
 
     # MENU 5 - SUBMENU 5: Declaração de tempo de serviço para contagem de triênios
-    ("5", "5", "1"): "Essa declaração é usada para comprovar o tempo de serviço do empregado para fins de contagem de triênios.",
+    ("5", "5", "1"): "Essa declaração é usada para *comprovar o tempo de serviço do empregado* para fins de contagem de triênios.",
     ("5", "5", "2"): (
-        "O empregado deve abrir um processo administrativo na FDC – Protocolo, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
-        "⏰ O protocolo funciona de segunda a sexta-feira, das 9h às 16h."
+        "O empregado deve abrir um *processo administrativo* na *FDC – Protocolo*, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
+        "⏰ O protocolo funciona de *segunda a sexta-feira*, das *9h às 16h*."
     ),
     ("5", "5", "3"): "HANDOFF",
 
     # MENU 5 - SUBMENU 6: Segunda via da rescisão contratual
-    ("5", "6", "1"): "É a cópia do documento de rescisão do contrato de trabalho com a Comlurb.",
+    ("5", "6", "1"): "É a *cópia do documento de rescisão* do contrato de trabalho com a Comlurb.",
     ("5", "6", "2"): (
         "Esse documento costuma ser usado para:\n"
         "- Comprovar o desligamento; ou\n"
         "- Realizar saque do FGTS na Caixa Econômica Federal."
     ),
     ("5", "6", "3"): (
-        "A solicitação deve ser feita por processo administrativo aberto na FDC – Protocolo, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
-        "⏰ O protocolo funciona de segunda a sexta-feira, das 9h às 16h."
+        "A solicitação deve ser feita por *processo administrativo* aberto na *FDC – Protocolo*, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
+        "⏰ O protocolo funciona de *segunda a sexta-feira*, das *9h às 16h*."
     ),
     ("5", "6", "4"): "HANDOFF",
 
@@ -1236,7 +1219,7 @@ SCRIPTS = {
         "📱 *Aplicativo:* Carteira de Trabalho Digital; ou\n"
         "💻 *Site:* Governo Federal (gov.br)."
     ),
-    ("5", "7", "4"): "Agora, o número utilizado para registro trabalhista é o *CPF* do trabalhador.",
+    ("5", "7", "4"): "Agora, o número utilizado para registro trabalhista é o *CPF do trabalhador*.",
     ("5", "7", "5"): "Os registros feitos antes da CTPS Digital continuam válidos e ficam na carteira física (de papel).",
     ("5", "7", "6"): "HANDOFF",
 
@@ -1248,15 +1231,13 @@ SCRIPTS = {
         "- Possíveis exposições a agentes insalubres ou perigosos."
     ),
     ("5", "8", "2"): (
-        "Podem solicitar empregados ou ex-empregados que trabalharam de forma habitual em ambiente:\n"
-        "- Insalubre;\n"
-        "- Penoso;\n"
-        "- Ou perigoso.\n\n"
-        "⚠️ *Atenção:* Atividades eventuais ou esporádicas não dão direito ao PPP."
+        "Podem solicitar empregados ou ex-empregados contratados até 31 de dezembro de 2022, que trabalharam de forma habitual em condições caracterizadas pelo Serviço Especializado de Segurança e Medicina do Trabalho da Comlurb como:\n"
+        "- Insalubre; Ou\n"
+        "- Perigoso."
     ),
     ("5", "8", "3"): (
         "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
-        "No dia agendado, deve comparecer à CAE - Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca, com os documentos necessários.\n\n"
+        "No dia agendado, deve comparecer à CAE - Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca, com os documentos necessários."
     ),
     ("5", "8", "4"): (
         "📄 *Documentos necessários – Empregado:*\n"
@@ -1284,15 +1265,15 @@ SCRIPTS = {
         "- CPF;\n"
         "- PIS/PASEP;\n"
         "- Comprovante de residência.\n\n"
-        "📌 *Nota:* Ex-empregado não precisa apresentar CI."
+        "📌 *Nota:* Ex-empregado *não precisa* apresentar CI."
     ),
     ("5", "8", "7"): (
         "📍 *Onde o documento é entregue?*\n"
-        "- *Empregado:* enviado ao órgão de lotação.\n"
+        "- *Empregado:* o documento será enviado ao órgão de lotação.\n"
         "- *Ex-empregado:* entregue na CAE - Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca."
     ),
     ("5", "8", "8"): (
-        "Para empregados cedidos a outros órgãos, é obrigatório apresentar ofício do órgão de atuação informando:\n"
+        "É obrigatório apresentar ofício do órgão de atuação, informando:\n"
         "- Local de trabalho;\n"
         "- Atividades exercidas;\n"
         "- Horário de trabalho;\n"
@@ -1318,7 +1299,7 @@ SCRIPTS = {
     ("6", "2", "1"): "Os empregados da Comlurb são representados por sindicatos, conforme a função exercida na empresa.",
     ("6", "2", "2"): (
         "A maioria dos empregados é representada pelo *Sindicato dos Empregados de Empresas de Asseio e Conservação do Município do Rio de Janeiro*.\n\n"
-        "Este sindicato representa todos os empregados, exceto os motoristas."
+        "Este sindicato representa todos os empregados, *exceto os motoristas*."
     ),
     ("6", "2", "3"): "Os motoristas são representados pelo *Sindicato dos Condutores de Veículos Rodoviários e Trabalhadores em Transportes de Cargas em Geral e Passageiros no Município do Rio de Janeiro*.",
     ("6", "2", "4"): (
@@ -1331,13 +1312,13 @@ SCRIPTS = {
 
     # MENU 6 - SUBMENU 3: Cooperativa dos empregados da Comlurb
     ("6", "3", "1"): "A cooperativa é uma sociedade formada por associados, criada para prestar serviços aos seus membros.",
-    ("6", "3", "2"): "A cooperativa dos empregados da Comlurb é a *CoopComlurb* – Cooperativa de Economia e Crédito Mútuo dos Servidores da Comlurb.",
+    ("6", "3", "2"): "A cooperativa dos empregados da Comlurb é a *CoopComlurb – Cooperativa de Economia e Crédito Mútuo dos Servidores da Comlurb*.",
     ("6", "3", "3"): (
         "A cooperativa fica na:\n\n"
         "📍 Rua Álvaro Alvim, 48 – Salas 910 a 913 – Cinelândia – Rio de Janeiro – RJ"
     ),
     ("6", "3", "4"): (
-        "⏰ A Cooperativa funciona de segunda a sexta-feira, das 9h às 17h.\n\n"
+        "⏰ A Cooperativa funciona de *segunda a sexta-feira*, das *9h às 17h*.\n\n"
         "📞 *Telefone:* (21) 2220-7921"
     ),
     ("6", "3", "5"): (
@@ -1352,7 +1333,7 @@ SCRIPTS = {
     # ====================================================
     # MENU 7 - SUBMENU 1: Férias
     ("7", "1", "1"): (
-        "O empregado pode perder o período aquisitivo de férias se ficar afastado por mais de 180 dias.\n\n"
+        "O empregado pode perder o período aquisitivo de férias se ficar afastado por *mais de 180 dias*.\n"
         "Quando retornar ao trabalho, começará uma nova contagem para aquisição de férias."
     ),
     ("7", "1", "2"): "Se o empregado já tinha direito às férias, mas ainda não havia usufruído por motivo de trabalho ou decisão própria, ele pode solicitar o gozo das férias após retornar ao trabalho.",
@@ -1399,14 +1380,10 @@ SCRIPTS = {
     ),
     ("7", "2", "2"): (
         "📅 *Período da licença:*\n"
-        "- O período normal é de *120 dias* (também se aplica em caso de natimorto).\n"
-        "- Em caso de aborto espontâneo, a licença é de 2 semanas."
+        "- O período normal é de *120 dias* (também se aplica em caso de natimorto, mediante certidão de óbito).\n"
+        "- Em caso de aborto espontâneo, a licença é de *2 semanas*."
     ),
-    ("7", "2", "3"): (
-        "A licença pode começar:\n"
-        "- Até 28 dias antes da data prevista para o parto; ou\n"
-        "- A partir do nascimento da criança."
-    ),
+    ("7", "2", "3"): "A licença pode começar até 28 dias antes da data prevista para o parto, ou a partir donascimento da criança.",
     ("7", "2", "4"): (
         "A empregada deve apresentar à sua gerência de lotação:\n"
         "📄 Atestado médico de afastamento (120 dias); ou\n"
@@ -1415,24 +1392,24 @@ SCRIPTS = {
     ),
     ("7", "2", "5"): (
         "Nos casos de adoção ou guarda:\n"
-        "💰 O salário-maternidade deve ser solicitado diretamente ao *INSS*;\n"
+        "💰 O salário-maternidade deve ser solicitado *diretamente ao INSS*;\n"
         "✅ A solicitação deve ser comprovada à Comlurb."
     ),
     ("7", "2", "6"): (
         "🆘 *Prorrogações:*\n"
-        "- Em caso de internação da mãe ou do recém-nascido, a licença pode ser prorrogada pelo período da internação (além dos 120 dias).\n"
+        "- Em caso de internação da mãe ou do recém-nascido, a licença pode ser *prorrogada pelo período da internação* (além dos 120 dias, mediante declaração de internação).\n"
         "- Além disso, a empregada pode solicitar prorrogação por mais *60 dias* após o período inicial."
     ),
     ("7", "2", "7"): (
         "Para solicitar a prorrogação:\n"
         "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
-        "A empregada ou representante deve comparecer à *CAE - Central de Atendimento ao Empregado* na Rua Major Ávila, 358 – Tijuca) em até *3 dias* após o término dos 120 dias.\n\n"
-        "📑 *Documentos:*\n"
-        "- Cópia da certidão de nascimento;\n"
+        "A empregada ou representante deve comparecer à *CAE - Central de Atendimento ao Empregado* em até *3 dias* após o término dos 120 dias.\n\n"
+        "📑 *Apresentar:*\n"
+        "- Cópia da certidão de nascimento da criança;\n"
         "- Atestado do pediatra informando amamentação."
     ),
     ("7", "2", "8"): "No primeiro dia após o término da licença, a empregada deve se apresentar à sua gerência de lotação para retorno ao trabalho.",
-    ("7", "2", "9"): "🛡️ A empregada gestante não pode ser demitida sem justa causa até *6 meses após o parto*.",
+    ("7", "2", "9"): "🛡️ A empregada gestante *não pode ser demitida sem justa causa* até *6 meses após o parto*.",
     ("7", "2", "10"): "HANDOFF",
 
     # MENU 7 - SUBMENU 3: Licença para acompanhamento e tratamento de pessoa da família
@@ -1448,18 +1425,17 @@ SCRIPTS = {
         "📄 *Documentos necessários:*\n"
         "O empregado deve apresentar na sua gerência de lotação o atestado médico em *seu próprio nome*, informando a necessidade de acompanhamento."
     ),
-    ("7", "3", "4"): "⏳ O afastamento pode ser de até *15 dias* dentro de um período de 60 dias.",
-    ("7", "3", "5"): "⚠️ Essa licença é válida apenas para empregados ocupantes de *cargos efetivos*.",
+    ("7", "3", "4"): "⏳ O afastamento pode ser de até *15 dias dentro de um período de 60 dias*.",
+    ("7", "3", "5"): "⚠️ Essa licença é válida *apenas para empregados ocupantes de cargos efetivos*.",
     ("7", "3", "6"): "HANDOFF",
 
     # MENU 7 - SUBMENU 4: Licença ou afastamento sem vencimentos
-    ("7", "4", "1"): "É a suspensão temporária do contrato de trabalho, concedida pela Comlurb a critério da Diretoria do empregado.",
+    ("7", "4", "1"): "É a suspensão temporária do contrato de trabalho, concedida pela Comlurb *a critério da Diretoria* do empregado.",
     ("7", "4", "2"): "⚠️ Podem solicitar apenas empregados com *mais de 5 anos* de empresa.",
     ("7", "4", "3"): "A licença pode durar *até 1 ano*, com possibilidade de prorrogação por mais 1 ano, dependendo de nova decisão da Diretoria.",
     ("7", "4", "4"): (
-        "O pedido deve ser feito por processo administrativo na FDC – Protocolo na sede da Comlurb.\n\n"
-        "📍 *Endereço:* Rua Major Ávila, 358 – Tijuca\n"
-        "⏰ *Horário:* Segunda a sexta-feira, das 9h às 16h."
+        "O pedido deve ser feito por *processo administrativo* na *FDC – Protocolo* na Rua Major Ávila, 358 – Tijuca.\n"
+        "⏰ O protocolo funciona de *segunda a sexta-feira*, das *9h às 16h*."
     ),
     ("7", "4", "5"): (
         "Durante o período de suspensão do contrato:\n"
@@ -1475,34 +1451,32 @@ SCRIPTS = {
     ("7", "5", "1"): "É o direito do empregado estudante de se ausentar do trabalho para realizar provas ou exames escolares, com abono do ponto.",
     ("7", "5", "2"): (
         "Para garantir o abono, o empregado deve:\n"
-        "⏳ Avisar o chefe imediato com pelo menos *72 horas* de antecedência;\n"
-        "📄 Apresentar comprovante oficial de realização da prova ou exame."
+        "⏳ Avisar o chefe imediato com *pelo menos 72 horas de antecedência*;\n"
+        "📄 Apresentar *comprovante oficial de realização* da prova ou exame."
     ),
-    ("7", "5", "3"): "⚠️ *Atenção:* O abono é concedido somente quando o horário da prova coincide com o seu *horário de trabalho*.",
+    ("7", "5", "3"): "⚠️ *Atenção:* O abono é concedido *somente quando o horário da prova coincide com o seu horário de trabalho*.",
     ("7", "5", "4"): "HANDOFF",
 
     # MENU 7 - SUBMENU 6: Licença-paternidade
     ("7", "6", "1"): "É o afastamento concedido ao empregado pelo nascimento de seu filho.",
     ("7", "6", "2"): "📅 A licença-paternidade é de *5 dias corridos*, contados a partir da data de nascimento da criança.",
-    ("7", "6", "3"): "Para comprovar o direito à licença, o empregado deve entregar a cópia da *certidão de nascimento* na sua gerência de lotação.",
+    ("7", "6", "3"): "Para comprovar o direito à licença, o empregado deve entregar a *cópia da certidão de nascimento  da criança* na sua gerência de lotação.",
     ("7", "6", "4"): (
         "💰 *Impacto na remuneração:*\n"
         "- *Salário:* pago normalmente;\n"
         "- *Tíquetes:* pagos normalmente;\n"
         "- *Vale-transporte:* pode haver desconto, pois não há deslocamento no período."
     ),
-    ("7", "6", "5"): (
-        "Se a ausência for lançada como falta, a gerência deve solicitar a correção à GGP (Gerência de Pagamento) por Comunicação Interna ou e-mail, anexando a certidão de nascimento."
-    ),
-    ("7", "6", "6"): "⚠️ A licença-paternidade não se aplica aos casos de adoção.",
+    ("7", "6", "5"): "Se a ausência for lançada como falta, a gerência deve solicitar a correção à GGP (Gerência de Pagamento) por Comunicação Interna ou e-mail, anexando a certidão de nascimento.",
+    ("7", "6", "6"): "⚠️ A licença-paternidade *não se aplica aos casos de adoção*.",
     ("7", "6", "7"): "⏺️ *Em caso de natimorto:* A ocorrência deve ser convertida em *licença nojo*, com duração de *2 dias*.",
     ("7", "6", "8"): "HANDOFF",
 
     # MENU 7 - SUBMENU 7: Licença avó-maternidade
     ("7", "7", "1"): "É o afastamento concedido à empregada que é mãe da gestante, para auxiliar a filha durante o período após o parto.",
     ("7", "7", "2"): "📅 A licença tem duração de *7 dias corridos*.",
-    ("7", "7", "3"): "Pode ser iniciada a qualquer momento dentro dos 120 dias da licença-maternidade da filha, devendo ser utilizada de forma *contínua*.",
-    ("7", "7", "4"): "Para solicitar, a empregada deve apresentar a cópia da *certidão de nascimento* da criança em sua gerência de lotação.",
+    ("7", "7", "3"): "Pode ser iniciada *a qualquer momento dentro dos 120 dias* da licença-maternidade da filha, devendo ser utilizada de forma contínua.",
+    ("7", "7", "4"): "Para solicitar, a empregada deve apresentar a cópia da *certidão de nascimento da criança* em sua gerência de lotação.",
     ("7", "7", "5"): (
         "💰 *Impacto na remuneração:*\n"
         "- *Salário:* pago normalmente;\n"
@@ -1510,15 +1484,15 @@ SCRIPTS = {
         "- *Vale-transporte:* pode haver desconto, pois não há deslocamento no período."
     ),
     ("7", "7", "6"): (
-        "👩‍👧 A licença é exclusiva para assistência à *filha gestante*.\n\n"
-        "⚠️ *Atenção:* A licença avó-maternidade não se aplica a casos de adoção."
+        "👩‍👧 A licença é *exclusiva para assistência à filha gestante*.\n\n"
+        "⚠️ *Atenção:* A licença avó-maternidade *não se aplica a casos de adoção*."
     ),
     ("7", "7", "7"): "HANDOFF",
 
     # MENU 7 - SUBMENU 8: Licença casamento (licença-gala)
     ("7", "8", "1"): "É o afastamento concedido ao empregado em razão de seu casamento civil.",
     ("7", "8", "2"): "📅 A licença tem duração de *3 dias consecutivos*, contados a partir da data do casamento.",
-    ("7", "8", "3"): "O empregado deve apresentar a cópia da *certidão de casamento* na sua gerência de lotação.",
+    ("7", "8", "3"): "O empregado deve apresentar a *cópia da certidão de casamento* na sua gerência de lotação.",
     ("7", "8", "4"): (
         "💰 *Impacto na remuneração:*\n"
         "- *Salário:* pago normalmente;\n"
@@ -1536,7 +1510,7 @@ SCRIPTS = {
         "- Irmão ou irmã;\n"
         "- Cônjuge ou companheiro(a);\n"
         "- Dependente econômico registrado.\n\n"
-        "⚠️ *Atenção:* A licença não é concedida automaticamente para avós ou sobrinhos. Em situações excepcionais, o gestor poderá avaliar o caso."
+        "⚠️ *Atenção:* A licença não é concedida automaticamente para avós ou sobrinhos. Em situações excepcionais, o gestor poderá avaliar o caso e definir o procedimento adequado."
     ),
     ("7", "9", "3"): "📅 O período da licença é de *3 dias consecutivos*.",
     ("7", "9", "4"): (
@@ -1551,13 +1525,13 @@ SCRIPTS = {
     # ====================================================
     # MENU 8 - SUBMENU 1: Frequência
     ("8", "1", "1"): (
-        "A frequência registra a presença, ausências e ocorrências do empregado e é a base para o cálculo de salário.\n\n"
+        "A frequência registra a presença, ausências e ocorrências do empregado e é a base para o cálculo de salário e outras verbas.\n\n"
         "📅 *O pagamento mensal considera:*\n"
         "- As ocorrências registradas no mês anterior; ou\n"
         "- Ajustes de meses anteriores (afastamentos ou correções pendentes)."
     ),
-    ("8", "1", "2"): "⏳ O atestado médico deve ser entregue na gerência de lotação em até *72 horas* após a emissão, para o registro correto.",
-    ("8", "1", "3"): "🏥 A Comlurb paga até *15 dias* de afastamento por atestado médico (doença ou acidente).",
+    ("8", "1", "2"): "⏳ O atestado médico deve ser entregue na *gerência de lotação em até 72 horas após a emissão*, para o registro correto.",
+    ("8", "1", "3"): "🏥 A Comlurb paga *até 15 dias* de afastamento por atestado médico (doença ou acidente).",
     ("8", "1", "4"): (
         "São aceitos atestados emitidos por:\n"
         "- Médicos do trabalho da Comlurb;\n"
@@ -1571,30 +1545,33 @@ SCRIPTS = {
         "✅ Registradas pela gerência de lotação;\n"
         "✅ Encaminhadas à Gerência de Pagamento (GGP)."
     ),
-    ("8", "1", "6"): "🩸 O empregado tem direito a *1 dia* de ausência abonada a cada 12 meses para doação de sangue. Apresente o comprovante na sua gerência.",
+    ("8", "1", "6"): (
+        "🩸 O empregado tem direito a *1 dia de ausência abonada a cada 12 meses* para doação de sangue.\n"
+        "É necessário apresentar *comprovante de doação* na gerência de lotação."
+    ),
     ("8", "1", "7"): (
-        "Em caso de erro, a gerência de lotação deve enviar o formulário de acerto à GGP, incluindo:\n"
+        "Em caso de erro, a gerência de lotação deve enviar o *formulário padrão de acerto de frequência, disponível no Portal da Companhia, para a *GGP - Gerência de Pagamento*, incluindo:\n"
         "- Guia de remessa;\n"
         "- Anuência do Diretor ou Superintendente."
     ),
     ("8", "1", "8"): (
         "⏱️ *Prazos para acerto:*\n"
-        "- Até *90 dias* após o fechamento da frequência.\n"
-        "- Após esse prazo, o pedido exige justificativa para a Diretoria (DGG)."
+        "- Até *90 dias após o fechamento da frequência*.\n"
+        "- Após esse prazo, o pedido deve ser encaminhado à Diretoria de Gestão de Gente (DGG) com justificativa."
     ),
     ("8", "1", "9"): "HANDOFF",
 
     # MENU 8 - SUBMENU 2: Adicional de insalubridade
-    ("8", "2", "1"): "É um valor adicional pago ao empregado que exerce atividades consideradas insalubres (exposição a agentes nocivos à saúde).",
+    ("8", "2", "1"): "É um valor adicional pago ao empregado que exerce atividades consideradas insalubres.",
     ("8", "2", "2"): (
         "📊 *Cálculo (Acordo Coletivo 2025/2026):*\n"
         "O adicional é calculado sobre o piso salarial da Companhia, fixado em *R$ 1.854,62*.\n\n"
         "O percentual aplicado depende da classificação da atividade (Mínimo, Médio ou Máximo)."
     ),
     ("8", "2", "3"): (
-        "A caracterização é definida pelo *LTCAT* (Laudo Técnico de Condições Ambientais de Trabalho), elaborado por empresa especializada e validado pelos Engenheiros de Segurança do Trabalho do SESMT da Comlurb."
+        "A caracterização é definida pelo *LTCAT (Laudo Técnico de Condições Ambientais de Trabalho)*, elaborado por empresa especializada e validado pelos *Engenheiros de Segurança do Trabalho do SESMT da Comlurb*."
     ),
-    ("8", "2", "4"): "⚠️ *Sim.* Se o empregado deixar de exercer a atividade considerada insalubre ou se as condições do ambiente forem normalizadas, o adicional pode ser retirado.",
+    ("8", "2", "4"): "Se o empregado deixar de exercer uma atividade considerada insalubre, o adicional pode ser retirado.",
     ("8", "2", "5"): (
         "🚫 *Não é permitido acumular.*\n\n"
         "Caso o empregado tenha direito a insalubridade e periculosidade ao mesmo tempo, ele receberá apenas o adicional que for mais vantajoso (o de maior valor)."
@@ -1602,50 +1579,50 @@ SCRIPTS = {
     ("8", "2", "6"): "HANDOFF",
 
     # MENU 8 - SUBMENU 3: Horas extras
-    ("8", "3", "1"): "São horas trabalhadas além da jornada normal, antes ou depois do horário habitual, desde que autorizadas pela chefia.",
+    ("8", "3", "1"): "São horas trabalhadas além da jornada normal, antes ou depois do horário habitual, desde que *autorizadas pela chefia*.",
     ("8", "3", "2"): (
         "🚀 *Novidade (Banco de Horas):*\n"
-        "Desde *1º de abril de 2026*, a Comlurb utiliza o Banco de Horas.\n\n"
+        "Desde *1º de abril de 2026*, a Comlurb utiliza o *Banco de Horas*.\n\n"
         "Cada hora extra trabalhada gera *1 hora de crédito* no Banco de Horas (proporção 1:1)."
     ),
     ("8", "3", "3"): (
         "⚖️ *Limites permitidos:*\n"
         "- Até *2 horas extras* por dia;\n"
-        "- Jornada máxima de *10 horas* diárias.\n\n"
-        "⚠️ Em casos de emergência ou força maior, esse limite pode ser ultrapassado com justificativa e autorização da chefia."
+        "- Jornada máxima de *10 horas diárias*.\n\n"
+        "⚠️ Em casos de emergência ou força maior, esse limite pode ser ultrapassado com *justificativa e autorização da chefia*."
     ),
     ("8", "3", "4"): (
         "🛌 *Intervalo entre jornadas:*\n"
-        "O empregado tem direito ao intervalo mínimo de *11 horas* entre uma jornada e outra (conforme CLT).\n\n"
-        "Essa regra só pode ser flexibilizada em situações emergenciais devidamente justificadas."
+        "O empregado *pode recusar* trabalho quando não houver o intervalo mínimo de 11 horas entre uma jornada e outra, conforme CLT.\n\n"
+        "Essa regra só pode ser flexibilizada em *situações emergenciais* devidamente justificadas."
     ),
     ("8", "3", "5"): "HANDOFF",
 
     # MENU 8 - SUBMENU 4: Banco de Horas
-    ("8", "4", "1"): "É um sistema em que as horas trabalhadas além da jornada normal são transformadas em créditos, que poderão ser compensados posteriormente com folgas ou reduções de jornada.",
+    ("8", "4", "1"): "É um sistema em que as horas trabalhadas além da jornada normal são transformadas em créditos, que poderão ser compensados posteriormente.",
     ("8", "4", "2"): (
         "📈 *Registro de Créditos:*\n"
-        "Cada *1 hora extra* trabalhada gera *1 hora de crédito* no Banco de Horas.\n\n"
-        "⚠️ *Lembre-se:* A realização de horas extras precisa sempre de autorização prévia da chefia."
+        "Cada *1 hora extra trabalhada* gera *1 hora de crédito* no Banco de Horas.\n\n"
+        "⚠️ *Lembre-se:* A realização de horas extras precisa sempre de *autorização pela chefia*."
     ),
     ("8", "4", "3"): (
         "⚖️ *Regras e Limites:*\n"
         "- Limite de *2 horas extras* por dia;\n"
         "- Jornada máxima de *10 horas* diárias.\n\n"
-        "❗ Em situações excepcionais ou emergenciais, esses limites podem ser ultrapassados mediante justificativa oficial."
+        "❗ Em situações *excepcionais ou emergenciais*, esses limites podem ser ultrapassados mediante justificativa oficial."
     ),
     ("8", "4", "4"): "HANDOFF",
 
     # MENU 8 - SUBMENU 5: Trabalho em Folgas, Domingos e Feriados
     ("8", "5", "1"): (
-        "⚠️ *Atenção:* As horas trabalhadas em folgas, domingos ou feriados *não entram* no Banco de Horas.\n\n"
-        "💰 Elas devem ser pagas com acréscimo de *100%* sobre o valor da hora normal."
+        "⚠️ *Atenção:* As horas trabalhadas em *folgas, domingos ou feriados não* entram no Banco de Horas.\n\n"
+        "💰 Elas devem ser pagas com *acréscimo de 100%* sobre o valor da hora normal."
     ),
-    ("8", "5", "2"): "✅ *Sim.* O empregado que trabalhar nesses dias terá direito a folgar em outro dia da semana, conforme a escala divulgada na sua gerência de lotação.",
+    ("8", "5", "2"): "✅ O empregado que trabalhar nesses dias terá direito a *folgar em outro dia da semana*, conforme a escala divulgada na sua gerência de lotação.",
     ("8", "5", "3"): (
         "📅 *Regras de Escala:*\n"
-        "- A escala mensal deve ser divulgada com antecedência mínima de *72 horas*.\n"
-        "- O acordo coletivo garante, no mínimo, *2 domingos* de folga por mês."
+        "- A escala mensal deve ser divulgada com *antecedência mínima de 72 horas*.\n"
+        "- O acordo coletivo garante, no mínimo, *2 domingos de folga por mês*."
     ),
     ("8", "5", "4"): (
         "🎄 *Natal e Ano Novo:* \n"
@@ -1654,10 +1631,12 @@ SCRIPTS = {
     ("8", "5", "5"): "HANDOFF",
 
     # MENU 8 - SUBMENU 6: Reflexo das Horas Extras nas Férias e no 13º Salário
-    ("8", "6", "1"): "✅ *Sim.* As horas extras trabalhadas são consideradas no cálculo das férias e do 13º salário, gerando um reflexo financeiro positivo.",
+    ("8", "6", "1"): "✅ *Sim.* As horas extras trabalhadas são consideradas no cálculo das *férias* e do *13º salário*.",
     ("8", "6", "2"): (
         "📊 *Cálculo da Média:*\n"
-        "A Comlurb utiliza a média das horas extras trabalhadas nos *últimos 12 meses* para definir o valor adicional que será pago nas suas férias e no 13º salário."
+        "A Comlurb utiliza a *média das horas extras trabalhadas nos últimos 12 meses* para calcular:\n"
+        "- Valor das férias;\n"
+        "- Valor do 13º salário."
     ),
     ("8", "6", "3"): "HANDOFF",
 
@@ -1665,23 +1644,23 @@ SCRIPTS = {
     ("8", "7", "1"): "✅ *Sim.* Em alguns setores é adotada a escala *12x36* (12 horas de trabalho por 36 de descanso), conforme previsto no acordo coletivo.",
     ("8", "7", "2"): (
         "🔄 *Mudança de Escala ou Turno:*\n"
-        "Sim, o empregado pode ser transferido. A chefia deve comunicar a mudança com antecedência mínima de *15 dias*."
+        "Sim, o empregado pode ser transferido. A chefia deve comunicar a mudança com *antecedência mínima de 15 dias*."
     ),
     ("8", "7", "3"): (
         "📍 *Mudança de Posto de Trabalho:*\n"
-        "Sim, o empregado pode ser transferido de local. A chefia deve comunicar com antecedência mínima de *7 dias*.\n\n"
+        "Sim, o empregado pode ser transferido de local. A chefia deve comunicar com *antecedência mínima de 7 dias*.\n\n"
         "⚠️ *Exceção:* Casos de emergências e eventos não precisam seguir esse prazo."
     ),
     ("8", "7", "4"): "HANDOFF",
 
     # MENU 8 - SUBMENU 8: Adicional Noturno
     ("8", "8", "1"): "É um valor adicional pago ao empregado que trabalha no período noturno, compreendido entre as *22h e 5h*.",
-    ("8", "8", "2"): "📈 O adicional corresponde a *20%* sobre o valor da hora normal de trabalho.",
+    ("8", "8", "2"): "📈 O adicional corresponde a *20% sobre o valor da hora normal de trabalho*.",
     ("8", "8", "3"): (
         "🧮 *Passo a passo do cálculo:*\n"
         "1. Salário de referência ÷ 30 = *Valor do dia*;\n"
-        "2. Valor do dia ÷ Horas trabalhadas por dia = *Valor da hora*;\n"
-        "3. Sobre o valor da hora, aplica-se o acréscimo de *20%*."
+        "2. Valor do dia ÷ Número de horas trabalhadas por dia = *Valor da hora*;\n"
+        "3. Sobre o valor da hora, aplica-se o *acréscimo de 20%*."
     ),
     ("8", "8", "4"): "HANDOFF",
     # ====================================================
@@ -1689,10 +1668,9 @@ SCRIPTS = {
 
     # ====================================================
     # MENU 9 - SUBMENU 1: Ficha Financeira
-    ("9", "1", "1"): "É o documento oficial que apresenta o histórico anual detalhado de todos os valores pagos ao empregado, incluindo remuneração, adicionais e descontos.",
+    ("9", "1", "1"): "É o documento oficial que apresenta o *histórico anual de valores pagos*, incluindo remuneração, adicionais e descontos.",
     ("9", "1", "2"): (
-        "🔍 *Onde consultar:*\n"
-        "A ficha financeira está disponível nos seguintes canais:\n"
+        "🔍 A ficha financeira está disponível nos seguintes canais:\n"
         "1. *Novo Passaporte* (acesso pessoal);\n"
         "2. *Portal Carioca Digital*;\n"
         "3. *Aplicativo da Comlurb*."
@@ -1709,89 +1687,99 @@ SCRIPTS = {
     ("9", "1", "5"): "HANDOFF",
 
     # MENU 9 - SUBMENU 2: Margem Consignável
-    ("9", "2", "1"): "É o valor máximo do salário que pode ser comprometido para descontos de empréstimos autorizados diretamente na folha de pagamento.",
+    ("9", "2", "1"): "É o valor máximo que pode ser descontado do pagamento do empregado para *empréstimos autorizados em folha*.",
     ("9", "2", "2"): (
         "⚠️ *Não.* A margem pode variar mensalmente, pois o cálculo depende diretamente de:\n"
-        "- *Proventos:* O total de valores recebidos no mês;\n"
-        "- *Descontos:* Outros abatimentos já existentes no seu contracheque.\n\n"
-        "Se o seu salário bruto muda ou se surgem novos descontos, sua margem será recalculada automaticamente."
+        "- *Proventos recebidos*;\n"
+        "- *Descontos existentes*."
     ),
     ("9", "2", "3"): "HANDOFF",
 
     # MENU 9 - SUBMENU 3: Empréstimo Consignado
-    ("9", "3", "1"): "✅ *Sim.* A Comlurb permite a contratação de empréstimo consignado, desde que o empregado autorize formalmente a operação junto ao banco.",
+    ("9", "3", "1"): "✅ *Sim.* A Comlurb permite a contratação de empréstimo consignado, desde que o empregado autorize formalmente a operação.",
     ("9", "3", "2"): (
         "🏦 *Instituições Conveniadas:*\n"
         "Atualmente, os bancos que possuem convênio com a Companhia são:\n"
         "- *Banco Santander*;\n"
         "- *Caixa Econômica Federal*."
     ),
-    ("9", "3", "3"): "💼 *Como solicitar:* O empregado deve procurar diretamente uma agência ou os canais digitais da instituição financeira conveniada para realizar a simulação e contratação.",
+    ("9", "3", "3"): "💼 *Como solicitar:* O empregado deve procurar diretamente uma agência ou os canais digitais da instituição financeira conveniada para realizar a contratação.",
     ("9", "3", "4"): "📉 *Pagamento:* As parcelas do empréstimo são descontadas automaticamente do seu pagamento mensal (direto no contracheque).",
     ("9", "3", "5"): (
         "💰 *Valor Liberado:*\n"
-        "O valor máximo do empréstimo depende da sua *margem consignável* disponível no momento da contratação. Você pode consultar sua margem atual no seu contracheque."
+        "O valor máximo do empréstimo depende da sua *margem consignável disponível*. Você pode consultar sua margem atual no seu contracheque."
     ),
     ("9", "3", "6"): "HANDOFF",
 
     # MENU 9 - SUBMENU 4: FGTS
-    ("9", "4", "1"): "A conta ativa recebe depósitos mensais de 8% do seu salário, feitos pela Comlurb durante a vigência do seu contrato de trabalho.",
-    ("9", "4", "2"): "💰 *Consulta:* Você pode solicitar o extrato analítico do FGTS em qualquer agência da Caixa Econômica Federal ou pelo aplicativo 'FGTS' da Caixa.",
+    ("9", "4", "1"): "A conta ativa recebe *depósitos mensais do FGTS* feitos pela Comlurb durante o contrato de trabalho.",
+    ("9", "4", "2"): "💰 *Consulta:* O empregado pode solicitar o *extrato analítico do FGTS* em qualquer agência da *Caixa Econômica Federal*.",
     ("9", "4", "3"): (
         "❓ *Dúvidas sobre depósitos:*\n"
-        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
+        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
+        "Comparecer à CAE – Central de Atendimento ao Empregado com o extrato analítico do FGTS;\n"
+        "A CAE solicitará à *GGP – Homologação* a verificação dos depósitos."
     ),
     ("9", "4", "4"): (
         "🔍 *Por que meu depósito não aparece?*\n"
-        "- Períodos em que você recebeu benefício do INSS (exceto auxílio-acidente);\n"
-        "- Existência de mais de uma conta vinculada (duplicidade)."
+        "- Períodos em que você recebeu benefício do *INSS*;\n"
+        "- Existência de *mais de uma conta vinculada de FGTS*"
     ),
     ("9", "4", "5"): (
-        "🔓 *Situações de saque:*\n"
+        "🔓 O FGTS pode ser sacado em situações previstas em lei, como:\n"
         "- Demissão sem justa causa;\n"
-        "- Aposentadoria ou idade ≥ 70 anos;\n"
+        "- Aposentadoria;\n"
+        "- Idade igual ou superior a 70 anos;\n"
         "- Falecimento do trabalhador;\n"
-        "- Doença grave (Câncer/HIV) do titular ou dependente;\n"
-        "- Compra de casa própria."
+        "- Doença grave do trabalhador ou dependente;\n"
+        "- Câncer ou HIV;\n"
+        "- Extinção da empresa;\n"
+        " Outras hipóteses legais."
     ),
     ("9", "4", "6"): (
         "📄 *Documentos para Saque (Rescisão):*\n"
         "- Identidade e CPF;\n"
         "- Carteira de Trabalho;\n"
         "- Cartão Cidadão ou número PIS/PASEP;\n"
-        "- Termo de Rescisão (TRCT)."
+        "- Termo de Rescisão do Contrato de Trabalho (TRCT) ou decisão judicial, quando aplicável."
     ),
     ("9", "4", "7"): (
         "🔗 *Unificação de contas:*\n"
-        "Se você tem contas separadas, procure a CAE com suas Carteiras de Trabalho e extratos. A documentação será validada e enviada à Caixa para unificação."
+        "Comparecer à *CAE – Central de Atendimento ao Empregado* na Rua Major Ávila, 358 – Tijuca, levando *Carteiras de Trabalho* e *extratos das contas*.\n\n"
+        "Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
+        " A documentação será encaminhada para a *GGP – Homologação*;\n"
+        "Após liberação, levar os documentos à *Caixa Econômica Federal* para efetivar a unificação."
     ),
-    ("9", "4", "8"): "É a conta que não recebe mais depósitos por conta do encerramento de um contrato anterior (ex: pedido de demissão ou justa causa).",
+    ("9", "4", "8"): "É a conta que *não recebe mais depósitos*, geralmente após pedido de demissão ou demissão por justa causa.",
     ("9", "4", "9"): (
         "📍 *Onde verificar:*\n"
-        "- *Empregados:* Na CAE (Rua Major Ávila, 358 – Tijuca).\n"
-        "- *Ex-empregados:* Pedido via processo administrativo no Protocolo (Rua Major Ávila, 358), das 9h às 16h."
+        "- *Empregados:* Deve procurar a CAE na Rua Major Ávila, 358 – Tijuca, que solicitará à GGP – Homologação a busca das contas.\n"
+        "Para agendar atendimento:\n"
+        "Você precisa voltar ao menu e selecionar Falar com atendente para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
+        "- *Ex-empregados:* Pedido via *processo administrativo* na *FDC - Protocolo* na Rua Major Ávila, 358 – Tijuca, das 9h às 16h."
     ),
     ("9", "4", "10"): "HANDOFF",
 
     # MENU 9 - SUBMENU 5: Anuênio, Triênio e Quinquênio
-    ("9", "5", "1"): "📅 É um adicional salarial de *1%* sobre o salário de referência, concedido a cada *365 dias* de efetivo exercício na Companhia.",
+    ("9", "5", "1"): "📅 É um *adicional salarial de 1% sobre o salário de referência*, concedido a cada *365 dias efetivamente trabalhados.*",
     ("9", "5", "2"): (
         "⚠️ *O que 'congela' ou atrasa a contagem?*\n"
         "Algumas ocorrências interrompem a contagem do período aquisitivo:\n"
-        "- Afastamentos superiores a 15 dias (doença/acidente);\n"
-        "- Faltas injustificadas;\n"
-        "- Suspensões disciplinares.\n\n"
-        "Essas situações adiam a data em que você completará os 365 dias necessários."
+        "- Afastamentos superiores a 15 dias;\n"
+        "- Faltas;\n"
+        "- Suspensões.\n\n"
+        "Essas situações podem *aumentar o tempo necessário* para completar o período."
     ),
     ("9", "5", "3"): (
         "📜 *Triênio e Quinquênio:*\n"
-        "Esses adicionais foram *extintos em julho de 1999* com a chegada do novo PCCS.\n\n"
-        "✅ *Importante:* Empregados que já haviam conquistado o direito antes dessa data continuam recebendo o valor normalmente como direito adquirido."
+        "Esses adicionais foram *extintos em julho de 1999*, com a implantação do *Plano de Carreiras, Cargos e Salários (PCCS)*.\n\n"
+        "✅ *Importante:* Empregados que já haviam conquistado o direito antes dessa data *continuam recebendo o valor normalmente*."
     ),
     ("9", "5", "4"): "HANDOFF",
 
     # MENU 9 - SUBMENU 6: Adiantamento Líquido Negativo
-    ("9", "6", "1"): "É o valor que precisa ser descontado do empregado em casos onde houve um pagamento indevido pela empresa, gerando um 'saldo devedor' a ser regularizado.",
+    ("9", "6", "1"): "É o valor que precisa ser *descontado do empregado* em casos de pagamento indevido pela empresa.",
     ("9", "6", "2"): (
         "🔄 *Situações comuns de ocorrência:*\n"
         "Geralmente ocorre no retorno de afastamentos, como:\n"
@@ -1800,34 +1788,34 @@ SCRIPTS = {
         "- Licença sem vencimentos;\n"
         "- Outras situações de interrupção do contrato."
     ),
-    ("9", "6", "3"): (
-        "⚖️ *Limite para o desconto:*\n"
-        "Fique tranquilo(a)! A Comlurb pode descontar no máximo *30% da sua remuneração mensal* para regularizar esses valores pagos indevidamente, até que o saldo seja quitado."
-    ),
+    ("9", "6", "3"): "*Sim.* A Comlurb pode descontar até *30% da sua remuneração mensal* do empregado para regularizar o valor pago indevidamente.",
     ("9", "6", "4"): "HANDOFF",
 
     # MENU 9 - SUBMENU 7: Contribuição Assistencial Negocial
-    ("9", "7", "1"): "É um desconto previsto em norma coletiva, destinado ao custeio das atividades sindicais relacionadas às negociações da categoria (como reajustes e benefícios).",
+    ("9", "7", "1"): "É um desconto previsto em norma coletiva, destinado ao custeio das atividades sindicais relacionadas às negociações da categoria.",
     ("9", "7", "2"): "💰 Conforme o termo aditivo do Acordo Coletivo, o valor fixo do desconto é de *R$ 14,28* por mês.",
-    ("9", "7", "3"): "🏢 O valor é integralmente destinado ao *SIEMACO-Rio* (Sindicato dos Empregados de Empresas de Asseio e Conservação do Município do Rio de Janeiro).",
-    ("9", "7", "4"): (
-        "⚖️ *Direito de Oposição:*\n"
-        "Sim. O empregado pode apresentar oposição ao desconto, desde que siga as regras e os prazos definidos pela própria entidade sindical (SIEMACO-Rio)."
-    ),
+    ("9", "7", "3"): "🏢 O valor é  destinado ao *SIEMACO-Rio*.",
+    ("9", "7", "4"): "*Sim.* O empregado pode apresentar oposição ao desconto, desde que siga as regras e os prazos definidos pela própria entidade sindical (SIEMACO-Rio).",
     ("9", "7", "5"): "🚫 *Não.* Empregados que já são associados ao sindicato ficam isentos deste desconto específico, conforme previsto no termo aditivo do acordo.",
     ("9", "7", "6"): "HANDOFF",
 
     # MENU 9 - SUBMENU 8: Contracheque
-    ("9", "8", "1"): "É o demonstrativo mensal que detalha todos os valores brutos recebidos (proventos) e todos os descontos efetuados no mês.",
+    ("9", "8", "1"): "É o documento que mostra todos os valores *pagos e descontados* do empregado no mês.",
     ("9", "8", "2"): (
         "📝 *Informações comuns no documento:*\n"
-        "- Salário-base e Anuênios;\n"
-        "- Adicionais (Insalubridade, Noturno, etc.);\n"
+        "- Salário;\n"
+        "- Adicionais;\n"
+        "- Benefícios;\n"
         "- Descontos obrigatórios (INSS e Imposto de Renda);\n"
-        "- Empréstimos consignados e pensão alimentícia;\n"
-        "- Outros lançamentos e benefícios."
+        "- Empréstimos consignados;\n"
+        "- Outros lançamentos."
     ),
-    ("9", "8", "3"): "📱 *Consulta:* O contracheque está disponível exclusivamente pelos *canais digitais* da Comlurb (Novo Passaporte, App Comlurb ou Portal Carioca Digital).",
+    ("9", "8", "3"): (
+        "📱 *Consulta:* O contracheque está disponível exclusivamente pelos *canais digitais* da Comlurb:\n"
+        "- No Novo Passaporte, utilizando seu acesso pessoal; ou\n"
+        "- No Aplicativo da Comlurb; ou\n"
+        "- No Portal Carioca Digital."
+    ),
     ("9", "8", "4"): (
         "⚠️ *Identificou um erro?*\n"
         "Você deve informar imediatamente sua *gerência de lotação*. Eles farão a conferência inicial e, se confirmado o erro, solicitarão a correção oficial à Gerência de Pagamento (GGP)."
@@ -1838,38 +1826,68 @@ SCRIPTS = {
 
     # ====================================================
     # MENU 10 - SUBMENU 1: Acidente de Trabalho
-    ("10", "1", "1"): "👷‍♂️ É o acidente que ocorre durante o exercício do trabalho ou no trajeto casa-trabalho, podendo ou não gerar afastamento.",
-    ("10", "1", "2"): "🚨 O empregado deve comunicar imediatamente ao superior. A chefia providenciará a análise preliminar e os trâmites para a emissão da CAT.",
+    ("10", "1", "1"): "👷‍♂️ É o acidente que acontece durante o trabalho ou no trajeto casa–trabalho, podendo haver ou não afastamento.",
+    ("10", "1", "2"): "🚨 O empregado deve comunicar imediatamente ao superior hierárquico. A chefia deve providenciar a análise preliminar e iniciar os procedimentos para emissão da *CAT – Comunicação de Acidente de Trabalho*.",
     ("10", "1", "3"): (
         "📋 *Documentos que o ENP deve enviar (comlurbcat@gmail.com):*\n"
-        "- Formulário de Registro de CAT preenchido;\n"
-        "- Fotos de documentos médicos (atestados, laudos);\n"
-        "- Foto do Livro de Ocorrência registrado;\n"
-        "- Relato de testemunha (se houver);\n"
+        "- Formulário de Informações para Registro de CAT preenchido;\n"
+        "- Fotos de todos os documentos médicos (atestados, laudos, exames);\n"
+        "- Foto do Livro de Ocorrência com registro do acidente;\n"
+        "- Relato escrito e assinado de testemunha (se houver);\n"
         "- Registro de Ocorrência policial (se houver)."
     ),
-    ("10", "1", "4"): "⚠️ *Aviso imediato:* Em acidentes graves ou fatais (inclusive doenças do trabalho que resultem em morte), o Serviço Social e o SESMT devem ser avisados na hora.",
-    ("10", "1", "5"): "📍 *Atendimento Presencial:* Após o envio dos documentos por e-mail, o órgão de lotação receberá a data/horário para o empregado comparecer ao serviço médico (Rua Major Ávila, 358 – Tijuca).",
+    ("10", "1", "4"): "Sim. Em caso de acidente típico grave, o aviso deve ser imediato. Acidente fatal também deve ser comunicado imediatamente ao SESMT, inclusive nos casos de doenças do trabalho que resultem em morte.",
+    ("10", "1", "5"): "📍 *Atendimento Presencial:* Após o Encarregado de Núcleo de Pessoal – ENP comunicar a ocorrência do acidente e enviar todos os documentos necessários para o *e-mail comlurbcat@gmail.com*, o órgão de lotação do empregado receberá, também por e-mail, a data e horário para atendimento presencial do empregado no serviço médico da Comlurb, na Rua Major Ávila, 358 – Tijuca.",
     ("10", "1", "6"): (
-        "📄 *Levar no atendimento:* CI do órgão com Registro, Nome, Férias no Ergon, Frequência (últimos 60 dias) e Último dia trabalhado.\n"
-        "💡 Se o empregado não puder ir, informe o nome do representante no e-mail."
+        "📄 O empregado (ou representante autorizado caso o empregado esteja em recuperação) deve levar os documentos médicos do atendimento, os documentos pessoais e a Comunicação Interna – CI do órgão de lotação informando:\n"
+        "- Registro;\n"
+        "- Nome completo do empregado;\n"
+        "- Informação sobre férias programas no Ergon;\n"
+        "- Frequência dos últimos 60 dias;\n"
+        "- Último dia trabalhado.\n\n"
+        "Se o empregado não puder comparecer, o órgão deve informar no e-mail o nome do familiar/representante."
     ),
-    ("10", "1", "7"): "🖋️ A CAT é emitida no Ergon pela *GGQ-ST* (Segurança do Trabalho), conforme definição do Médico do Trabalho (Típico, Trajeto ou Doença).",
+    ("10", "1", "7"): (
+        "🖋️ A CAT é emitida no sistema Ergon pela *GGQ-ST - (Gerência Adjunta de Segurança do Trabalho)*, de acordo com a definição do Médico do Trabalho da Comlurb, que decide se é:\n"
+        "- Acidente típico;\n"
+        "- Acidente de trabalho;\n"
+        "- Doença do trabalho;\n"
+        "- CAT inicial; ou\n"
+        "- CAT reabertura."
+    ),
     ("10", "1", "8"): "✅ *Sim.* A CAT deve ser emitida sempre, mesmo que não haja afastamento ou que o empregado já seja aposentado.",
-    ("10", "1", "9"): "🏦 *Kit INSS:* Atestado, laudos, CAT preenchida, Identidade/CPF, Carteira de Trabalho, PIS e Certidão de nascimento dos filhos (< 14 anos).",
+    ("10", "1", "9"): (
+        "🏦 *Kit INSS:*\n" 
+        "- Atestado médico;\n"
+        "- Exames e laudos;\n"
+        "- Atestado de internação (se houver);\n"
+        "- CAT preenchida;\n"
+        "- Identidade/CPF;\n"
+        "- Carteira de Trabalho ou documento que comprove atividade;\n"
+        "- PIS/PASEP;\n"
+        "- Certidão de nascimento dos filhos (menores de 14 anos);\n"
+        "- Declaração de carga horária (fornecida pelo órgão de lotação, se solicitada)."
+    ),
     ("10", "1", "10"): (
-        "🏁 *Após a Perícia:* Compareça à Rua Major Ávila, 235 (Tijuca) ou envie o resultado para: *servico.social.comlurb@gmail.com*.\n"
-        "📢 O empregado só retorna ao trabalho após a *alta oficial* do INSS."
+        "Na data previamente agendada, o empregado acidentado deverá comparecer na Sede da Comlurb na Rua Major Ávila 235, Tijuca, para entregar o resultado da perícia ao atendente de afastamento ou enviar via e-mail para *serviço.social.comlurb@gmail.com*.\n\n"
+        "O INSS pode:\n"
+        "- Conceder benefício;\n"
+        "- Negar benefício; ou\n"
+        "- Encaminhar para reabilitação profissional.\n\n"
+        "O empregado só retorna ao trabalho com alta do INSS e após ser considerado apto no exame de retorno no serviço médico da Comlurb."
     ),
     ("10", "1", "11"): (
         "📞 *Exame de Retorno:* Agende pelo Canal I após a alta:\n"
         "- Fone: 99002-1021 | 1023 | 1166 | 1168\n"
         "- Zap: 99002-1374 | 1375"
     ),
-    ("10", "1", "12"): "🛡️ O acidentado tem estabilidade de *12 meses* no emprego após o fim do benefício do INSS.",
+    ("10", "1", "12"): "🛡️ O empregado afastado por acidente de trabalho tem estabilidade por 12 meses após o fim do benefício do INSS.",
     ("10", "1", "13"): (
-        "💰 *Suplementação:* A Comlurb paga a diferença entre o INSS e o salário real para afastamentos > 15 dias.\n"
-        "⚠️ *Atenção:* É preciso apresentar o extrato do INSS a cada 3 meses para não suspender o pagamento."
+        "A Comlurb pode pagar suplementação quando o empregado ficar afastado por mais de 15 dias por:\n"
+        "- Acidente ou doença do trabalho reconhecidos pelo INSS;\n"
+        "- Doença grave prevista em lei.\n\n"
+        "Essa suplementação corresponde à diferença entre o benefício recebido e a remuneração que o empregado receberia se estivesse trabalhando, exceto para ocupantes exclusivamente de emprego de confiança.\n"
+        "O empregado deve apresentar o extrato de pagamento do INSS a cada 3 meses, senão a suplementação pode ser suspensa."
     ),
     ("10", "1", "14"): "🍴 *Tíquete:* É pago integralmente durante todo o período de afastamento por acidente de trabalho.",
     ("10", "1", "15"): "⏳ *Até 15 dias:* O INSS não é acionado. O empregado retorna à gerência ao fim do atestado.",
