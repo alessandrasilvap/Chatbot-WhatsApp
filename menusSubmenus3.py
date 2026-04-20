@@ -128,8 +128,9 @@ SUBSUBMENUS = {
         "6": "Falar com atendente"
     },
     ("1", "3"): {
-        "1": "Quais documentos preciso?",
-        "2": "Falar com atendente"
+        "1": "Como solicitar?",
+        "2": "Quais documentos preciso?",
+        "3": "Falar com atendente"
     },
 
     # MENU 2
@@ -674,7 +675,8 @@ SCRIPTS = {
     ("1", "2", "6"): "HANDOFF",
 
     # MENU 1 - SUBMENU 3: Pensão alimentícia (pensionista)
-    ("1", "3", "1"): (
+    ("1", "3", "1"): "Comparecer na CAE – Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca de segunda a sexta, das 9h às 16h (exceto feriados).",
+    ("1", "3", "2"): (
         "Para começar a receber a pensão alimentícia, você precisa apresentar:\n"
         "- Ofício original da Vara de Família (assinado pelo juiz);\n"
         "- Cópia do documento de identidade (RG);\n"
@@ -682,7 +684,7 @@ SCRIPTS = {
         "- Cópia do comprovante de residência;\n"
         "- Cópia do comprovante de conta bancária."
     ),
-    ("1", "3", "2"): "HANDOFF",
+    ("1", "3", "3"): "HANDOFF",
     # ====================================================
 
 
@@ -702,7 +704,7 @@ SCRIPTS = {
         "- Pai ou mãe;\n"
         "- Filhos inválidos ou com deficiência (qualquer idade)."
     ),
-    ("2", "1", "4"): "O pagamento é feito em até *24 horas* após a comunicação formal, respeitando os dias de funcionamento da empresa e o horário bancário.",
+    ("2", "1", "4"): "O pagamento é feito em até *24 horas após a comunicação formal*, respeitando os dias de funcionamento da empresa e o horário bancário.",
     ("2", "1", "5"): (
         "Você deve ir até o Serviço Social da Comlurb, na sede da empresa na Rua Major Ávila, 358 – Tijuca, com os documentos necessários.\n\n"
         "⏰ *Horário de atendimento:*\n"
@@ -714,14 +716,15 @@ SCRIPTS = {
         "- Cópia do documento de identidade (RG) do solicitante;\n"
         "- Comprovante de conta bancária, para depósito do valor."
     ),
-    ("2", "1", "7"): "Em caso de falecimento de parente de primeiro grau, o empregado tem direito a *3 dias* de abono.",
+    ("2", "1", "7"): "Em caso de falecimento de parente de primeiro grau, o empregado tem direito a *3 dias de abono*.",
     ("2", "1", "8"): "HANDOFF",
 
     # MENU 2 - SUBMENU 2: Vale-transporte
-    ("2", "2", "1"): "É um benefício destinado a custear o deslocamento do empregado entre residência e trabalho, com créditos em cartão de transporte.",
+    ("2", "2", "1"): "É um benefício destinado a custear o *deslocamento do empregado entre residência e trabalho*, com créditos em cartão de transporte.",
     ("2", "2", "2"): "Todos os empregados com frequência normal na empresa têm direito ao vale-transporte.",
     ("2", "2", "3"): (
-        "Você precisa preencher o formulário de vale-transporte:\n"
+        "Você precisa preencher o formulário de vale-transporte disponível no Portal da Comlurb\n"
+        "- *https://portal.comlurb.rio.rj.gov.br/index.php/orientacoes_documentos/vale-transporte/* \n"
         "- Na admissão; ou\n"
         "- Quando mudar de endereço ou local de trabalho.\n\n"
         "Depois, sua gerência de lotação envia a solicitação para a GGP (Gerência de Pagamento)."
@@ -729,13 +732,14 @@ SCRIPTS = {
     ("2", "2", "4"): (
         "O desconto mensal no contracheque será o menor valor entre:\n"
         "- 6% do seu salário de referência; ou\n"
-        "- O valor total das passagens (quando esse valor for menor que os 6%)."
+        "- O valor total das passagens, quando esse valor for menor que os 6% do salário de referência."
     ),
     ("2", "2", "5"): (
         "Sim, você pode cancelar o vale-transporte.\n\n"
-        "Basta preencher o formulário marcando a opção “não recebimento” e enviar pela sua gerência de lotação para a GGP (Gerência de Pagamento)."
+        "Basta preencher o formulário marcando a opção *“não recebimento”* e enviar pela sua gerência de lotação para a GGP (Gerência de Pagamento)."
     ),
     ("2", "2", "6"): (
+        "Sobre qual situação você quer saber?\n\n"
         "📌 *Afastamento pelo INSS:*\n"
         "Durante afastamentos (auxílio-doença, acidente ou licença-maternidade), não há crédito de vale-transporte.\n\n"
         "📌 *Créditos indevidos:*\n"
@@ -746,15 +750,16 @@ SCRIPTS = {
     ("2", "2", "7"): (
         "🚌 *RIOCARD*\n\n"
         "🔹 *Perda ou quebra:*\n"
+        "É preciso entrar em contato com a RioCard através do telefone 2127-4000 para solicitar o cancelamento do cartão.\n"
         "- A 2ª via custa R$ 30,10 (descontado em folha).\n"
-        "⚠️ *Atenção:* Ligar mais de uma vez para cancelar gera múltiplos boletos e todos serão descontados!\n\n"
-        "📍 *Novo cartão:* A GGP avisa a gerência por e-mail. Retirada na CAE (Rua Major Ávila, 358 – Tijuca), seg a sex, das 9h às 16h.\n"
-        "⏳ *Enquanto o cartão não chega:* Vá à CAE solicitar até 3 vales-rápido de R$ 80,00 cada (mediante análise).\n\n"
+        "⚠️ *Atenção:* Se ligar mais de uma vez para solicitar o cancelamento do cartão, irá gerar mais de um boleto e será descontado na folha de pagamento do empregado os valores referentes ao pagamento de todos os boletos gerados.\n\n"
+        "📍 *Novo cartão:* A GGP (Gerência de Pagamento) avisa a gerência por e-mail. Ficará disponibilizado para retirada na CAE – Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca, seg a sex, das 9h às 16h.\n"
+        "⏳ *Enquanto o cartão não chega:* Você deve comparecer à CAE – Central de Atendimento ao Empregado, na sede da Comlurb para receber até 3 vales-rápido de R$ 80,00 cada (mediante análise).\n\n"
         "🔹 *Roubo ou furto:*\n"
         "1. Faça um Boletim de Ocorrência (BO);\n"
         "2. Solicite a 2ª via num posto RioCard;\n"
-        "3. Entregue cópia do BO e do protocolo da Fetranspor na CAE para receber o vale-rápido.\n\n"
-        "🚫 *Uso indevido:* Pode gerar o cancelamento do cartão e penalidades legais.\n\n"
+        "3. Ir à CAE na Rua Major Ávila, 358 – Tijuca de segunda a sexta, das 9h às 16h (exceto feriados) para a entrega da cópia do Boletim de Ocorrência e do protocolo fornecido pela Fetranspor para o recebimento de vale-rápido.\n\n"
+        "🚫 *Uso indevido:* Pode gerar o cancelamento do cartão. Não haverá adiantamento de passagens e pode haver penalidades legais.\n\n"
         "📱 *JAÉ*\n\n"
         "Aceito em: ônibus municipais, BRT, VLT, vans e kombis regulamentadas.\n"
         "Pode usar o cartão físico ou QR Code pelo app Jaé.\n\n"
@@ -767,17 +772,17 @@ SCRIPTS = {
     ("2", "3", "1"): "O valor mensal é de *R$ 825,00*, equivalente a *R$ 27,50* por dia.",
     ("2", "3", "2"): (
         "Sim, pode haver desconto.\n"
-        "É descontado *20%* do valor do benefício, apenas para quem tem remuneração bruta a partir de *R$ 8.146,76*."
+        "É descontado *20% do valor do benefício*, apenas para quem tem remuneração bruta a partir de *R$ 8.146,76*."
     ),
     ("2", "3", "3"): "O pagamento é calculado com base na frequência do mês anterior.",
     ("2", "3", "4"): (
         "Quer saber sobre qual situação?\n\n"
         "🩺 *Doença:*\n"
-        "O benefício é mantido por até 90 dias.\n\n"
+        "O benefício é mantido por até *90 dias*.\n\n"
         "🚑 *Doença grave:*\n"
-        "Se reconhecida pelo INSS, o benefício pode ser mantido por até 12 meses.\n\n"
+        "Se reconhecida pelo INSS, o benefício pode ser mantido por até *12 meses*.\n\n"
         "⚠️ *Acidente de trabalho:*\n"
-        "O benefício é mantido durante todo o período de afastamento."
+        "O benefício é mantido durante *todo o período de afastamento*."
     ),
     ("2", "3", "5"): (
         "Sim, existe tíquete extra.\n\n"
@@ -805,7 +810,7 @@ SCRIPTS = {
     ),
     ("2", "4", "3"): "O benefício é pago até a criança completar *6 anos, 11 meses e 29 dias*.",
     ("2", "4", "4"): (
-        "Para dar entrada no benefício, você deve enviar a documentação através de malote com guia de remessa para a GGP (Gerência de Pagamento) ou entregar na CAE (Rua Major Ávila, 358 - Tijuca).\n\n"
+        "Para dar entrada no benefício, você deve enviar a documentação através do malote da sua gerência de lotação, com guia de remessa, para a GGP (Gerência de Pagamento) ou para a Central de Atendimento ao Empregado/CAE, situada à Rua Major Ávila, 358 Tijuca.\n\n"
         "📄 *Para solicitar, apresente:*\n"
         "- Cópia da certidão de nascimento ou RG da criança;\n"
         "- CPF da criança;\n"
@@ -819,7 +824,7 @@ SCRIPTS = {
         "Sim, é necessário comprovar regularmente enviando os documentos pelo sistema *“Manutenção de Auxílio Creche”*.\n\n"
         "💻 *Acesso:*\n"
         "Acesse pelo Portal da Comlurb (aba Passaporte) ou pelo link abaixo:\n"
-        "https://comlurbdev.rio.rj.gov.br/extranet/NovoPassaporte/view/modulos/login/\n"
+        "https://comlurbnet.rio.rj.gov.br/extranet/novopassaporte/view/modulos/login/index.php\n"
         "(Caminho: Minha Comlurb > Canal Digital > Manutenção Auxílio Creche)\n\n"
         "📅 *A cada 3 meses:*\n"
         "Declaração da Instituição Escolar (original), em papel timbrado com CNPJ, contendo: nome do aluno, nome do empregado(a), valores pagos mensalmente e datas de pagamento, assinatura do responsável e data de emissão.\n\n"
@@ -843,7 +848,7 @@ SCRIPTS = {
     ("2", "4", "8"): "O benefício começa a valer a partir da *data de recebimento* dos documentos na GGP (Gerência de Pagamento) ou na CAE (Central de Atendimento ao Empregado).",
     ("2", "4", "9"): (
         "Você pode cancelar o benefício.\n\n"
-        "Basta informar à GGP (Gerência de Pagamento) ou à CAE, através de *carta de próprio punho*, solicitando a suspensão do benefício."
+        "Basta informar à GGP (Gerência de Pagamento) ou à Central de Atendimento ao Empregado (CAE), através de *carta de próprio punho*, solicitando a suspensão do benefício."
     ),
     ("2", "4", "10"): "HANDOFF",
 
@@ -872,7 +877,7 @@ SCRIPTS = {
         "  • Ordem judicial;\n"
         "  • Formulário “Declaração de ciência de benefício pago para pensionista” (disponível em normativa da Comlurb).\n\n"
         "📨 *Como enviar:*\n"
-        "Envie a documentação pela sua gerência de lotação para a GGP-RI (Gerência Adjunta de Remuneração Indireta) ou entregue presencialmente na CAE (Central de Atendimento ao Empregado), após agendamento prévio pelo Canal I."
+        "Envie a documentação pela sua gerência de lotação para a GGP-RI (Gerência Adjunta de Remuneração Indireta) ou você pode voltar ao menu e selecionar Falar com atendente para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente, na CAE."
     ),
     ("2", "5", "4"): (
         "⚠️ *Não é automático!*\n\n"
@@ -905,14 +910,18 @@ SCRIPTS = {
     ),
     ("2", "5", "9"): (
         "Você pode cancelar o benefício.\n\n"
-        "Basta comunicar à GGP ou à CAE através de uma *carta de próprio punho* solicitando a suspensão."
+        "Basta comunicar à GGP, enviando por malote para GGP-RI, uma Carta de próprio punho solicitando a suspensão ou agendar um atendimento na CAE.\n\n"
+        "Para agendar um atendimento na CAE:\n"
+        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
     ),
     ("2", "5", "10"): "HANDOFF",
 
     # MENU 2 - SUBMENU 6: Plano de saúde e odontológico
     ("2", "6", "1"): (
         "O plano de saúde é *opcional*.\n"
-        "A inclusão é feita no momento da admissão, caso você escolha participar."
+        "A inclusão é feita no momento da admissão, caso você escolha participar; Ou poderá solicitar, preenchendo o formulário de inclusão na sua gerência de lotação ou na CAE, com agendamento prévio com o Canal I.\n\n"
+        "Para agendar um atendimento na CAE:\n"
+        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
     ),
     ("2", "6", "2"): (
         "Você pode incluir como dependentes:\n"
@@ -928,15 +937,8 @@ SCRIPTS = {
         "Você pode solicitar de duas formas:\n"
         "- Pela sua gerência de lotação (via comunicação interna para a GGP - Gerência de Pagamento);\n"
         "- Presencialmente na CAE – Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca (com agendamento prévio pelo Canal I).\n\n"
-        "📞 *Contatos Canal I:*\n\n"
-        "☎️ *Telefones:*\n"
-        "- 99002-1021\n"
-        "- 99002-1023\n"
-        "- 99002-1166\n"
-        "- 99002-1168\n\n"
-        "📱 *WhatsApp:*\n"
-        "- 99002-1374\n"
-        "- 99002-1375"
+        "Para agendar um atendimento:\n"
+        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
     ),
     ("2", "6", "4"): (
         "A Comlurb oferece plano odontológico para empregados e dependentes, com custo totalmente pago pela empresa.\n\n"
