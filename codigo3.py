@@ -303,7 +303,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             registrar_evento(atendimento_id, "finalizar")
             finalizar(atendimento_id)
             apagar_sessao(telefone)
-            return "✅ Atendimento finalizado. Obrigada!"
+            return "✅ Atendimento finalizado.\n\nO Canal I agradece o seu contato. Se precisar no futuro, é só mandar uma nova mensagem."
         
         # Se o cliente mandar áudio/foto no meio do atendimento humano:
         if mensagem.startswith("__MEDIA__"):
@@ -522,7 +522,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             registrar_evento(atendimento_id, "finalizar")
             finalizar(atendimento_id)
             apagar_sessao(telefone)
-            return "✅ Atendimento finalizado. Obrigada!"
+            return "✅ Atendimento finalizado.\n\nO Canal I agradece o seu contato. Se precisar no futuro, é só mandar uma nova mensagem."
 
         if mensagem == "0":
             registrar_evento(atendimento_id, "voltar_menu_anterior")
@@ -546,7 +546,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             registrar_evento(atendimento_id, "finalizar")
             finalizar(atendimento_id)
             apagar_sessao(telefone)
-            return "✅ Atendimento finalizado. Obrigada!"
+            return "✅ Atendimento finalizado.\n\nO Canal I agradece o seu contato. Se precisar no futuro, é só mandar uma nova mensagem."
 
         if not sessao.get("resumo_handoff_salvo"):
             registrar_evento(atendimento_id, "resumo_handoff", mensagem)
@@ -818,7 +818,7 @@ def admin_encerrar_rota():
         if res:
             telefone = res[0] # Se não for dictionary=True, usa índice
             apagar_sessao(telefone)
-            send_whatsapp_text(telefone, "✅ Atendimento encerrado.\n\nPosso ajudar em algo mais?")
+            send_whatsapp_text(telefone, "✅ Atendimento finalizado.\n\nA equipe do Canal I agradece o seu contato! Sempre que precisar, estamos à disposição!")
             
         cursor.close()
         conn.close()
