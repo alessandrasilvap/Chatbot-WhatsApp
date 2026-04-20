@@ -72,7 +72,6 @@ python codigo3.py
 ## 🔐 Segurança
 
 * O arquivo `.env` não está incluído no repositório por conter informações sensíveis
-* Não compartilhe tokens da API da Meta ou credenciais do banco de dados
 
 ---
 
@@ -104,5 +103,5 @@ Sinta-se à vontade para:
 
 Este projeto está sendo desenvolvido para fins de aprendizado e evolução profissional.
 
-<img width="800" height="500" alt="Design sem nome" src="https://github.com/user-attachments/assets/3e0d5b54-caea-4fd6-88eb-d238c805c2a3" />
 <img width="800" height="500" alt="Design sem nome (1)" src="https://github.com/user-attachments/assets/c0b524b1-bb2b-4600-a5bb-8bea88e8c52f" />
+<img width="800" height="500" alt="Design sem nome" src="https://github.com/user-attachments/assets/3e0d5b54-caea-4fd6-88eb-d238c805c2a3" />
