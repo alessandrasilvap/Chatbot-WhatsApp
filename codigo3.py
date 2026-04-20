@@ -566,7 +566,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                     f"Neste momento, existem **{pessoas_na_frente} pessoa(s)** aguardando na sua frente. "
                     "Agradecemos a paciência e logo nossa equipe falará com você."
                 )
-            # -------------------------------------
             
             salvar_sessao(
                 telefone=telefone,
@@ -628,7 +627,7 @@ def processar_mensagem_background(m):
             
             agora = datetime.now()
 
-            # Chama o motor principal (handle_incoming) que você já tem no código
+            # Chama o motor principal (handle_incoming)
             resposta = handle_incoming(
                 telefone=telefone, 
                 mensagem=texto, 
@@ -677,14 +676,13 @@ def webhook():
             print(f">>> Mensagem de {m.get('from')} enfileirada no Redis com sucesso!")
 
         # O FLASK RETORNA 200 OK IMEDIATAMENTE PARA A META, 
-        # ENQUANTO AS THREADS TRABALHAM NOS BASTIDORES!
         return "OK", 200
 
 # ============================================================
 # ADMIN - BLINDADO COM VERIFICAÇÃO DE SESSÃO
 # ============================================================
 # Lista de usuários que podem acessar a tela histórico
-USUARIOS_ADMIN = ['admin', 'chefe1', 'chefe2']
+USUARIOS_ADMIN = ['admin']
 
 @app.route('/admin')
 def painel_admin():
@@ -722,7 +720,7 @@ def admin_fila():
         conn.close()
 
         # ==========================================
-        # NOVIDADE: Calculando os contadores no Python
+        # Calculando os contadores no Python
         # ==========================================
         qtd_aguardando = sum(1 for a in fila if a['status'] == 'aguardando')
         qtd_em_atendimento = sum(1 for a in fila if a['status'] == 'em_atendimento_humano')
