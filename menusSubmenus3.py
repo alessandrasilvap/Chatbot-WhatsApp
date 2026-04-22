@@ -1230,11 +1230,11 @@ SCRIPTS = {
     ),
     ("5", "8", "2"): (
         "Podem solicitar empregados ou ex-empregados contratados até 31 de dezembro de 2022, que trabalharam de forma habitual em condições caracterizadas pelo Serviço Especializado de Segurança e Medicina do Trabalho da Comlurb como:\n"
-        "- Insalubre; Ou\n"
+        "- Insalubre; ou\n"
         "- Perigoso."
     ),
     ("5", "8", "3"): (
-        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
         "No dia agendado, deve comparecer à CAE - Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca, com os documentos necessários."
     ),
     ("5", "8", "4"): (
@@ -1296,7 +1296,7 @@ SCRIPTS = {
     # MENU 6 - SUBMENU 2: Sindicato
     ("6", "2", "1"): "Os empregados da Comlurb são representados por sindicatos, conforme a função exercida na empresa.",
     ("6", "2", "2"): (
-        "A maioria dos empregados é representada pelo *Sindicato dos Empregados de Empresas de Asseio e Conservação do Município do Rio de Janeiro*.\n\n"
+        "A maioria dos empregados é representada pelo *Sindicato dos Empregados de Empresas de Asseio e Conservação do Município do Rio de Janeiro*.\n"
         "Este sindicato representa todos os empregados, *exceto os motoristas*."
     ),
     ("6", "2", "3"): "Os motoristas são representados pelo *Sindicato dos Condutores de Veículos Rodoviários e Trabalhadores em Transportes de Cargas em Geral e Passageiros no Município do Rio de Janeiro*.",
@@ -1312,11 +1312,11 @@ SCRIPTS = {
     ("6", "3", "1"): "A cooperativa é uma sociedade formada por associados, criada para prestar serviços aos seus membros.",
     ("6", "3", "2"): "A cooperativa dos empregados da Comlurb é a *CoopComlurb – Cooperativa de Economia e Crédito Mútuo dos Servidores da Comlurb*.",
     ("6", "3", "3"): (
-        "A cooperativa fica na:\n\n"
+        "A cooperativa fica na:\n"
         "📍 Rua Álvaro Alvim, 48 – Salas 910 a 913 – Cinelândia – Rio de Janeiro – RJ"
     ),
     ("6", "3", "4"): (
-        "⏰ A Cooperativa funciona de *segunda a sexta-feira*, das *9h às 17h*.\n\n"
+        "⏰ A Cooperativa funciona de *segunda a sexta-feira*, das *9h às 17h*.\n"
         "📞 *Telefone:* (21) 2220-7921"
     ),
     ("6", "3", "5"): (
@@ -1332,7 +1332,7 @@ SCRIPTS = {
     # MENU 7 - SUBMENU 1: Férias
     ("7", "1", "1"): (
         "O empregado pode perder o período aquisitivo de férias se ficar afastado por *mais de 180 dias*.\n"
-        "Quando retornar ao trabalho, começará uma nova contagem para aquisição de férias."
+        "Quando retornar ao trabalho, começará uma nova contagem para aquisição de férias.\n"
     ),
     ("7", "1", "2"): "Se o empregado já tinha direito às férias, mas ainda não havia usufruído por motivo de trabalho ou decisão própria, ele pode solicitar o gozo das férias após retornar ao trabalho.",
     ("7", "1", "3"): "Se o contrato de trabalho ficar suspenso por mais de 15 dias, o período aquisitivo pode ser alterado, podendo haver perda parcial do período.",
@@ -1400,7 +1400,7 @@ SCRIPTS = {
     ),
     ("7", "2", "7"): (
         "Para solicitar a prorrogação:\n"
-        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
         "A empregada ou representante deve comparecer à *CAE - Central de Atendimento ao Empregado* em até *3 dias* após o término dos 120 dias.\n\n"
         "📑 *Apresentar:*\n"
         "- Cópia da certidão de nascimento da criança;\n"
@@ -1430,7 +1430,7 @@ SCRIPTS = {
     # MENU 7 - SUBMENU 4: Licença ou afastamento sem vencimentos
     ("7", "4", "1"): "É a suspensão temporária do contrato de trabalho, concedida pela Comlurb *a critério da Diretoria* do empregado.",
     ("7", "4", "2"): "⚠️ Podem solicitar apenas empregados com *mais de 5 anos* de empresa.",
-    ("7", "4", "3"): "A licença pode durar *até 1 ano*, com possibilidade de prorrogação por mais 1 ano, dependendo de nova decisão da Diretoria.",
+    ("7", "4", "3"): "📅 A licença pode durar *até 1 ano*, com possibilidade de prorrogação por mais 1 ano, dependendo de nova decisão da Diretoria.",
     ("7", "4", "4"): (
         "O pedido deve ser feito por *processo administrativo* na *FDC – Protocolo* na Rua Major Ávila, 358 – Tijuca.\n"
         "⏰ O protocolo funciona de *segunda a sexta-feira*, das *9h às 16h*."
@@ -1466,8 +1466,8 @@ SCRIPTS = {
         "- *Vale-transporte:* pode haver desconto, pois não há deslocamento no período."
     ),
     ("7", "6", "5"): "Se a ausência for lançada como falta, a gerência deve solicitar a correção à GGP (Gerência de Pagamento) por Comunicação Interna ou e-mail, anexando a certidão de nascimento.",
-    ("7", "6", "6"): "⚠️ A licença-paternidade *não se aplica aos casos de adoção*.",
-    ("7", "6", "7"): "⏺️ *Em caso de natimorto:* A ocorrência deve ser convertida em *licença nojo*, com duração de *2 dias*.",
+    ("7", "6", "6"): "⚠️ A licença-paternidade *não se aplica* aos casos de adoção.",
+    ("7", "6", "7"): "*Em caso de natimorto:* A ocorrência deve ser convertida em *licença nojo*, com duração de *2 dias*.",
     ("7", "6", "8"): "HANDOFF",
 
     # MENU 7 - SUBMENU 7: Licença avó-maternidade
@@ -1482,7 +1482,7 @@ SCRIPTS = {
         "- *Vale-transporte:* pode haver desconto, pois não há deslocamento no período."
     ),
     ("7", "7", "6"): (
-        "👩‍👧 A licença é *exclusiva para assistência à filha gestante*.\n\n"
+        "👩‍👧 A licença é *exclusiva para assistência à filha gestante*.\n"
         "⚠️ *Atenção:* A licença avó-maternidade *não se aplica a casos de adoção*."
     ),
     ("7", "7", "7"): "HANDOFF",
@@ -1580,7 +1580,7 @@ SCRIPTS = {
     ("8", "3", "1"): "São horas trabalhadas além da jornada normal, antes ou depois do horário habitual, desde que *autorizadas pela chefia*.",
     ("8", "3", "2"): (
         "🚀 *Novidade (Banco de Horas):*\n"
-        "Desde *1º de abril de 2026*, a Comlurb utiliza o *Banco de Horas*.\n\n"
+        "Desde *1º de abril de 2026*, a Comlurb utiliza o *Banco de Horas*.\n"
         "Cada hora extra trabalhada gera *1 hora de crédito* no Banco de Horas (proporção 1:1)."
     ),
     ("8", "3", "3"): (
@@ -1714,7 +1714,7 @@ SCRIPTS = {
     ("9", "4", "2"): "💰 *Consulta:* O empregado pode solicitar o *extrato analítico do FGTS* em qualquer agência da *Caixa Econômica Federal*.",
     ("9", "4", "3"): (
         "❓ *Dúvidas sobre depósitos:*\n"
-        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
         "Comparecer à CAE – Central de Atendimento ao Empregado com o extrato analítico do FGTS;\n"
         "A CAE solicitará à *GGP – Homologação* a verificação dos depósitos."
     ),
@@ -1744,8 +1744,8 @@ SCRIPTS = {
     ("9", "4", "7"): (
         "🔗 *Unificação de contas:*\n"
         "Comparecer à *CAE – Central de Atendimento ao Empregado* na Rua Major Ávila, 358 – Tijuca, levando *Carteiras de Trabalho* e *extratos das contas*.\n\n"
-        "Para agendar um atendimento:\n"
-        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
+        "📅 Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
         " A documentação será encaminhada para a *GGP – Homologação*;\n"
         "Após liberação, levar os documentos à *Caixa Econômica Federal* para efetivar a unificação."
     ),
@@ -1753,9 +1753,10 @@ SCRIPTS = {
     ("9", "4", "9"): (
         "📍 *Onde verificar:*\n"
         "- *Empregados:* Deve procurar a CAE na Rua Major Ávila, 358 – Tijuca, que solicitará à GGP – Homologação a busca das contas.\n"
-        "Para agendar atendimento:\n"
-        "Você precisa voltar ao menu e selecionar Falar com atendente para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
-        "- *Ex-empregados:* Pedido via *processo administrativo* na *FDC - Protocolo* na Rua Major Ávila, 358 – Tijuca, das 9h às 16h."
+        "📅 Para agendar atendimento:\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
+        "- *Ex-empregados:* Pedido via *processo administrativo* na *FDC - Protocolo* na Rua Major Ávila, 358 – Tijuca.\n"
+        "⏰ O protocolo funciona de *segunda a sexta-feira*, das *9h às 16h*."
     ),
     ("9", "4", "10"): "HANDOFF",
 
