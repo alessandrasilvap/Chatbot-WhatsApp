@@ -1913,7 +1913,7 @@ SCRIPTS = {
     ("10", "3", "1"): (
         "🚨 *Procedimento Imediato:*\n"
         "O empregado deve entrar em contato imediatamente com a *FCS – Coordenadoria de Serviços Gerais e Segurança Empresarial*.\n"
-        "Eles fornecerão todas as orientações e o encaminhamento necessário para o registro da ocorrência."
+        "Eles fornecerão todas as orientações e o encaminhamento necessário."
     ),
     ("10", "3", "2"): "HANDOFF",
 
@@ -1928,7 +1928,7 @@ SCRIPTS = {
         "- Assinatura do gerente da lotação."
     ),
     ("10", "4", "4"): (
-        "Se a CI estiver incompleta ou sem assinatura, ela será devolvida para a gerência de origem.\n\n"
+        "Se a CI estiver incompleta ou sem assinatura, ela será devolvida para a gerência de origem.\n"
         "🩺 *Lembre-se:* O exame médico só será realizado após a regularização de toda a documentação."
     ),
     ("10", "4", "5"): "HANDOFF",
@@ -1965,7 +1965,7 @@ SCRIPTS = {
     ),
     ("10", "6", "2"): (
         "📲 *Início do Processo:*\n"
-        "A gerência de lotação deve abrir a solicitação no *Sistema Controle dos Afastados* (Passaporte Comlurb).\n\n"
+        "A gerência de lotação deve abrir a solicitação no *Sistema Controle dos Afastados* (Passaporte Comlurb).\n"
         "💡 Caso o empregado esteja internado ou sem condições de locomoção, um familiar pode ir à gerência para abrir o processo levando a documentação médica."
     ),
     ("10", "6", "3"): "📩 *Deveres:* O empregado deve enviar a *declaração médica atualizada* sempre que o prazo da licença estiver vencendo para o e-mail: *servico.social.comlurb@gmail.com*.",
