@@ -652,9 +652,7 @@ SCRIPTS = {
 
     # MENU 1 - SUBMENU 2: Desligamento por aposentadoria por invalidez
     ("1", "2", "1"): "É o processo para o empregado se desligar da empresa após receber aposentadoria por invalidez pelo INSS.",
-    ("1", "2", "2"): (
-        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
-    ),
+    ("1", "2", "2"): "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.",
     ("1", "2", "3"): (
         "No dia do atendimento, leve:\n"
         "- Cópia da Carta de Concessão da Aposentadoria por Invalidez (INSS);\n"
@@ -701,8 +699,7 @@ SCRIPTS = {
     ("2", "1", "4"): "O pagamento é feito em até *24 horas após a comunicação formal*, respeitando os dias de funcionamento da empresa e o horário bancário.",
     ("2", "1", "5"): (
         "Você deve ir até o Serviço Social da Comlurb, na sede da empresa na Rua Major Ávila, 358 – Tijuca, com os documentos necessários.\n\n"
-        "⏰ *Horário de atendimento:*\n"
-        "Segunda a sexta, das 9h às 16h (exceto feriados e pontos facultativos)."
+        "⏰ Horário de atendimento: *Segunda a sexta*, das *9h às 16h (exceto feriados e pontos facultativos)*."
     ),
     ("2", "1", "6"): (
         "Para receber o benefício, apresente:\n"
@@ -718,7 +715,7 @@ SCRIPTS = {
     ("2", "2", "2"): "Todos os empregados com frequência normal na empresa têm direito ao vale-transporte.",
     ("2", "2", "3"): (
         "Você precisa preencher o formulário de vale-transporte disponível no Portal da Comlurb\n"
-        "- *https://portal.comlurb.rio.rj.gov.br/index.php/orientacoes_documentos/vale-transporte/* \n"
+        "- *https://portal.comlurb.rio.rj.gov.br/index.php/orientacoes_documentos/vale-transporte/*;\n"
         "- Na admissão; ou\n"
         "- Quando mudar de endereço ou local de trabalho.\n\n"
         "Depois, sua gerência de lotação envia a solicitação para a GGP (Gerência de Pagamento)."
@@ -729,7 +726,7 @@ SCRIPTS = {
         "- O valor total das passagens, quando esse valor for menor que os 6% do salário de referência."
     ),
     ("2", "2", "5"): (
-        "Sim, você pode cancelar o vale-transporte.\n\n"
+        "você pode cancelar o vale-transporte.\n\n"
         "Basta preencher o formulário marcando a opção *“não recebimento”* e enviar pela sua gerência de lotação para a GGP (Gerência de Pagamento)."
     ),
     ("2", "2", "6"): (
@@ -763,12 +760,12 @@ SCRIPTS = {
     ("2", "2", "8"): "HANDOFF",
 
     # MENU 2 - SUBMENU 3: Tíquete alimentação / refeição
-    ("2", "3", "1"): "O valor mensal é de *R$ 825,00*, equivalente a *R$ 27,50* por dia.",
+    ("2", "3", "1"): "O valor mensal é de *R$ 825,00*, equivalente a *R$ 27,50 por dia*.",
     ("2", "3", "2"): (
-        "Sim, pode haver desconto.\n"
+        "Pode haver desconto.\n"
         "É descontado *20% do valor do benefício*, apenas para quem tem remuneração bruta a partir de *R$ 8.146,76*."
     ),
-    ("2", "3", "3"): "O pagamento é calculado com base na frequência do mês anterior.",
+    ("2", "3", "3"): "O pagamento é calculado com base na *frequência do mês anterior*.",
     ("2", "3", "4"): (
         "Quer saber sobre qual situação?\n\n"
         "🩺 *Doença:*\n"
@@ -786,7 +783,7 @@ SCRIPTS = {
     ),
     ("2", "3", "6"): "Para solicitar cartão ou recuperar senha, entre em contato com a *VR Benefícios* pelo telefone 📞 *4004-4938*.",
     ("2", "3", "7"): (
-        "Sim, você pode trocar entre alimentação e refeição.\n\n"
+        "Você pode trocar entre alimentação e refeição.\n\n"
         "Basta preencher um formulário na sua gerência de lotação, que encaminhará para a GGP (Gerência de Pagamento)."
     ),
     ("2", "3", "8"): (
@@ -842,12 +839,12 @@ SCRIPTS = {
     ("2", "4", "8"): "O benefício começa a valer a partir da *data de recebimento* dos documentos na GGP (Gerência de Pagamento) ou na CAE (Central de Atendimento ao Empregado).",
     ("2", "4", "9"): (
         "Você pode cancelar o benefício.\n\n"
-        "Basta informar à GGP (Gerência de Pagamento) ou à Central de Atendimento ao Empregado (CAE), através de *carta de próprio punho*, solicitando a suspensão do benefício."
+        "Basta informar à GGP (Gerência de Pagamento) ou à Central de Atendimento ao Empregado (CAE), através de 
     ),
     ("2", "4", "10"): "HANDOFF",
 
     # MENU 2 - SUBMENU 5: Auxílio para filhos com deficiência
-    ("2", "5", "1"): "O valor é de *R$ 675,47* por filho com deficiência.",
+    ("2", "5", "1"): "O valor é de *R$ 675,47 por filho com deficiência*.",
     ("2", "5", "2"): (
         "O benefício é concedido quando o filho apresenta:\n"
         "- Deficiência intelectual (moderada, severa ou profunda);\n"
@@ -871,7 +868,8 @@ SCRIPTS = {
         "  • Ordem judicial;\n"
         "  • Formulário “Declaração de ciência de benefício pago para pensionista” (disponível em normativa da Comlurb).\n\n"
         "📨 *Como enviar:*\n"
-        "Envie a documentação pela sua gerência de lotação para a GGP-RI (Gerência Adjunta de Remuneração Indireta) ou você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente, na CAE."
+        "Envie a documentação pela sua gerência de lotação para a GGP-RI (Gerência Adjunta de Remuneração Indireta); ou\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente, na CAE."
     ),
     ("2", "5", "4"): (
         "⚠️ *Não é automático!*\n\n"
@@ -906,7 +904,7 @@ SCRIPTS = {
         "Você pode cancelar o benefício.\n\n"
         "Basta comunicar à GGP, enviando por malote para GGP-RI, uma Carta de próprio punho solicitando a suspensão ou agendar um atendimento na CAE.\n\n"
         "Para agendar um atendimento:\n"
-        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
     ),
     ("2", "5", "10"): "HANDOFF",
 
@@ -914,8 +912,8 @@ SCRIPTS = {
     ("2", "6", "1"): (
         "O plano de saúde é *opcional*.\n"
         "A inclusão é feita no momento da admissão, caso você escolha participar; Ou poderá solicitar, preenchendo o formulário de inclusão na sua gerência de lotação ou na CAE, com agendamento prévio com o Canal I.\n\n"
-        "Para agendar um atendimento:\n"
-        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
+        "📅 Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
     ),
     ("2", "6", "2"): (
         "Você pode incluir como dependentes:\n"
@@ -929,10 +927,10 @@ SCRIPTS = {
     ),
     ("2", "6", "3"): (
         "Você pode solicitar de duas formas:\n"
-        "- Pela sua gerência de lotação (via comunicação interna para a GGP - Gerência de Pagamento);\n"
+        "- Pela sua gerência de lotação (via comunicação interna para a GGP - Gerência de Pagamento); ou\n"
         "- Presencialmente na CAE – Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca (com agendamento prévio pelo Canal I).\n\n"
-        "Para agendar um atendimento:\n"
-        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
+        "📅 Para agendar um atendimento:\n"
+        "Volte ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("2", "6", "4"): (
         "A Comlurb oferece plano odontológico para empregados e dependentes, com custo totalmente pago pela empresa.\n\n"
@@ -949,7 +947,7 @@ SCRIPTS = {
         "- Sem afastamentos."
     ),
     ("2", "7", "2"): (
-        "O abono deve ser previamente combinado com a sua gerência e *não pode ser acumulado*.\n\n"
+        "O abono deve ser previamente combinado com a sua gerência e *não pode ser acumulado*.\n"
         "Ou seja, você precisa usar dentro do próprio trimestre."
     ),
     ("2", "7", "3"): "HANDOFF",
@@ -1020,8 +1018,8 @@ SCRIPTS = {
     ),
     ("3", "3", "2"): "Qualquer empregado que não concordar com sua demissão ou com uma punição aplicada pode pedir revisão da decisão.",
     ("3", "3", "3"): (
-        "O pedido deve ser protocolado na *FDC – Divisão de Expedição e Documentação*, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
-        "⏰ O protocolo funciona de segunda a sexta-feira, das 9h às 16h.\n\n"
+        "O pedido deve ser protocolado na *FDC – Protocolo*, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n\n"
+        "⏰ O protocolo funciona de *segunda a sexta-feira*, das *9h às 16h*.\n\n"
         "📝 *Importante:* É necessário entregar uma *carta* explicando o motivo da discordância, endereçada à *Comissão de Revisão Disciplinar e Demissional (CRDD)*."
     ),
     ("3", "3", "4"): (
@@ -1030,7 +1028,7 @@ SCRIPTS = {
         "- *Revisão de punição:* até *10 dias corridos* após a aplicação."
     ),
     ("3", "3", "5"): (
-        "Assim que o empregado solicita a revisão da demissão:\n\n"
+        "Assim que o empregado solicita a revisão da demissão:\n"
         "⏸️ O prazo para homologação da rescisão fica *suspenso* até a decisão da comissão."
     ),
     ("3", "3", "6"): "Se a comissão aprovar a revisão, a demissão é *cancelada*.",
@@ -1053,11 +1051,11 @@ SCRIPTS = {
     ),
     ("4", "1", "2"): (
         "A atualização pode ser feita:\n"
-        "- Na sua gerência de lotação;\n"
-        "- Na CAE – Central de Atendimento ao Empregado, na Rua Major Ávila, 358 – Tijuca (com agendamento prévio pelo Canal I);\n"
+        "- Na sua gerência de lotação, através do sistema Passaporte/atualização cadastral; ou\n"
+        "- Na CAE – Central de Atendimento ao Empregado, na Rua Major Ávila, 358 – Tijuca (com agendamento prévio pelo Canal I); ou\n"
         "- Através do sistema Passaporte/atualização cadastral.\n\n"
-        "Para agendar um atendimento:\n"
-        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
+        "📅 Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("4", "1", "3"): (
         "Para atualizar o nome no cadastro, o empregado deve apresentar:\n"
@@ -1075,8 +1073,8 @@ SCRIPTS = {
         "- Na sua gerência de lotação; ou\n"
         "- Na CAE – Central de Atendimento ao Empregado.\n\n"
         "🏦 *Atenção:* É necessário apresentar as informações da nova conta-corrente do Banco Santander.\n\n"
-        "Para agendar um atendimento:\n"
-        "Você precisa voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
+        "📅 Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("4", "2", "4"): "HANDOFF",
 
@@ -1090,9 +1088,9 @@ SCRIPTS = {
         "- Outras informações necessárias para a declaração."
     ),
     ("4", "3", "3"): (
-        "O documento deve ser consultado pelos *canais digitais* disponibilizados pela Comlurb:\n\n"
-        "📱 *App Comlurb*; ou\n"
-        "💻 No *Passaporte*, acessando a aba “Minha Comlurb”."
+        "O documento deve ser consultado pelos *canais digitais* disponibilizados pela Comlurb:\n"
+        "📱 *App Comlurb*;\n"
+        "💻 *Passaporte*, acessando a aba “Minha Comlurb”."
     ),
     ("4", "3", "4"): "HANDOFF",
 
@@ -1107,8 +1105,8 @@ SCRIPTS = {
         "A atualização cadastral pode ser feita:\n"
         "- Na sua gerência de lotação; ou\n"
         "- Na CAE – Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca.\n\n"
-        "Para agendar um atendimento:\n"
-        "Você pode voltar ao menu e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
+        "📅 Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("4", "4", "3"): "Sim. O empregado deve apresentar um documento que comprove a nova informação, como comprovante de residência.",
     ("4", "4", "4"): (
@@ -1124,7 +1122,7 @@ SCRIPTS = {
     # ====================================================
     # MENU 5 - SUBMENU 1: Declaração de tempo de serviço
     ("5", "1", "1"): "É o documento usado para comprovar o vínculo empregatício do empregado com a Comlurb, podendo ser apresentado em órgãos públicos, bancos e outras instituições.",
-    ("5", "1", "2"): ("Você precisa voltar ao menu e selecionar *Falar com atendente* para solicitar a declaração."),
+    ("5", "1", "2"): ("Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para solicitar a declaração."),
     ("5", "1", "3"): "A declaração é emitida em até *3 dias úteis*.",
     ("5", "1", "4"): (
         "Após a emissão, o documento pode ser retirado:\n"
@@ -1146,7 +1144,7 @@ SCRIPTS = {
         "- Secretaria Municipal de Obras.\n"
         "- Rua Afonso Cavalcanti, 455 – 9º andar – Cidade Nova.\n\n"
         "Para vínculos de 06/01/1970 a 16/09/1973, procurar:\n"
-        "- Secretaria Municipal de Obras; Ou\n"
+        "- Secretaria Municipal de Obras; ou\n"
         "- Secretaria Municipal de Administração."
         "- Rua Afonso Cavalcanti, 455 – Cidade Nova\n\n"
         "Para vínculos até 05/06/1975, procurar:\n"
@@ -1182,7 +1180,7 @@ SCRIPTS = {
 
     # MENU 5 - SUBMENU 4: Declaração para aquisição de casa própria
     ("5", "4", "1"): "É a declaração usada pelo empregado para processos de *financiamento* ou *aquisição de casa própria*.",
-    ("5", "4", "2"): "Você precisa voltar ao menu e selecionar *Falar com atendente* para solicitar a declaração.",
+    ("5", "4", "2"): "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para solicitar a declaração.",
     ("5", "4", "3"): "A declaração é emitida em até *3 dias úteis*.",
     ("5", "4", "4"): (
         "📍 A retirada é feita na *CAE – Central de Atendimento ao Empregado*, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
@@ -1203,7 +1201,7 @@ SCRIPTS = {
     ("5", "6", "2"): (
         "Esse documento costuma ser usado para:\n"
         "- Comprovar o desligamento; ou\n"
-        "- Realizar saque do FGTS na Caixa Econômica Federal."
+        "- Realizar *saque do FGTS* na Caixa Econômica Federal."
     ),
     ("5", "6", "3"): (
         "A solicitação deve ser feita por *processo administrativo* aberto na *FDC – Protocolo*, na sede da Comlurb na Rua Major Ávila, 358 – Tijuca.\n"
