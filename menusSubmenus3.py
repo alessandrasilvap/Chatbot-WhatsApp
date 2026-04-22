@@ -1894,20 +1894,15 @@ SCRIPTS = {
     ("10", "1", "16"): "HANDOFF",
 
     # MENU 10 - SUBMENU 2: Exame Médico Periódico
-    ("10", "2", "1"): "🩺 É o exame realizado regularmente para avaliar o estado de saúde do empregado e garantir que ele esteja apto para suas funções, conforme exigência legal (NR-7).",
+    ("10", "2", "1"): "🩺 É o exame realizado regularmente para avaliar o estado de saúde do empregado, conforme exigência legal.",
     ("10", "2", "2"): (
         "📢 *Convocação:*\n"
         "A convocação é enviada de duas formas:\n"
         "1. Pelo *App COMLURB*, informando data, horário e local;\n"
-        "2. Por e-mail enviado diretamente à sua *gerência de lotação*."
+        "2. Por e-mail enviado diretamente à sua gerência de lotação."
     ),
-    ("10", "2", "3"): "⚠️ *Se você perder a data:* Não se preocupe, o exame será remarcado automaticamente pelo sistema e uma nova convocação será emitida.",
-    ("10", "2", "4"): (
-        "⏱️ *Periodicidade por cargo:*\n"
-        "- *Gari:* Anualmente;\n"
-        "- *Administrativos:* A cada 2 anos;\n"
-        "- *Profissionais de vetores:* A cada 6 meses."
-    ),
+    ("10", "2", "3"): "Se o empregado não comparecer, o exame será *remarcado automaticamente pelo sistema*.",
+    ("10", "2", "4"): "⏱️ Periodicidade: *Anual*",
     ("10", "2", "5"): (
         "📍 *Locais de Realização (Medsoul):*\n\n"
         "🏢 *Centro:* Rua Buenos Aires, 68 / 12º andar.\n"
@@ -1918,29 +1913,29 @@ SCRIPTS = {
     # MENU 10 - SUBMENU 3: Acidentes com Transporte da Empresa
     ("10", "3", "1"): (
         "🚨 *Procedimento Imediato:*\n"
-        "O empregado deve entrar em contato imediatamente com a *FCS – Coordenadoria de Serviços Gerais e Segurança Empresarial*.\n\n"
+        "O empregado deve entrar em contato imediatamente com a *FCS – Coordenadoria de Serviços Gerais e Segurança Empresarial*.\n"
         "Eles fornecerão todas as orientações e o encaminhamento necessário para o registro da ocorrência."
     ),
     ("10", "3", "2"): "HANDOFF",
 
     # MENU 10 - SUBMENU 4: Avaliação Médica
-    ("10", "4", "1"): "🏢 O encaminhamento para avaliação médica deve ser realizado pela sua *gerência de lotação*, com destino à *Coordenação de Higiene e Medicina do Trabalho*.",
-    ("10", "4", "2"): "📄 *Procedimento:* A solicitação é feita via *Comunicação Interna (CI)*, que deve ser entregue impressa pelo próprio empregado no momento do atendimento médico.",
+    ("10", "4", "1"): "🏢 O encaminhamento para avaliação médica deve ser realizado pela sua *gerência de lotação*, com destino à *Gerência Adjunta de Medicina do Trabalho*.",
+    ("10", "4", "2"): "📄 *Procedimento:* A solicitação é feita via *Comunicação Interna (CI)*, que deve ser entregue pelo próprio empregado no momento do atendimento.",
     ("10", "4", "3"): (
         "✍️ *Dados obrigatórios na CI:*\n"
-        "- Motivo detalhado da solicitação;\n"
+        "- Motivo da solicitação da avaliação;\n"
         "- Nome completo e número de registro;\n"
         "- Data do último exame periódico ou admissional;\n"
         "- Assinatura do gerente da lotação."
     ),
     ("10", "4", "4"): (
-        "⚠️ *Atenção:* Se a CI estiver incompleta ou sem assinatura, ela será devolvida para a gerência de origem.\n\n"
+        "Se a CI estiver incompleta ou sem assinatura, ela será devolvida para a gerência de origem.\n\n"
         "🩺 *Lembre-se:* O exame médico só será realizado após a regularização de toda a documentação."
     ),
     ("10", "4", "5"): "HANDOFF",
 
     # MENU 10 - SUBMENU 5: Assédio Moral
-    ("10", "5", "1"): "🚫 É toda conduta abusiva, repetitiva e humilhante que ocorre no ambiente de trabalho, prejudicando a saúde física ou mental do trabalhador e sua dignidade.",
+    ("10", "5", "1"): "🚫 Assédio moral é toda conduta abusiva, repetitiva e humilhante que prejudica o trabalhador no ambiente de trabalho.",
     ("10", "5", "2"): (
         "⚠️ *Exemplos comuns de assédio:*\n"
         "- Isolamento forçado do trabalhador na equipe;\n"
@@ -1950,8 +1945,11 @@ SCRIPTS = {
         "- Atribuição de tarefas impossíveis ou inúteis."
     ),
     ("10", "5", "3"): (
-        "🛡️ *Atuação e Canais de Denúncia:*\n"
-        "A Comlurb garante sigilo absoluto, apuração rigorosa e proteção contra retaliações.\n\n"
+        "🛡️ A Comlurb mantém *canais de denúncia* e *políticas internas de prevenção*, garantindo:*\n"
+        "- Apuração adequada das denúncias;\n"
+        "- Confidencialidade durante o processo;\n"
+        "- Proteção contra retaliações;\n"
+        "- Acompanhamento quando necessário.\n\n"
         "📢 *Onde denunciar:*\n"
         "- *E-mail:* integridade.comlurb@prefeitura.rio;\n"
         "- *App Comlurb* ou *Novo Passaporte* (Minha Comlurb);\n"
@@ -1969,9 +1967,9 @@ SCRIPTS = {
     ("10", "6", "2"): (
         "📲 *Início do Processo:*\n"
         "A gerência de lotação deve abrir a solicitação no *Sistema Controle dos Afastados* (Passaporte Comlurb).\n\n"
-        "💡 Caso o empregado esteja internado, um familiar pode ir à gerência para abrir o processo."
+        "💡 Caso o empregado esteja internado ou sem condições de locomoção, um familiar pode ir à gerência para abrir o processo levando a documentação médica."
     ),
-    ("10", "6", "3"): "📩 *Deveres:* O empregado deve enviar a declaração médica atualizada sempre que o prazo da licença estiver vencendo para o e-mail: *servico.social.comlurb@gmail.com*.",
+    ("10", "6", "3"): "📩 *Deveres:* O empregado deve enviar a *declaração médica atualizada* sempre que o prazo da licença estiver vencendo para o e-mail: *servico.social.comlurb@gmail.com*.",
     ("10", "6", "4"): (
         "🔙 *Retorno ao Trabalho:*\n"
         "1. Agende com o médico do trabalho via *Canal I*;\n"
@@ -1988,13 +1986,16 @@ SCRIPTS = {
     ("10", "6", "6"): "HANDOFF",
 
     # MENU 10 - SUBMENU 7: Auxílio-Doença
-    ("10", "7", "1"): "É o benefício concedido quando o empregado precisa se afastar por mais de *15 dias* (consecutivos ou somados pela mesma doença dentro de 60 dias).",
+    ("10", "7", "1"): "É o benefício concedido ao empregado que precisa se afastar do trabalho por motivo de doença quando o período de afastamento ultrapassar 15 dias, seja de forma consecutiva ou por licenças intercaladas pela mesma doença que, somadas, excedam 15 dias dentro de 60 dias.",
     ("10", "7", "2"): (
         "📅 *Quando abrir o processo?*\n"
-        "Deve ser aberto pela gerência de lotação no *Sistema Controle dos Afastados* (Passaporte Comlurb) sempre que a licença médica superar 15 dias."
+        "Deve ser aberto quando o empregado apresentar:"
+        "- Licença médica superior a 15 dias consecutivos; ou\n"
+        "- Licenças intercaladas pela mesma doença que somem mais de 15 dias dentro de 60 dias.\n\n"
+        "Nesses casos, a gerência de lotação deve abrir solicitação no Sistema Controle dos Afastados, no Passaporte Comlurb."
     ),
-    ("10", "7", "3"): "🩺 A avaliação final da necessidade de afastamento e do tipo de auxílio é feita exclusivamente pelo *Médico do Trabalho da Comlurb*.",
-    ("10", "7", "4"): "🏦 Se indicado o afastamento, a Comlurb agenda sua perícia no INSS. Você deve retornar à Companhia *5 dias após a perícia* para entregar o resultado.",
+    ("10", "7", "3"): "🩺 A avaliação é feita exclusivamente pelo *Médico do Trabalho da Comlurb*, que definirá se há necessidade de afastamento e qual o tipo (auxílio-doença, auxílio-acidente ou outros).",
+    ("10", "7", "4"): "🏦 Se o Médico do Trabalho indicar afastamento, a atendente de afastamento agenda a perícia no INSS e marca a data de retorno à Comlurb, para entrega do resultado.",
     ("10", "7", "5"): (
         "⚠️ *Benefício Negado?*\n"
         "Ligue imediatamente para o *Canal I* para agendar seu exame de retorno ao trabalho.\n\n"
@@ -2003,18 +2004,18 @@ SCRIPTS = {
     ),
     ("10", "7", "6"): (
         "⚖️ *Seus Direitos:*\n"
-        "- *Tíquete:* Pago por até 90 dias (ou 12 meses em doenças graves);\n"
+        "- *Tíquete:* Pago por até 90 dias ou 12 meses em doenças graves reconhecida pela Previdência Social;\n"
         "- *Plano de Saúde:* Mantido (descontos ocorrem após o retorno);\n"
-        "- *13º Salário:* A Comlurb paga o proporcional aos meses trabalhados; o restante é pelo INSS;\n"
+        "- *13º Salário:* A Comlurb paga o proporcional aos meses trabalhados, o restante é pelo INSS;\n"
         "- *Férias:* Se o afastamento passar de *180 dias*, perde-se o direito às férias daquele período aquisitivo;\n"
         "- *Auxílio-Creche/Filho com Deficiência:* Mantidos conforme as regras vigentes."
     ),
     ("10", "7", "7"): "HANDOFF",
 
-    # MENU 10 - SUBMENU 8: Retorno ao Trabalho
+    # MENU 10 - SUBMENU 8: Retorno ao Trabalho 
     ("10", "8", "1"): (
         "✅ É o procedimento obrigatório para que o empregado que recebeu alta do INSS possa voltar às suas funções.\n\n"
-        "⚠️ *Atenção:* O empregado **não** pode voltar diretamente ao trabalho após a alta do INSS sem antes passar pela avaliação médica ocupacional na Comlurb."
+        "⚠️ *Atenção:* O empregado *não* pode voltar diretamente ao trabalho após a alta do INSS sem antes passar pela avaliação médica ocupacional na Comlurb."
     ),
     ("10", "8", "2"): (
         "📞 *O que fazer:* Assim que receber a alta, entre em contato com o *Canal I* para agendar seu exame de retorno.\n\n"
@@ -2028,7 +2029,7 @@ SCRIPTS = {
     ),
     ("10", "8", "4"): (
         "🩺 *Avaliação Médica:* A autorização final é dada exclusivamente pelo Médico do Trabalho da Comlurb, que poderá considerar o empregado:\n"
-        "1. *Apto:* Retorna imediatamente às atividades;\n"
+        "1. *Apto:* Retorna às atividades;\n"
         "2. *Inapto:* Indica novo afastamento ou outro encaminhamento necessário."
     ),
     ("10", "8", "5"): "HANDOFF",
