@@ -150,7 +150,7 @@ SUBSUBMENUS = {
         "3": "Como solicitar",
         "4": "Descontos no salário",
         "5": "Alterar ou cancelar",
-        "6": "Situações especiais",
+        "6": "Situações especiais (Afastamentos / Créditos indevidos)",
         "7": "Problemas com cartão (RioCard / Jaé)",
         "8": "Falar com atendente"
     },
@@ -512,14 +512,14 @@ SUBSUBMENUS = {
         "4": "Casos comuns de ausência de depósitos",
         "5": "Situações de saque",
         "6": "Documentos para saque (Demissão)",
-        "7": "Unificação de contas",
+        "7": "Unificação de contas do FGTS",
         "8": "Conta inativa do FGTS",
         "9": "Como verificar conta inativa",
         "10": "Falar com atendente"
     },
     ("9", "5"): {
         "1": "O que é o anuênio?",
-        "2": "O que interfere na contagem?",
+        "2": "O que interfere na contagem do anuênio?",
         "3": "Triênio e quinquênio",
         "4": "Falar com atendente"
     },
@@ -530,11 +530,11 @@ SUBSUBMENUS = {
         "4": "Falar com atendente"
     },
     ("9", "7"): {
-        "1": "O que é a contribuição assistencial?",
+        "1": "O que é a contribuição assistencial negocial?",
         "2": "Qual é o valor do desconto?",
         "3": "Para qual sindicato é destinado?",
         "4": "O empregado pode se opor?",
-        "5": "Quem é associado paga?",
+        "5": "Quem é associado paga a contribuição?",
         "6": "Falar com atendente"
     },
     ("9", "8"): {
@@ -607,7 +607,7 @@ SUBSUBMENUS = {
         "7": "Falar com atendente"
     },
     ("10", "8"): {
-        "1": "O que é o retorno ao trabalho?",
+        "1": "O que é?",
         "2": "O que fazer ao receber alta do INSS?",
         "3": "Quais documentos apresentar?",
         "4": "Como funciona o retorno às atividades?",
