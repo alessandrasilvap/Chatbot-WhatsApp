@@ -839,7 +839,7 @@ SCRIPTS = {
     ("2", "4", "8"): "O benefício começa a valer a partir da *data de recebimento* dos documentos na GGP (Gerência de Pagamento) ou na CAE (Central de Atendimento ao Empregado).",
     ("2", "4", "9"): (
         "Você pode cancelar o benefício.\n\n"
-        "Basta informar à GGP (Gerência de Pagamento) ou à Central de Atendimento ao Empregado (CAE), através de 
+        "Basta informar à GGP (Gerência de Pagamento) ou à Central de Atendimento ao Empregado (CAE), através de carta de próprio punho, solicitando a suspensão do benefício."
     ),
     ("2", "4", "10"): "HANDOFF",
 
