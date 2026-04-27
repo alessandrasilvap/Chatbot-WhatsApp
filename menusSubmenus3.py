@@ -1332,11 +1332,11 @@ SCRIPTS = {
     # MENU 7 - SUBMENU 1: Férias
     ("7", "1", "1"): (
         "O empregado pode perder o período aquisitivo de férias se ficar afastado por *mais de 180 dias*.\n"
-        "Quando retornar ao trabalho, começará uma nova contagem para aquisição de férias.\n"
+        "Quando retornar ao trabalho, começará uma nova contagem para aquisição de férias.\n\n"
+        "Exceções à perda: Se o empregado *já tinha direito às férias*, mas ainda não havia usufruído por motivo de trabalho ou decisão própria, ele pode solicitar o gozo das férias após retornar ao trabalho."
     ),
-    ("7", "1", "2"): "Se o empregado já tinha direito às férias, mas ainda não havia usufruído por motivo de trabalho ou decisão própria, ele pode solicitar o gozo das férias após retornar ao trabalho.",
-    ("7", "1", "3"): "Se o contrato de trabalho ficar suspenso por mais de 15 dias, o período aquisitivo pode ser alterado, podendo haver perda parcial do período.",
-    ("7", "1", "4"): (
+    ("7", "1", "2"): "Se o contrato de trabalho ficar suspenso por mais de 15 dias, o período aquisitivo pode ser alterado, podendo haver perda parcial do período.",
+    ("7", "1", "3"): (
         "A quantidade de faltas ou suspensões no período aquisitivo pode reduzir os dias de férias, conforme a tabela:\n\n"
         "➖ *0 a 5 faltas* → 30 dias de férias\n"
         "➖ *6 a 14 faltas* → 24 dias de férias\n"
@@ -1344,14 +1344,14 @@ SCRIPTS = {
         "➖ *24 a 32 faltas* → 12 dias de férias\n"
         "❌ *Mais de 32 faltas* → perde o direito"
     ),
-    ("7", "1", "5"): (
+    ("7", "1", "4"): (
         "O pagamento das férias inclui:\n"
         "- Remuneração do período de férias;\n"
         "- Gratificação de férias de 70% sobre o salário de referência (ou o percentual previsto na Constituição Federal, valendo o que for maior);\n"
         "- Outros valores previstos em lei.\n\n"
         "💰 O pagamento é feito no 2º dia útil, junto com o pagamento do mês."
     ),
-    ("7", "1", "6"): (
+    ("7", "1", "5"): (
         "O empregado pode vender até 10 dias de férias (abono pecuniário).\n\n"
         "O cálculo considera todos os proventos tributáveis, como:\n"
         "- Salário de referência;\n"
@@ -1359,7 +1359,7 @@ SCRIPTS = {
         "- Anuênio;\n"
         "- Triênio."
     ),
-    ("7", "1", "7"): (
+    ("7", "1", "6"): (
         "As férias podem ser:\n"
         "- 30 dias corridos; ou\n"
         "- 20 dias com venda de 10 dias.\n\n"
@@ -1367,7 +1367,7 @@ SCRIPTS = {
         "- Um período mínimo de 14 dias corridos;\n"
         "- Os demais com no mínimo 5 dias corridos cada."
     ),
-    ("7", "1", "8"): "O agendamento das férias deve ser feito diretamente na gerência de lotação do empregado.",
+    ("7", "1", "7"): "O agendamento das férias deve ser feito diretamente na gerência de lotação do empregado.",
     ("7", "1", "9"): "HANDOFF",
 
     # MENU 7 - SUBMENU 2: Licença-maternidade
