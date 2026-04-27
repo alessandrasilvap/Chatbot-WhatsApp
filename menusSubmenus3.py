@@ -1876,9 +1876,9 @@ SCRIPTS = {
         "O empregado só retorna ao trabalho com alta do INSS e após ser considerado apto no exame de retorno no serviço médico da Comlurb."
     ),
     ("10", "1", "11"): (
-        "📞 *Exame de Retorno:* Agende pelo Canal I após a alta:\n"
-        "- Fone: 99002-1021 | 1023 | 1166 | 1168\n"
-        "- Zap: 99002-1374 | 1375"
+        "Após alta ou indeferimento, o empregado deve agendar o exame de retorno com o médico do trabalho pelo Canal I.\n\n"
+        "📅 Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
     ),
     ("10", "1", "12"): "🛡️ O empregado afastado por acidente de trabalho tem estabilidade por 12 meses após o fim do benefício do INSS.",
     ("10", "1", "13"): (
@@ -1974,8 +1974,8 @@ SCRIPTS = {
         "1. Agende com o médico do trabalho via *Canal I*;\n"
         "2. Compareça à CAE (Rua Major Ávila, 358 – Tijuca) no dia marcado;\n"
         "3. Leve a declaração médica de *Apto ao Trabalho*.\n\n"
-        "📞 *Canal I:* 99002-1021 | 1023 | 1166 | 1168\n"
-        "💬 *WhatsApp:* 99002-1374 | 1375"
+        "📅 Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca para entregar presencialmente."
     ),
     ("10", "6", "5"): (
         "🍴 *Regras do Tíquete:*\n"
@@ -1997,9 +1997,9 @@ SCRIPTS = {
     ("10", "7", "4"): "🏦 Se o Médico do Trabalho indicar afastamento, a atendente de afastamento agenda a perícia no INSS e marca a data de retorno à Comlurb, para entrega do resultado.",
     ("10", "7", "5"): (
         "⚠️ *Benefício Negado?*\n"
-        "Ligue imediatamente para o *Canal I* para agendar seu exame de retorno ao trabalho.\n\n"
-        "📞 *Contatos:* 99002-1021 | 1023 | 1166 | 1168\n"
-        "💬 *WhatsApp:* 99002-1374 | 1375"
+        "Agende com o *Canal I* seu exame de retorno ao trabalho.\n\n"
+        "📅 Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("10", "7", "6"): (
         "⚖️ *Seus Direitos:*\n"
@@ -2018,7 +2018,8 @@ SCRIPTS = {
     ),
     ("10", "8", "2"): (
         "📞 *O que fazer:* Assim que receber a alta, entre em contato com o *Canal I* para agendar seu exame de retorno.\n\n"
-        "☎️ *Telefones:* 99002-1021 | 1023 | 1166 | 1168"
+        "📅 Para agendar um atendimento:\n"
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("10", "8", "3"): (
         "📄 *Documentos Necessários:*\n"
