@@ -4,7 +4,7 @@ from bd3 import (
     criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento,
     obter_status_atendimento, obter_sessao, salvar_sessao, apagar_sessao, get_conn, validar_login, contar_fila_espera_humana
 )
-from redis import Redis
+from redis import Redis, ConnectionPool
 from rq import Queue
 import holidays
 from datetime import datetime, timedelta, time
@@ -21,10 +21,22 @@ load_dotenv()
 # ============================================================
 # CONFIGURAÇÃO DA FILA DE ALTA PERFORMANCE (REDIS + RQ)
 # ============================================================
+redis_conn = None
+
 try:
-    redis_conn = Redis(host='localhost', port=6379)
+    pool = ConnectionPool(
+        host='localhost',
+        port=6379,
+        max_connections=20,
+        socket_connect_timeout=5,
+        socket_timeout=5
+    )
+    redis_conn = Redis(connection_pool=pool)
     fila_zap = Queue('fila_zap', connection=redis_conn)
-    print("✅ Conectado à Fila do Redis com sucesso.")
+
+    # Warm-up Redis
+    redis_conn.ping()
+    print("🔥 Redis aquecido (ping OK)")
 except Exception as e:
     print(f"❌ ERRO CRÍTICO ao conectar no Redis: {e}")
 
@@ -65,24 +77,20 @@ def em_horario_comercial(agora: datetime) -> bool:
 # ============================================================
 # CACHE DE DEDUPLICAÇÃO (MEMÓRIA ANTI-REPETIÇÃO)
 # ============================================================
-MENSAGENS_PROCESSADAS = {}
-
-def is_duplicada(message_id: str, agora: datetime) -> bool:
-    if not message_id:
+def is_duplicada_redis(message_id: str) -> bool:
+    """
+    Verifica se a mensagem já foi processada nos últimos 120 minutos.
+    Usa o Redis como um 'escudo' de alta velocidade.
+    """
+    if not message_id or not redis_conn:
         return False
-        
-    # Limpa da memória mensagens que chegaram há mais de 2 horas para não pesar o servidor
-    chaves_velhas = [k for k, v in MENSAGENS_PROCESSADAS.items() if (agora - v).total_seconds() > 7200]
-    for k in chaves_velhas:
-        del MENSAGENS_PROCESSADAS[k]
 
-    # Se a mensagem já passou por aqui, bloqueia!
-    if message_id in MENSAGENS_PROCESSADAS:
-        return True
-
-    # Se é nova, registra no escudo
-    MENSAGENS_PROCESSADAS[message_id] = agora
-    return False
+    try:
+        foi_criada = redis_conn.set(f"msg:{message_id}", "1", ex=7200, nx=True)
+        return not foi_criada
+    except Exception as e:
+        print(f"Erro Redis deduplicação: {e}")
+        return False
 
 # ============================================================
 # APP / ENV
