@@ -16,15 +16,21 @@ DB_CONFIG = {
 
 try:
     db_pool = pooling.MySQLConnectionPool(
-        pool_name="comlurb_pool",
         pool_size=32, # Aumentado para suportar picos de concorrência (Escalabilidade)
+        pool_name="comlurb_pool",
         pool_reset_session=True,
+        connect_timeout=5,
         **DB_CONFIG
     )
     print("✅ Pool de banco de dados iniciado com sucesso.")
 except Error as e:
     print(f"❌ ERRO CRÍTICO ao criar o pool de conexões: {e}")
     raise
+
+# Warm-up do pool (abre conexões antes do primeiro usuário)
+for _ in range(5):
+    conn = db_pool.get_connection()
+    conn.close()
 
 def get_conn():
     """Pega uma conexão já aberta do Pool instantaneamente."""
