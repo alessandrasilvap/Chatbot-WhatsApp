@@ -14,6 +14,7 @@ import hashlib
 import requests
 from dotenv import load_dotenv
 from functools import wraps
+from utils_tempo import em_horario_comercial, get_tipo_periodo
 
 # Carrega variáveis do .env
 load_dotenv()
