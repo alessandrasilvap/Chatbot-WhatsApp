@@ -200,29 +200,26 @@ def send_whatsapp_text(to_wa_id: str, text: str, phone_number_id: str = None) ->
 # Agora retorna TEXTO (string), não jsonify.
 # ============================================================
 def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: str = None, telefone_bot: str = None) -> str:
-    if not em_horario_comercial(agora):
-        return (
-            "⏰ *Nosso atendimento está offline no momento.*\n\n"
-            "Funcionamos de segunda a sexta, das 08:00 às 17:00 (exceto feriados).\n"
-            "Por favor, envie sua mensagem novamente dentro desse período para que possamos te ajudar!"
-        )
 
     if not telefone:
         return "❌ Erro: telefone não informado."
 
     sessao = obter_sessao(telefone)
 
-    # Se não existe sessão, cria atendimento + sessão
+    # =========================================================
+    # 🔥 CRIA ATENDIMENTO SEMPRE
+    # =========================================================
     if not sessao:
         atendimento_id = criar_atendimento(telefone, telefone_bot)
+
         registrar_evento(atendimento_id, "inicio_atendimento")
 
-        # DEDUPE no BD
+        # DEDUPE
         if message_id:
             try:
                 registrar_evento(atendimento_id, "msg_usuario", mensagem, external_message_id=message_id)
             except Exception as e:
-                if "Duplicate entry" in str(e) or "duplicate" in str(e).lower():
+                if "duplicate" in str(e).lower():
                     return "✅ (dedupe-db) mensagem já processada"
                 raise
         else:
@@ -236,27 +233,37 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             telefone_bot=telefone_bot
         )
 
+        # 🔥 OFFLINE (depois de salvar)
+        if not em_horario_comercial(agora):
+            return (
+                "⏰ *Nosso atendimento está offline no momento.*\n\n"
+                "Funcionamos de segunda a sexta, das 08:00 às 17:00 (exceto feriados).\n"
+                "Por favor, envie sua mensagem novamente dentro desse período."
+            )
+
         return (
             "Olá! 👋 Sou a assistente virtual do Canal I da COMLURB.\n\n"
-            "Estou aqui para ajudar a tirar suas dúvidas de forma rápida. Mas não se preocupe: se precisar, você poderá escolher falar com um atendente da equipe do Canal I.\n\n"
-            "⚠️ *Aviso:* Para agilizar o atendimento de todos, conversas sem interação por mais de 10 minutos são encerradas automaticamente.\n\n"
-            "Para começarmos, por favor, digite o seu *nome*."
+            "Para começarmos, digite o seu *nome*."
         )
+
+    # =========================================================
+    # 🔹 ATENDIMENTO EXISTENTE
+    # =========================================================
 
     atendimento_id = sessao["atendimento_id"]
 
-    # DEDUPE antes de timeout/sessão
+    # DEDUPE + REGISTRO
     if message_id:
         try:
             registrar_evento(atendimento_id, "msg_usuario", mensagem, external_message_id=message_id)
         except Exception as e:
-            if "Duplicate entry" in str(e) or "duplicate" in str(e).lower():
+            if "duplicate" in str(e).lower():
                 return "✅ (dedupe-db) mensagem já processada"
             raise
     else:
         registrar_evento(atendimento_id, "msg_usuario", mensagem)
 
-    # Atualiza ultimo_contato
+    # Atualiza sessão
     salvar_sessao(
         telefone=telefone,
         atendimento_id=atendimento_id,
@@ -271,36 +278,52 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         telefone_bot=telefone_bot
     )
 
-    # Travar quando humano assumiu
+    # =========================================================
+    # 🔥 HUMANO ASSUMIU
+    # =========================================================
     status_bd = obter_status_atendimento(atendimento_id)
+
     if status_bd == "em_atendimento_humano":
+
         if mensagem == "3":
             registrar_evento(atendimento_id, "finalizar")
             finalizar(atendimento_id)
             apagar_sessao(telefone)
-            return "✅ Atendimento finalizado.\n\nO Canal I agradece o seu contato. Se precisar no futuro, é só mandar uma nova mensagem."
-        
-        # Se o cliente mandar áudio/foto no meio do atendimento humano:
+            return "✅ Atendimento finalizado."
+
+        # 🔥 mídia durante atendimento humano
         if mensagem.startswith("__MEDIA__"):
-            aviso_painel = f"⚠️ [SISTEMA: O cliente enviou um arquivo de mídia pelo WhatsApp. Painel exibe apenas texto.]"
-            registrar_evento(atendimento_id, "msg_usuario", aviso_painel)
-            return "" # Bot continua em silêncio
-            
-        return "" # O robô não retorna NADA para textos normais. Fica em silêncio.
+            aviso = "⚠️ [SISTEMA: cliente enviou mídia]"
+            registrar_evento(atendimento_id, "msg_usuario", aviso)
+            return ""
+
+        return ""
 
     # =========================================================
-    # BARREIRA DO BOT CONTRA ÁUDIOS E FIGURINHAS
+    # 🔥 BLOQUEIO DE MÍDIA (BOT)
+    # =========================================================
     if mensagem.startswith("__MEDIA__"):
         return (
             "❌ *Formato não suportado.*\n\n"
-            "Sou uma assistente virtual focada em texto. Não consigo ouvir áudios, nem visualizar imagens, figurinhas ou documentos.\n\n"
-            "Por favor, *digite* a sua resposta para continuarmos."
+            "Envie sua mensagem em texto para continuar."
         )
+
+    # =========================================================
+    # 🔥 OFFLINE (DEPOIS DE SALVAR)
+    # =========================================================
+    if not em_horario_comercial(agora):
+        return (
+            "⏰ *Nosso atendimento está offline no momento.*\n\n"
+            "Funcionamos de segunda a sexta, das 08:00 às 17:00 (exceto feriados).\n"
+            "Por favor, envie sua mensagem novamente dentro desse período."
+        )
+
+    # =========================================================
+    # 🔹 FLUXO NORMAL
     # =========================================================
 
     etapa = sessao["etapa"]
 
-    # Etapa: nome
     if etapa == "nome":
         if not mensagem:
             return "❌ Por favor, informe seu *nome*."
@@ -315,23 +338,14 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             etapa="matricula",
             ultimo_contato=agora,
             nome=nome,
-            matricula=sessao.get("matricula"),
-            menu_id=sessao.get("menu_id"),
-            sub_id=sessao.get("sub_id"),
-            atendente_chamado=sessao.get("atendente_chamado", 0),
-            resumo_handoff_salvo=sessao.get("resumo_handoff_salvo", 0),
             telefone_bot=telefone_bot
         )
 
-        return f"Obrigada, {nome}! 😊 Agora, informe sua *matrícula* (apenas números)."
+        return f"Obrigada, {nome}! 😊 Agora, informe sua *matrícula*."
 
-    # Etapa: matrícula
     if etapa == "matricula":
         if not mensagem.isdigit():
-            return "❌ Matrícula inválida. Informe apenas *números*."
-
-        if len(mensagem) != 6:
-            return "❌ Matrícula inválida. Informe sua matrícula de 6 dígitos, por favor."
+            return "❌ Matrícula inválida."
 
         matricula = mensagem
         atualizar_atendimento(atendimento_id, matricula=matricula)
@@ -342,12 +356,11 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             atendimento_id=atendimento_id,
             etapa="menu_principal",
             ultimo_contato=agora,
-            nome=sessao.get("nome"),
-            matricula=matricula,
             telefone_bot=telefone_bot
         )
-        return "Cadastro realizado com sucesso ✅\n\n" + texto_menu_principal()
 
+        return "Cadastro realizado ✅\n\n" + texto_menu_principal()
+        
     # Etapa: menu principal
     if etapa == "menu_principal":
         opcoes_validas = [str(i) for i in range(1, 11)]
