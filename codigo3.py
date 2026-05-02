@@ -235,6 +235,8 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
         # 🔥 OFFLINE (depois de salvar)
         if not em_horario_comercial(agora):
+            finalizar(atendimento_id)
+            
             return (
                 "⏰ *Nosso atendimento está offline no momento.*\n\n"
                 "Funcionamos de segunda a sexta, das 08:00 às 17:00 (exceto feriados).\n"
@@ -312,6 +314,8 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
     # 🔥 OFFLINE (DEPOIS DE SALVAR)
     # =========================================================
     if not em_horario_comercial(agora):
+        finalizar(atendimento_id)
+        
         return (
             "⏰ *Nosso atendimento está offline no momento.*\n\n"
             "Funcionamos de segunda a sexta, das 08:00 às 17:00 (exceto feriados).\n"
