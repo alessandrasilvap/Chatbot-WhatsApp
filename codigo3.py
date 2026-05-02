@@ -44,16 +44,13 @@ except Exception as e:
 # ============================================================
 # CACHE DE DEDUPLICAÇÃO (MEMÓRIA ANTI-REPETIÇÃO)
 # ============================================================
-def is_duplicada_redis(message_id: str) -> bool:
-    """
-    Verifica se a mensagem já foi processada nos últimos 120 minutos.
-    Usa o Redis como um 'escudo' de alta velocidade.
-    """
+def is_duplicada_redis(message_id: str, prefix="msg") -> bool:
     if not message_id or not redis_conn:
         return False
 
     try:
-        foi_criada = redis_conn.set(f"msg:{message_id}", "1", ex=7200, nx=True)
+        chave = f"{prefix}:{message_id}"
+        foi_criada = redis_conn.set(chave, "1", ex=7200, nx=True)
         return not foi_criada
     except Exception as e:
         print(f"Erro Redis deduplicação: {e}")
@@ -629,8 +626,8 @@ def processar_mensagem_background(m):
             )
 
             # Se o bot decidiu responder algo, envia para o WhatsApp
-            if resposta:
-                send_whatsapp_text(telefone, resposta, phone_number_id=phone_number_id)
+            if resposta and not is_duplicada_redis(msg_id, "send"):
+                    send_whatsapp_text(telefone, resposta, phone_number_id=phone_number_id)
                 
         except Exception as e:
             print(f"❌ Erro no processamento em background: {e}")
@@ -664,9 +661,15 @@ def webhook():
 
         # Joga a mensagem na Fila do Redis instantaneamente
         for m in msgs:
+            msg_id = m.get("id")
+        
+            if is_duplicada_redis(msg_id, "msg"):
+                print(f"⚠️ Mensagem duplicada ignorada (Redis): {msg_id}")
+                continue
+        
             fila_zap.enqueue('codigo3.processar_mensagem_background', m)
             print(f">>> Mensagem de {m.get('from')} enfileirada no Redis com sucesso!")
-
+            
         # O FLASK RETORNA 200 OK IMEDIATAMENTE PARA A META, 
         return "OK", 200
 
