@@ -3,6 +3,8 @@ import mysql.connector
 from mysql.connector import pooling, Error
 from dotenv import load_dotenv
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime
+from codigo3 import get_tipo_periodo
 
 load_dotenv()  # Carrega variáveis do arquivo .env
 
@@ -44,9 +46,16 @@ def criar_atendimento(telefone: str, telefone_bot: str = None) -> int:
     conn = get_conn()
     cur = conn.cursor()
     try:
+        agora = datetime.now()
+        tipo_periodo = get_tipo_periodo(agora)
+
         cur.execute(
-            "INSERT INTO atendimentos (telefone, telefone_bot, status, atendente_chamado) VALUES (%s, %s, %s, %s)",
-            (telefone, telefone_bot, 'em_atendimento', 0)
+            """
+            INSERT INTO atendimentos 
+            (telefone, telefone_bot, status, atendente_chamado, data_inicio, tipo_periodo)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+            (telefone, telefone_bot, 'em_atendimento', 0, agora, tipo_periodo)
         )
         conn.commit()
         return cur.lastrowid
