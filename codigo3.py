@@ -74,6 +74,24 @@ def em_horario_comercial(agora: datetime) -> bool:
             
     return HORA_INICIO <= agora.time() <= HORA_FIM
 
+def get_tipo_periodo(agora: datetime) -> str:
+    hoje_texto = agora.strftime("%Y-%m-%d")
+
+    # 🔴 Feriado ou ponto facultativo
+    if hoje_texto in recessos_comlurb or agora.date() in feriados_rj:
+        return "feriado"
+
+    # 🔵 Final de semana
+    if agora.weekday() not in DIAS_ATUAIS:
+        return "fim_de_semana"
+
+    # 🟡 Fora do horário
+    if not (HORA_INICIO <= agora.time() <= HORA_FIM):
+        return "fora_horario"
+
+    # 🟢 Horário comercial
+    return "horario_comercial"
+
 # ============================================================
 # CACHE DE DEDUPLICAÇÃO (MEMÓRIA ANTI-REPETIÇÃO)
 # ============================================================
