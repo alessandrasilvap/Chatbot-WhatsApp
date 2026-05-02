@@ -4,7 +4,7 @@ from mysql.connector import pooling, Error
 from dotenv import load_dotenv
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
-from codigo3 import get_tipo_periodo
+from utils_tempo import em_horario_comercial, get_tipo_periodo
 
 load_dotenv()  # Carrega variáveis do arquivo .env
 
