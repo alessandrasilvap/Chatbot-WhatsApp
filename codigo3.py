@@ -737,7 +737,8 @@ def admin_assumir():
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
     if atendimento_id:
-        atualizar_atendimento(atendimento_id, status="em_atendimento_humano")
+        nome_atendente = session['usuario_logado']
+        assumir_atendimento(atendimento_id, nome_atendente)
         registrar_evento(atendimento_id, "assumido_por_humano")
     return jsonify({"ok": True})
 
@@ -800,6 +801,7 @@ def admin_encerrar_rota():
         sql_update = """
             UPDATE atendimentos 
             SET status = 'finalizado', 
+                atendente_chamado = 1,
                 atendente_nome = %s, 
                 data_fim = NOW() 
             WHERE id = %s
