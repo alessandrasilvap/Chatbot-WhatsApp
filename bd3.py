@@ -170,6 +170,7 @@ def assumir_atendimento(atendimento_id: int, atendente_nome: str) -> bool:
         cur.execute("""
             UPDATE atendimentos
                SET status='em_atendimento_humano',
+                   atendente_chamado=1,
                    atendente_nome=%s,
                    assumido_em=NOW()
              WHERE id=%s AND status='handoff'
