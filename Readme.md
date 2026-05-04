@@ -105,3 +105,4 @@ Este projeto está sendo desenvolvido para fins de aprendizado e evolução prof
 
 <img width="800" height="500" alt="Design sem nome (1)" src="https://github.com/user-attachments/assets/c0b524b1-bb2b-4600-a5bb-8bea88e8c52f" />
 <img width="800" height="500" alt="Design sem nome" src="https://github.com/user-attachments/assets/3e0d5b54-caea-4fd6-88eb-d238c805c2a3" />
+<img width="1920" height="1080" alt="584912826-edfe2fbf-4e4b-411f-9e3b-b0f5c7696c36" src="https://github.com/user-attachments/assets/c9db3155-b67f-4255-bbe2-255cc6258307" />
