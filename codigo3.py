@@ -203,9 +203,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
     sessao = obter_sessao(telefone)
 
-    # =========================================================
-    # 🔥 CRIA ATENDIMENTO SEMPRE
-    # =========================================================
+    # Primeiro cria o atendimento
     if not sessao:
         atendimento_id = criar_atendimento(telefone, telefone_bot)
 
@@ -230,7 +228,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             telefone_bot=telefone_bot
         )
 
-        # 🔥 OFFLINE (depois de salvar)
+        # Offline (depois de salvar)
         if not em_horario_comercial(agora):
             finalizar(atendimento_id)
             
@@ -244,10 +242,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             "Olá! 👋 Sou a assistente virtual do Canal I da COMLURB.\n\n"
             "Para começarmos, digite o seu *nome*."
         )
-
-    # =========================================================
-    # 🔹 ATENDIMENTO EXISTENTE
-    # =========================================================
 
     atendimento_id = sessao["atendimento_id"]
 
@@ -277,9 +271,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         telefone_bot=telefone_bot
     )
 
-    # =========================================================
-    # 🔥 HUMANO ASSUMIU
-    # =========================================================
+    # Humano assumiu
     status_bd = obter_status_atendimento(atendimento_id)
 
     if status_bd == "em_atendimento_humano":
@@ -290,7 +282,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             apagar_sessao(telefone)
             return "✅ Atendimento finalizado."
 
-        # 🔥 mídia durante atendimento humano
+        # Mídia durante atendimento humano
         if mensagem.startswith("__MEDIA__"):
             aviso = "⚠️ [SISTEMA: cliente enviou mídia]"
             registrar_evento(atendimento_id, "msg_usuario", aviso)
@@ -298,18 +290,14 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
         return ""
 
-    # =========================================================
-    # 🔥 BLOQUEIO DE MÍDIA (BOT)
-    # =========================================================
+    # Mídia durante atendimento bot
     if mensagem.startswith("__MEDIA__"):
         return (
             "❌ *Formato não suportado.*\n\n"
             "Envie sua mensagem em texto para continuar."
         )
 
-    # =========================================================
-    # 🔥 OFFLINE (DEPOIS DE SALVAR)
-    # =========================================================
+    # Offline (depois de salvar)
     if not em_horario_comercial(agora):
         finalizar(atendimento_id)
         
@@ -318,10 +306,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             "Funcionamos de segunda a sexta, das 08:00 às 17:00 (exceto feriados).\n"
             "Por favor, envie sua mensagem novamente dentro desse período."
         )
-
-    # =========================================================
-    # 🔹 FLUXO NORMAL
-    # =========================================================
 
     etapa = sessao["etapa"]
 
@@ -597,6 +581,11 @@ def tela_login():
             
     # Se for apenas GET (acessar o site), mostra a tela de login
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
 
 # ============================================================
 # WEBHOOK META
