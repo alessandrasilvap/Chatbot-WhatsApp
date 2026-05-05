@@ -545,7 +545,7 @@ SUBSUBMENUS = {
         "5": "Falar com atendente"
     },
 
-    # MNENU 10
+    # MENU 10
     ("10", "1"): {
         "1": "O que é acidente de trabalho",
         "2": "O que fazer na hora do acidente",
@@ -1368,7 +1368,7 @@ SCRIPTS = {
         "- Os demais com no mínimo 5 dias corridos cada."
     ),
     ("7", "1", "7"): "O agendamento das férias deve ser feito diretamente na gerência de lotação do empregado.",
-    ("7", "1", "9"): "HANDOFF",
+    ("7", "1", "8"): "HANDOFF",
 
     # MENU 7 - SUBMENU 2: Licença-maternidade
     ("7", "2", "1"): (
