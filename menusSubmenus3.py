@@ -2081,7 +2081,7 @@ def texto_sub_submenu(menu_id: str, sub_id: str):
     return "\n".join(linhas)
 
 
-def obter_script(menu_id: str, sub_id: str, sub_sub_id: str = None):
+def obter_script(menu_id: str, sub_id: str, sub_sub_id: str):
     return SCRIPTS.get((menu_id, sub_id, sub_sub_id))
 
 def texto_opcoes_pos_script():
