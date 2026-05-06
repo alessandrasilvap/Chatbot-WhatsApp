@@ -245,21 +245,26 @@ def validar_login(usuario_digitado, senha_digitada):
     conn = get_conn()
     cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute("SELECT senha FROM atendentes WHERE usuario = %s", (usuario_digitado,))
+        cursor.execute(
+            "SELECT senha, permissao, usuario FROM atendentes WHERE usuario = %s",
+            (usuario_digitado,)
+        )
         resultado = cursor.fetchone()
-        
+
         if resultado:
-            senha_banco_hasheada = resultado['senha']
-            # Isso compara a senha digitada em texto com o hash embaralhado do banco
-            if check_password_hash(senha_banco_hasheada, senha_digitada):
-                return True
-                
-        return False
-        
+            if check_password_hash(resultado['senha'], senha_digitada):
+                return {
+                    "autenticado": True,
+                    "permissao": resultado["permissao"],
+                    "usuario": resultado["usuario"]
+                }
+
+        return {"autenticado": False, "permissao": None, "usuario": None}
+
     except Exception as e:
         print("Erro crítico ao validar login no banco de dados:", e)
-        return False
-        
+        return {"autenticado": False, "permissao": None, "usuario": None}
+
     finally:
         cursor.close()
         conn.close()
