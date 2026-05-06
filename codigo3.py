@@ -4,6 +4,10 @@ from bd3 import (
     criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento,
     obter_status_atendimento, obter_sessao, salvar_sessao, apagar_sessao, get_conn, validar_login, contar_fila_espera_humana
 )
+from disparos import (
+    criar_disparo, iniciar_disparo, pausar_disparo,
+    retomar_disparo, iniciar_reenvio_erros, listar_disparos, detalhar_disparo, listar_respostas
+)
 from redis import Redis, ConnectionPool
 from rq import Queue
 import holidays
@@ -68,12 +72,35 @@ WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID", "")
 WA_API_VERSION = os.getenv("WA_API_VERSION", "v24.0")
 app.secret_key = ""
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'usuario_logado' not in session:
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Verifica se o usuário está logado E se o nome dele está na lista de admins
-        if 'usuario_logado' not in session or session['usuario_logado'] not in USUARIOS_ADMIN:
-            return "❌ Acesso Negado: Esta área é exclusiva para a coordenação.", 403
+        if 'usuario_logado' not in session:
+            return redirect('/login')
+        permissao = session.get('permissao')
+        painel = session.get('painel')
+        if permissao not in ['admin', 'chat'] and painel != 'chat':
+            return "❌ Acesso Negado.", 403
+        return f(*args, **kwargs)
+    return decorated_function
+
+def disparo_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'usuario_logado' not in session:
+            return redirect('/login')
+        permissao = session.get('permissao')
+        painel = session.get('painel')
+        if permissao not in ['admin', 'disparo'] and painel != 'disparo':
+            return "❌ Acesso Negado.", 403
         return f(*args, **kwargs)
     return decorated_function
 
@@ -562,24 +589,40 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 # ============================================================
 # ROTAS DO PAINEL WEB
 # ============================================================
-
 @app.route('/', methods=['GET'])
 @app.route('/login', methods=['GET', 'POST'])
 def tela_login():
     if request.method == 'POST':
-        # Captura o que foi digitado no HTML
         usuario = request.form.get('usuario')
         senha = request.form.get('senha')
-        
-        # Chama a sua função que já existe para checar no banco
-        if validar_login(usuario, senha):
-            # Se a senha estiver certa, libera a entrada
-            session['usuario_logado'] = usuario
-            return redirect('/admin')
+        painel = request.form.get('painel')  # 'chat' ou 'disparo'
+
+        resultado = validar_login(usuario, senha)
+
+        if resultado["autenticado"]:
+            permissao = resultado["permissao"]
+
+            # Verifica se tem acesso ao painel escolhido
+            tem_acesso = (
+                permissao == 'admin' or
+                (permissao == 'chat' and painel == 'chat') or
+                (permissao == 'disparo' and painel == 'disparo')
+            )
+
+            if tem_acesso:
+                session['usuario_logado'] = resultado["usuario"]
+                session['permissao'] = permissao
+                session['painel'] = painel
+
+                if painel == 'disparo':
+                    return redirect('/disparos')
+                else:
+                    return redirect('/admin')
+            else:
+                return render_template('login.html', erro="⛔ Acesso restrito. Você não tem permissão para este painel.")
         else:
             return render_template('login.html', erro="Usuário ou senha incorretos")
-            
-    # Se for apenas GET (acessar o site), mostra a tela de login
+
     return render_template('login.html')
 
 @app.route('/logout')
@@ -669,12 +712,8 @@ def webhook():
 USUARIOS_ADMIN = ['admin']
 
 @app.route('/admin')
+@admin_required
 def painel_admin():
-    # Se não tiver o crachá, vai pra rua (tela de login)!
-    if 'usuario_logado' not in session:
-        return redirect('/login')
-    
-    # Passa o nome do usuário logado para o painel.html
     return render_template('painel.html', usuario=session['usuario_logado'])
 
 @app.get("/admin/fila")
@@ -883,6 +922,106 @@ def simulated_incoming():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+# ============================================================
+# PAINEL DE DISPAROS
+# ============================================================
+
+@app.route('/disparos')
+@disparo_required
+def painel_disparos():
+    return render_template('disparos.html', usuario=session['usuario_logado'])
+
+@app.get('/disparos/api/listar')
+@disparo_required
+def api_listar_disparos():
+    try:
+        resultado = listar_disparos()
+        return jsonify({"disparos": resultado})
+    except Exception as e:
+        print("Erro ao listar disparos:", e)
+        return jsonify({"disparos": []})
+
+@app.get('/disparos/api/detalhar/<int:disparo_id>')
+@disparo_required
+def api_detalhar_disparo(disparo_id):
+    try:
+        resultado = detalhar_disparo(disparo_id)
+        return jsonify(resultado)
+    except Exception as e:
+        print("Erro ao detalhar disparo:", e)
+        return jsonify({})
+
+@app.post('/disparos/api/criar')
+@disparo_required
+def api_criar_disparo():
+    try:
+        dados = request.get_json(force=True) or {}
+        nome_campanha = dados.get('nome_campanha')
+        template_nome = dados.get('template_nome')
+        numero_id = dados.get('numero_id')
+        contatos = dados.get('contatos', [])
+
+        disparo_id = criar_disparo(nome_campanha, template_nome, numero_id, contatos)
+        return jsonify({"ok": True, "disparo_id": disparo_id})
+    except Exception as e:
+        print("Erro ao criar disparo:", e)
+        return jsonify({"ok": False, "erro": str(e)})
+
+@app.post('/disparos/api/iniciar/<int:disparo_id>')
+@disparo_required
+def api_iniciar_disparo(disparo_id):
+    try:
+        dados = request.get_json(force=True) or {}
+        template_nome = dados.get('template_nome')
+        numero_id = dados.get('numero_id')
+        iniciar_disparo(disparo_id, template_nome, numero_id)
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"ok": False, "erro": str(e)})
+
+@app.post('/disparos/api/pausar/<int:disparo_id>')
+@disparo_required
+def api_pausar_disparo(disparo_id):
+    try:
+        pausar_disparo(disparo_id)
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"ok": False, "erro": str(e)})
+
+@app.post('/disparos/api/retomar/<int:disparo_id>')
+@disparo_required
+def api_retomar_disparo(disparo_id):
+    try:
+        dados = request.get_json(force=True) or {}
+        template_nome = dados.get('template_nome')
+        numero_id = dados.get('numero_id')
+        retomar_disparo(disparo_id, template_nome, numero_id)
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"ok": False, "erro": str(e)})
+
+@app.post('/disparos/api/reenviar/<int:disparo_id>')
+@disparo_required
+def api_reenviar_erros(disparo_id):
+    try:
+        dados = request.get_json(force=True) or {}
+        template_nome = dados.get('template_nome')
+        numero_id = dados.get('numero_id')
+        iniciar_reenvio_erros(disparo_id, template_nome, numero_id)
+        return jsonify({"ok": True})
+    except Exception as e:
+        return jsonify({"ok": False, "erro": str(e)})
+
+@app.get('/disparos/api/respostas')
+@disparo_required
+def api_respostas():
+    try:
+        disparo_id = request.args.get('disparo_id', type=int)
+        resultado = listar_respostas(disparo_id)
+        return jsonify({"respostas": resultado})
+    except Exception as e:
+        return jsonify({"respostas": []})
 
 if __name__ == "__main__":
     app.run(debug=False, port=5000)
