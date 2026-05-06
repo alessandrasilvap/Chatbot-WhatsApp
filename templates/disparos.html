@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Disparos em Massa - Canal I</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="../static/logo-comlurb.png" type="image/png">
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- NAVBAR -->
+  <nav class="bg-slate-800 text-white p-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-4">
+        <h1 class="text-xl font-bold tracking-tight">📢 Disparos em Massa</h1>
+        <span class="text-xs bg-slate-600 px-2 py-1 rounded text-slate-300">Logado: {{ usuario }}</span>
+      </div>
+      <a href="/logout" class="text-sm bg-red-700 hover:bg-red-600 px-4 py-2 rounded transition border border-red-500">Sair</a>
+    </div>
+  </nav>
+
+  <!-- ABAS -->
+  <div class="container mx-auto px-6 pt-6">
+    <div class="flex gap-2 border-b border-gray-300 mb-6">
+      <button onclick="trocarAba('novo')" id="aba-novo"
+        class="aba-btn px-5 py-2 text-sm font-semibold rounded-t-lg border border-b-0 bg-white text-green-700 border-gray-300">
+        ➕ Novo Disparo
+      </button>
+      <button onclick="trocarAba('historico')" id="aba-historico"
+        class="aba-btn px-5 py-2 text-sm font-semibold rounded-t-lg border border-b-0 bg-gray-100 text-gray-500 border-gray-300">
+        📋 Histórico
+      </button>
+      <button onclick="trocarAba('respostas')" id="aba-respostas"
+        class="aba-btn px-5 py-2 text-sm font-semibold rounded-t-lg border border-b-0 bg-gray-100 text-gray-500 border-gray-300">
+        💬 Respostas
+      </button>
+    </div>
+
+    <!-- ABA: NOVO DISPARO -->
+    <div id="painel-novo">
+
+      <!-- PARTE 1: Criação -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
+        <h2 class="font-bold text-gray-700 text-base mb-4">1. Configurar Disparo</h2>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nome da Campanha</label>
+            <input id="nome-campanha" type="text" placeholder="Ex: Processo Seletivo Maio"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nome do Template</label>
+            <input id="template-nome" type="text" placeholder="Ex: processo_seletivo_etapa"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- PARTE 2: Importar lista -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
+        <h2 class="font-bold text-gray-700 text-base mb-1">2. Importar Lista de Contatos</h2>
+        <p class="text-xs text-gray-500 mb-4">
+          O arquivo deve ter as colunas: <strong>nome</strong>, <strong>telefone</strong> e as variáveis do template 
+          (<strong>etapa</strong>, <strong>data</strong>, <strong>horario</strong>, <strong>local</strong>).
+        </p>
+        <input id="arquivo-csv" type="file" accept=".csv,.xlsx"
+          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-green-50 file:text-green-700 file:font-semibold hover:file:bg-green-100 cursor-pointer border border-gray-300 rounded-lg">
+        <p id="info-arquivo" class="text-xs text-gray-400 mt-2"></p>
+      </div>
+
+      <!-- PARTE 3: Preview -->
+      <div id="painel-preview" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4 hidden">
+        <h2 class="font-bold text-gray-700 text-base mb-4">3. Preview</h2>
+        <div class="flex gap-6 flex-wrap">
+          <!-- Preview da mensagem -->
+          <div class="bg-[#efeae2] rounded-xl p-4 w-72 shadow-inner" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-color: rgba(255,255,255,0.7);">
+            <div class="bg-white rounded-lg p-3 shadow text-sm text-gray-800 max-w-xs">
+              <p class="text-xs font-bold text-gray-400 mb-1">PROCESSO SELETIVO</p>
+              <div id="preview-texto" class="whitespace-pre-line text-sm"></div>
+              <div class="mt-2 pt-2 border-t border-gray-100 flex flex-col gap-1">
+                <button class="w-full text-center text-green-600 text-xs font-semibold py-1 bg-green-50 rounded">✅ Confirmo presença</button>
+                <button class="w-full text-center text-red-500 text-xs font-semibold py-1 bg-red-50 rounded">❌ Não poderei comparecer</button>
+              </div>
+            </div>
+          </div>
+          <!-- Resumo -->
+          <div class="flex-1 min-w-48">
+            <p class="text-xs text-gray-500 uppercase font-bold mb-2">Resumo</p>
+            <div class="space-y-2 text-sm text-gray-700">
+              <div class="flex justify-between border-b pb-1"><span>Total de contatos:</span> <strong id="preview-total">0</strong></div>
+              <div class="flex justify-between border-b pb-1"><span>Primeiro contato:</span> <strong id="preview-primeiro">—</strong></div>
+              <div class="flex justify-between border-b pb-1"><span>Template:</span> <strong id="preview-template">—</strong></div>
+              <div class="flex justify-between"><span>Campanha:</span> <strong id="preview-campanha">—</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARTE 4: Botões de ação -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
+        <h2 class="font-bold text-gray-700 text-base mb-4">4. Ações</h2>
+        <div class="flex flex-wrap gap-3">
+          <button onclick="criarEIniciarDisparo()"
+            class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold shadow transition text-sm">
+            ▶ Iniciar Disparo
+          </button>
+          <button onclick="pausarDisparo()"
+            class="bg-yellow-400 hover:bg-yellow-500 text-white px-6 py-2 rounded-lg font-semibold shadow transition text-sm">
+            ⏸ Pausar
+          </button>
+          <button onclick="retomarDisparo()"
+            class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow transition text-sm">
+            ▶▶ Retomar
+          </button>
+          <button onclick="reenviarErros()"
+            class="bg-orange-400 hover:bg-orange-500 text-white px-6 py-2 rounded-lg font-semibold shadow transition text-sm">
+            🔁 Reenviar Erros
+          </button>
+        </div>
+        <p id="msg-acao" class="text-sm mt-3 text-gray-500"></p>
+      </div>
+
+      <!-- PARTE 5: Acompanhamento -->
+      <div id="painel-acompanhamento" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4 hidden">
+        <h2 class="font-bold text-gray-700 text-base mb-4">5. Acompanhamento</h2>
+
+        <!-- Barra de progresso -->
+        <div class="mb-4">
+          <div class="flex justify-between text-xs text-gray-500 mb-1">
+            <span>Progresso</span>
+            <span id="pct-progresso">0%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-3">
+            <div id="barra-progresso" class="bg-green-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Contadores -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+          <div class="bg-gray-50 rounded-lg p-3 border">
+            <p class="text-xs text-gray-500 mb-1">Pendente</p>
+            <p id="cnt-pendente" class="text-xl font-bold text-gray-600">0</p>
+          </div>
+          <div class="bg-blue-50 rounded-lg p-3 border border-blue-100">
+            <p class="text-xs text-blue-500 mb-1">Enviado</p>
+            <p id="cnt-enviado" class="text-xl font-bold text-blue-600">0</p>
+          </div>
+          <div class="bg-green-50 rounded-lg p-3 border border-green-100">
+            <p class="text-xs text-green-500 mb-1">Entregue</p>
+            <p id="cnt-entregue" class="text-xl font-bold text-green-600">0</p>
+          </div>
+          <div class="bg-purple-50 rounded-lg p-3 border border-purple-100">
+            <p class="text-xs text-purple-500 mb-1">Lido</p>
+            <p id="cnt-lido" class="text-xl font-bold text-purple-600">0</p>
+          </div>
+          <div class="bg-red-50 rounded-lg p-3 border border-red-100">
+            <p class="text-xs text-red-500 mb-1">Erro</p>
+            <p id="cnt-erro" class="text-xl font-bold text-red-600">0</p>
+          </div>
+        </div>
+
+        <!-- Status do disparo -->
+        <div class="mt-4 flex items-center gap-2">
+          <span class="text-xs text-gray-500">Status:</span>
+          <span id="badge-status" class="text-xs font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABA: HISTÓRICO -->
+    <div id="painel-historico" class="hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
+            <tr>
+              <th class="p-4">Campanha</th>
+              <th class="p-4">Template</th>
+              <th class="p-4 text-center">Total</th>
+              <th class="p-4 text-center">Enviados</th>
+              <th class="p-4 text-center">Erros</th>
+              <th class="p-4">Status</th>
+              <th class="p-4">Data</th>
+              <th class="p-4 text-center">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-historico" class="divide-y divide-gray-100 text-gray-700">
+            <tr><td colspan="8" class="p-10 text-center text-gray-400 italic">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ABA: RESPOSTAS -->
+    <div id="painel-respostas" class="hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4 flex gap-3 items-end">
+        <div class="flex-1">
+          <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Filtrar por Campanha</label>
+          <select id="filtro-campanha-resposta"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white">
+            <option value="">Todas as campanhas</option>
+          </select>
+        </div>
+        <button onclick="carregarRespostas()"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow transition text-sm">
+          Buscar
+        </button>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
+            <tr>
+              <th class="p-4">Nome</th>
+              <th class="p-4">Telefone</th>
+              <th class="p-4">Campanha</th>
+              <th class="p-4">Resposta / Status</th>
+              <th class="p-4">Atualizado em</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-respostas" class="divide-y divide-gray-100 text-gray-700">
+            <tr><td colspan="5" class="p-10 text-center text-gray-400 italic">Selecione uma campanha e clique em Buscar.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- fim container -->
+
+  <script>
+    // ============================================================
+    // ESTADO GLOBAL
+    // ============================================================
+    let disparoAtualId = null;
+    let disparoAtualTemplate = null;
+    let contatosImportados = [];
+    let loopAcompanhamento = null;
+
+    // ============================================================
+    // ABAS
+    // ============================================================
+    function trocarAba(aba) {
+      ['novo','historico','respostas'].forEach(a => {
+        document.getElementById(`painel-${a}`).classList.add('hidden');
+        const btn = document.getElementById(`aba-${a}`);
+        btn.classList.remove('bg-white','text-green-700');
+        btn.classList.add('bg-gray-100','text-gray-500');
+      });
+      document.getElementById(`painel-${aba}`).classList.remove('hidden');
+      const btnAtivo = document.getElementById(`aba-${aba}`);
+      btnAtivo.classList.add('bg-white','text-green-700');
+      btnAtivo.classList.remove('bg-gray-100','text-gray-500');
+
+      if (aba === 'historico') carregarHistorico();
+      if (aba === 'respostas') carregarSelectCampanhas();
+    }
+
+    // ============================================================
+    // IMPORTAR ARQUIVO
+    // ============================================================
+    document.getElementById('arquivo-csv').addEventListener('change', async function() {
+      const file = this.files[0];
+      if (!file) return;
+
+      const info = document.getElementById('info-arquivo');
+      info.textContent = `Lendo ${file.name}...`;
+
+      try {
+        const texto = await file.text();
+        const linhas = texto.trim().split('\n');
+        const cabecalho = linhas[0].split(',').map(c => c.trim().toLowerCase().replace(/\r/g,''));
+
+        contatosImportados = linhas.slice(1).map(linha => {
+          const cols = linha.split(',').map(c => c.trim().replace(/\r/g,''));
+          const obj = {};
+          cabecalho.forEach((h, i) => obj[h] = cols[i] || '');
+
+          // Monta variaveis_json com tudo exceto nome e telefone
+          const variaveis = {};
+          cabecalho.forEach(h => {
+            if (h !== 'nome' && h !== 'telefone') variaveis[h] = obj[h];
+          });
+
+          return { nome: obj['nome'], telefone: obj['telefone'], variaveis_json: variaveis };
+        }).filter(c => c.nome && c.telefone);
+
+        info.textContent = `✅ ${contatosImportados.length} contatos carregados.`;
+        atualizarPreview();
+      } catch(e) {
+        info.textContent = '❌ Erro ao ler o arquivo. Use CSV com vírgula.';
+      }
+    });
+
+    function atualizarPreview() {
+      const nome = document.getElementById('nome-campanha').value || '—';
+      const template = document.getElementById('template-nome').value || '—';
+      const primeiro = contatosImportados[0];
+
+      document.getElementById('painel-preview').classList.remove('hidden');
+      document.getElementById('preview-total').textContent = contatosImportados.length;
+      document.getElementById('preview-primeiro').textContent = primeiro ? primeiro.nome : '—';
+      document.getElementById('preview-template').textContent = template;
+      document.getElementById('preview-campanha').textContent = nome;
+
+      if (primeiro) {
+        const vars = primeiro.variaveis_json;
+        const texto = `Olá, ${primeiro.nome}! 🎉\n\nVocê foi aprovado(a) para a próxima etapa!\n\n📋 Etapa: ${vars.etapa || '—'}\n📅 Data: ${vars.data || '—'}\n🕐 Horário: ${vars.horario || '—'}\n📍 Local: ${vars.local || '—'}\n\nEquipe de Recrutamento`;
+        document.getElementById('preview-texto').textContent = texto;
+      }
+    }
+
+    // ============================================================
+    // CRIAR E INICIAR DISPARO
+    // ============================================================
+    async function criarEIniciarDisparo() {
+      const nomeCampanha = document.getElementById('nome-campanha').value.trim();
+      const templateNome = document.getElementById('template-nome').value.trim();
+
+      if (!nomeCampanha || !templateNome) {
+        setMsgAcao('❌ Preencha o nome da campanha e o template.', 'red'); return;
+      }
+      if (contatosImportados.length === 0) {
+        setMsgAcao('❌ Importe uma lista de contatos primeiro.', 'red'); return;
+      }
+
+      setMsgAcao('⏳ Criando disparo...', 'gray');
+
+      try {
+        const res = await fetch('/disparos/api/criar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ nome_campanha: nomeCampanha, template_nome: templateNome, numero_id: null, contatos: contatosImportados })
+        });
+        const data = await res.json();
+        if (!data.ok) { setMsgAcao('❌ Erro ao criar: ' + data.erro, 'red'); return; }
+
+        disparoAtualId = data.disparo_id;
+        disparoAtualTemplate = templateNome;
+
+        await fetch(`/disparos/api/iniciar/${disparoAtualId}`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ template_nome: templateNome, numero_id: null })
+        });
+
+        setMsgAcao(`✅ Disparo #${disparoAtualId} iniciado!`, 'green');
+        document.getElementById('painel-acompanhamento').classList.remove('hidden');
+        iniciarLoopAcompanhamento();
+      } catch(e) {
+        setMsgAcao('❌ Erro inesperado: ' + e.message, 'red');
+      }
+    }
+
+    async function pausarDisparo() {
+      if (!disparoAtualId) { setMsgAcao('❌ Nenhum disparo ativo.', 'red'); return; }
+      await fetch(`/disparos/api/pausar/${disparoAtualId}`, { method: 'POST' });
+      setMsgAcao('⏸ Disparo pausado.', 'yellow');
+    }
+
+    async function retomarDisparo() {
+      if (!disparoAtualId) { setMsgAcao('❌ Nenhum disparo selecionado.', 'red'); return; }
+      await fetch(`/disparos/api/retomar/${disparoAtualId}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ template_nome: disparoAtualTemplate, numero_id: null })
+      });
+      setMsgAcao('▶ Disparo retomado.', 'green');
+      iniciarLoopAcompanhamento();
+    }
+
+    async function reenviarErros() {
+      if (!disparoAtualId) { setMsgAcao('❌ Nenhum disparo selecionado.', 'red'); return; }
+      await fetch(`/disparos/api/reenviar/${disparoAtualId}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ template_nome: disparoAtualTemplate, numero_id: null })
+      });
+      setMsgAcao('🔁 Reenvio de erros iniciado.', 'orange');
+    }
+
+    // ============================================================
+    // ACOMPANHAMENTO
+    // ============================================================
+    function iniciarLoopAcompanhamento() {
+      if (loopAcompanhamento) clearInterval(loopAcompanhamento);
+      atualizarAcompanhamento();
+      loopAcompanhamento = setInterval(atualizarAcompanhamento, 4000);
+    }
+
+    async function atualizarAcompanhamento() {
+      if (!disparoAtualId) return;
+      try {
+        const res = await fetch(`/disparos/api/detalhar/${disparoAtualId}`);
+        const d = await res.json();
+        if (!d.id) return;
+
+        const contatos = d.contatos || [];
+        const cnt = { pendente:0, enviado:0, entregue:0, lido:0, erro:0 };
+        contatos.forEach(c => { if (cnt[c.status] !== undefined) cnt[c.status]++; });
+
+        document.getElementById('cnt-pendente').textContent = cnt.pendente;
+        document.getElementById('cnt-enviado').textContent = cnt.enviado;
+        document.getElementById('cnt-entregue').textContent = cnt.entregue;
+        document.getElementById('cnt-lido').textContent = cnt.lido;
+        document.getElementById('cnt-erro').textContent = cnt.erro;
+
+        const total = d.total_contatos || 1;
+        const feitos = cnt.enviado + cnt.entregue + cnt.lido + cnt.erro;
+        const pct = Math.round((feitos / total) * 100);
+        document.getElementById('pct-progresso').textContent = pct + '%';
+        document.getElementById('barra-progresso').style.width = pct + '%';
+
+        const badges = {
+          ativo: 'bg-green-100 text-green-700',
+          pausado: 'bg-yellow-100 text-yellow-700',
+          finalizado: 'bg-gray-100 text-gray-600'
+        };
+        const badge = document.getElementById('badge-status');
+        badge.textContent = d.status;
+        badge.className = `text-xs font-bold px-2 py-1 rounded-full ${badges[d.status] || 'bg-gray-100 text-gray-600'}`;
+
+        if (d.status === 'finalizado' && loopAcompanhamento) {
+          clearInterval(loopAcompanhamento);
+          setMsgAcao('🏁 Disparo finalizado!', 'green');
+        }
+      } catch(e) { console.error('Erro acompanhamento:', e); }
+    }
+
+    // ============================================================
+    // HISTÓRICO
+    // ============================================================
+    async function carregarHistorico() {
+      const corpo = document.getElementById('tabela-historico');
+      corpo.innerHTML = '<tr><td colspan="8" class="p-10 text-center text-blue-500">Carregando...</td></tr>';
+      try {
+        const res = await fetch('/disparos/api/listar');
+        const data = await res.json();
+        if (!data.disparos.length) {
+          corpo.innerHTML = '<tr><td colspan="8" class="p-10 text-center text-gray-400 italic">Nenhum disparo encontrado.</td></tr>';
+          return;
+        }
+        corpo.innerHTML = '';
+        data.disparos.forEach(d => {
+          const badges = { ativo:'bg-green-100 text-green-700', pausado:'bg-yellow-100 text-yellow-700', finalizado:'bg-gray-100 text-gray-600' };
+          const data_fmt = d.data_criacao ? new Date(d.data_criacao).toLocaleString('pt-BR') : '—';
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-blue-50 transition';
+          tr.innerHTML = `
+            <td class="p-4 font-semibold">${d.nome_campanha}</td>
+            <td class="p-4 text-xs font-mono text-gray-500">${d.template_nome}</td>
+            <td class="p-4 text-center">${d.total_contatos}</td>
+            <td class="p-4 text-center text-green-700 font-bold">${d.enviados}</td>
+            <td class="p-4 text-center text-red-600 font-bold">${d.erros}</td>
+            <td class="p-4"><span class="text-xs font-bold px-2 py-1 rounded-full ${badges[d.status] || 'bg-gray-100 text-gray-600'}">${d.status}</span></td>
+            <td class="p-4 text-xs text-gray-500">${data_fmt}</td>
+            <td class="p-4 text-center">
+              <button onclick="selecionarDisparoHistorico(${d.id}, '${d.template_nome}')"
+                class="text-blue-600 hover:underline text-xs font-semibold">Gerenciar</button>
+            </td>
+          `;
+          corpo.appendChild(tr);
+        });
+      } catch(e) {
+        corpo.innerHTML = '<tr><td colspan="8" class="p-10 text-center text-red-500">Erro ao carregar.</td></tr>';
+      }
+    }
+
+    function selecionarDisparoHistorico(id, template) {
+      disparoAtualId = id;
+      disparoAtualTemplate = template;
+      trocarAba('novo');
+      document.getElementById('painel-acompanhamento').classList.remove('hidden');
+      setMsgAcao(`📋 Disparo #${id} selecionado.`, 'gray');
+      iniciarLoopAcompanhamento();
+    }
+
+    // ============================================================
+    // RESPOSTAS
+    // ============================================================
+    async function carregarSelectCampanhas() {
+      try {
+        const res = await fetch('/disparos/api/listar');
+        const data = await res.json();
+        const sel = document.getElementById('filtro-campanha-resposta');
+        sel.innerHTML = '<option value="">Todas as campanhas</option>';
+        data.disparos.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.id;
+          opt.textContent = `#${d.id} — ${d.nome_campanha}`;
+          sel.appendChild(opt);
+        });
+      } catch(e) {}
+    }
+
+    async function carregarRespostas() {
+      const corpo = document.getElementById('tabela-respostas');
+      const campanhaId = document.getElementById('filtro-campanha-resposta').value;
+      corpo.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-blue-500">Carregando...</td></tr>';
+
+      try {
+        const url = campanhaId ? `/disparos/api/respostas?disparo_id=${campanhaId}` : '/disparos/api/respostas';
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!data.respostas.length) {
+          corpo.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-400 italic">Nenhuma resposta encontrada.</td></tr>';
+          return;
+        }
+
+        const badges = {
+          pendente: 'bg-gray-100 text-gray-600',
+          enviado: 'bg-blue-100 text-blue-700',
+          entregue: 'bg-green-100 text-green-700',
+          lido: 'bg-purple-100 text-purple-700',
+          erro: 'bg-red-100 text-red-700'
+        };
+
+        corpo.innerHTML = '';
+        data.respostas.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-blue-50 transition';
+          const atualizado = r.data_status_update ? new Date(r.data_status_update).toLocaleString('pt-BR') : '—';
+          tr.innerHTML = `
+            <td class="p-4 font-semibold">${r.nome}</td>
+            <td class="p-4 text-xs font-mono text-gray-500">${r.telefone}</td>
+            <td class="p-4 text-xs text-gray-600">${r.nome_campanha}</td>
+            <td class="p-4"><span class="text-xs font-bold px-2 py-1 rounded-full ${badges[r.status] || 'bg-gray-100 text-gray-600'}">${r.status}</span></td>
+            <td class="p-4 text-xs text-gray-500">${atualizado}</td>
+          `;
+          corpo.appendChild(tr);
+        });
+      } catch(e) {
+        corpo.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-red-500">Erro ao carregar.</td></tr>';
+      }
+    }
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function setMsgAcao(texto, cor) {
+      const el = document.getElementById('msg-acao');
+      const cores = { red:'text-red-600', green:'text-green-600', gray:'text-gray-500', yellow:'text-yellow-600', orange:'text-orange-500' };
+      el.className = `text-sm mt-3 font-semibold ${cores[cor] || 'text-gray-500'}`;
+      el.textContent = texto;
+    }
+
+    // Atualiza preview ao digitar
+    document.getElementById('nome-campanha').addEventListener('input', atualizarPreview);
+    document.getElementById('template-nome').addEventListener('input', atualizarPreview);
+  </script>
+</body>
+</html>
