@@ -34,7 +34,7 @@ def enviar_template(telefone: str, template_nome: str, variaveis: list, numero_i
         {
             "type": "body",
             "parameters": [
-                {"type": "text", "text": str(v)} for v in variaveis
+                {"type": "text", "text": str(v or "")} for v in variaveis
             ]
         }
     ]
