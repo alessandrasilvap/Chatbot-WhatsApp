@@ -4,9 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
+WHATSAPP_TOKEN = os.getenv("WA_ACCESS_TOKEN")
+NUMERO_ID_DISPAROS = os.getenv("WA_PHONE_NUMBER_ID_DISPAROS")
 
-def enviar_template(telefone: str, template_nome: str, variaveis: list, numero_id: str) -> dict:
+def enviar_template(telefone: str, template_nome: str, variaveis: list, numero_id: str = None) -> dict:
     """
     Envia um template aprovado pela Meta para um número de telefone.
     
@@ -19,6 +20,9 @@ def enviar_template(telefone: str, template_nome: str, variaveis: list, numero_i
     Returns:
         dict com 'sucesso' (bool), 'wamid' (str) e 'erro' (str)
     """
+    if numero_id is None:
+        numero_id = NUMERO_ID_DISPAROS
+
     url = f"https://graph.facebook.com/v19.0/{numero_id}/messages"
 
     headers = {
@@ -26,7 +30,6 @@ def enviar_template(telefone: str, template_nome: str, variaveis: list, numero_i
         "Content-Type": "application/json"
     }
 
-    # Monta os componentes com as variáveis do template
     componentes = [
         {
             "type": "body",
