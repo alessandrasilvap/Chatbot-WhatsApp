@@ -161,6 +161,52 @@ def extract_text_messages(payload: dict):
                     })
     return results
 
+def extract_status_updates(payload: dict) -> list:
+    """
+    Extrai atualizações de status (entregue, lido) do webhook da Meta.
+    Usado para atualizar o status dos disparos em massa.
+    """
+    results = []
+    for e in payload.get("entry", []) or []:
+        for c in (e.get("changes", []) or []):
+            value = c.get("value", {}) or {}
+            for s in (value.get("statuses", []) or []):
+                wamid = s.get("id", "")
+                status_meta = s.get("status", "")  # sent, delivered, read, failed
+
+                # Mapeia status da Meta para o nosso banco
+                mapa = {
+                    "sent": "enviado",
+                    "delivered": "entregue",
+                    "read": "lido",
+                    "failed": "erro"
+                }
+                status_bd = mapa.get(status_meta)
+
+                if wamid and status_bd:
+                    results.append({"wamid": wamid, "status": status_bd})
+    return results
+
+
+def atualizar_status_por_wamid(wamid: str, status: str):
+    """
+    Atualiza o status de um contato de disparo pelo wamid.
+    """
+    conn = get_conn()
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            UPDATE disparos_contatos
+            SET status = %s, data_status_update = NOW()
+            WHERE wamid = %s
+        """, (status, wamid))
+        conn.commit()
+        if cur.rowcount > 0:
+            print(f"✅ Status atualizado via webhook: {wamid} → {status}")
+    finally:
+        cur.close()
+        conn.close()
+
 # ============================================================
 # WhatsApp SEND (Cloud API) - COM MONITORIZAÇÃO DE ERROS
 # ============================================================
@@ -690,6 +736,12 @@ def webhook():
             return "Invalid signature", 403
 
         payload = request.get_json(silent=True) or {}
+
+        # Processa atualizações de status dos disparos
+        status_updates = extract_status_updates(payload)
+        for s in status_updates:
+            atualizar_status_por_wamid(s["wamid"], s["status"])
+
         msgs = extract_text_messages(payload)
         print(">>> Mensagens extraidas:", msgs)
 
