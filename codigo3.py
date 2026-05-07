@@ -778,7 +778,7 @@ def admin_mensagem():
     telefone = str(dados.get("telefone", "")).strip()
     texto = str(dados.get("texto", "")).strip()
 
-    # Pega o nome do atendente direto da sessão segura, e não do HTML
+    # Pega o nome do atendente direto da sessão segura
     atendente_nome = session['usuario_logado']
 
     # Registra no banco de dados o que o atendente digitou com o nome real dele
