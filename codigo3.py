@@ -267,6 +267,8 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
         return (
             "Olá! 👋 Sou a assistente virtual do Canal I da COMLURB.\n\n"
+            "Estou aqui para ajudar a tirar suas dúvidas de forma rápida. Mas não se preocupe: se precisar, você poderá escolher falar com um atendente da equipe do Canal I.\n\n"
+            "⚠️ *Aviso:* Para agilizar o atendimento de todos, conversas sem interação por mias de 10 minutos são encerradas automaticamente.\n\n"
             "Para começarmos, digite o seu *nome*."
         )
 
@@ -353,7 +355,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             telefone_bot=telefone_bot
         )
 
-        return f"Obrigada, {nome}! 😊 Agora, informe sua *matrícula*."
+        return f"Obrigada, {nome}! 😊 Agora, informe sua *matrícula* (apenas números)."
 
     if etapa == "matricula":
         if not mensagem.isdigit():
