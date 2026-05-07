@@ -3,6 +3,11 @@ import threading
 from datetime import datetime
 from bd3 import get_conn
 from fila_disparos import executar_disparo, reenviar_erros
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+NUMERO_ID_DISPAROS = os.getenv("WA_PHONE_NUMBER_ID_DISPAROS")
 
 def criar_disparo(nome_campanha: str, template_nome: str, numero_id: str, contatos: list) -> int:
     """
@@ -17,6 +22,9 @@ def criar_disparo(nome_campanha: str, template_nome: str, numero_id: str, contat
     Returns:
         ID do disparo criado
     """
+    if not numero_id:
+        numero_id = NUMERO_ID_DISPAROS
+        
     conn = get_conn()
     cur = conn.cursor()
     try:
