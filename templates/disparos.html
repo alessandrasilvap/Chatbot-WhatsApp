@@ -7,8 +7,6 @@
   <link rel="icon" href="../static/logo-comlurb.png" type="image/png">
 </head>
 <body class="bg-gray-100 font-sans">
-
-  <!-- NAVBAR -->
   <nav class="bg-slate-800 text-white p-4 shadow-md">
     <div class="container mx-auto flex justify-between items-center">
       <div class="flex items-center gap-4">
@@ -19,7 +17,6 @@
     </div>
   </nav>
 
-  <!-- ABAS -->
   <div class="container mx-auto px-6 pt-6">
     <div class="flex gap-2 border-b border-gray-300 mb-6">
       <button onclick="trocarAba('novo')" id="aba-novo"
@@ -36,10 +33,8 @@
       </button>
     </div>
 
-    <!-- ABA: NOVO DISPARO -->
     <div id="painel-novo">
-
-      <!-- PARTE 1: Criação -->
+      <!-- Aba: NOVO DISPARO -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
         <h2 class="font-bold text-gray-700 text-base mb-4">1. Configurar Disparo</h2>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -56,7 +51,7 @@
         </div>
       </div>
 
-      <!-- PARTE 2: Importar lista -->
+      <!-- Importar lista -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
         <h2 class="font-bold text-gray-700 text-base mb-1">2. Importar Lista de Contatos</h2>
         <p class="text-xs text-gray-500 mb-4">
@@ -68,7 +63,7 @@
         <p id="info-arquivo" class="text-xs text-gray-400 mt-2"></p>
       </div>
 
-      <!-- PARTE 3: Preview -->
+      <!-- Preview -->
       <div id="painel-preview" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4 hidden">
         <h2 class="font-bold text-gray-700 text-base mb-4">3. Preview</h2>
         <div class="flex gap-6 flex-wrap">
@@ -96,7 +91,7 @@
         </div>
       </div>
 
-      <!-- PARTE 4: Botões de ação -->
+      <!-- Botões de ação -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
         <h2 class="font-bold text-gray-700 text-base mb-4">4. Ações</h2>
         <div class="flex flex-wrap gap-3">
@@ -120,7 +115,7 @@
         <p id="msg-acao" class="text-sm mt-3 text-gray-500"></p>
       </div>
 
-      <!-- PARTE 5: Acompanhamento -->
+      <!-- Acompanhamento -->
       <div id="painel-acompanhamento" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4 hidden">
         <h2 class="font-bold text-gray-700 text-base mb-4">5. Acompanhamento</h2>
 
@@ -167,7 +162,7 @@
       </div>
     </div>
 
-    <!-- ABA: HISTÓRICO -->
+    <!-- Aba: HISTÓRICO -->
     <div id="painel-historico" class="hidden">
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <table class="w-full text-left text-sm">
@@ -190,7 +185,7 @@
       </div>
     </div>
 
-    <!-- ABA: RESPOSTAS -->
+    <!-- Aba: RESPOSTAS -->
     <div id="painel-respostas" class="hidden">
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4 flex gap-3 items-end">
         <div class="flex-1">
@@ -224,20 +219,18 @@
       </div>
     </div>
 
-  </div><!-- fim container -->
+  </div>
 
   <script>
     // ============================================================
-    // ESTADO GLOBAL
-    // ============================================================
+    // Estado global
     let disparoAtualId = null;
     let disparoAtualTemplate = null;
     let contatosImportados = [];
     let loopAcompanhamento = null;
 
     // ============================================================
-    // ABAS
-    // ============================================================
+    // Abas
     function trocarAba(aba) {
       ['novo','historico','respostas'].forEach(a => {
         document.getElementById(`painel-${a}`).classList.add('hidden');
@@ -255,8 +248,7 @@
     }
 
     // ============================================================
-    // IMPORTAR ARQUIVO
-    // ============================================================
+    // Impoortar arquivo
     document.getElementById('arquivo-csv').addEventListener('change', async function() {
       const file = this.files[0];
       if (!file) return;
@@ -309,8 +301,7 @@
     }
 
     // ============================================================
-    // CRIAR E INICIAR DISPARO
-    // ============================================================
+    // Criar e iniciar disparo
     async function criarEIniciarDisparo() {
       const nomeCampanha = document.getElementById('nome-campanha').value.trim();
       const templateNome = document.getElementById('template-nome').value.trim();
@@ -378,8 +369,7 @@
     }
 
     // ============================================================
-    // ACOMPANHAMENTO
-    // ============================================================
+    // Acompanhamento
     function iniciarLoopAcompanhamento() {
       if (loopAcompanhamento) clearInterval(loopAcompanhamento);
       atualizarAcompanhamento();
@@ -426,8 +416,7 @@
     }
 
     // ============================================================
-    // HISTÓRICO
-    // ============================================================
+    // Histórico
     async function carregarHistorico() {
       const corpo = document.getElementById('tabela-historico');
       corpo.innerHTML = '<tr><td colspan="8" class="p-10 text-center text-blue-500">Carregando...</td></tr>';
@@ -474,8 +463,7 @@
     }
 
     // ============================================================
-    // RESPOSTAS
-    // ============================================================
+    // Respostas
     async function carregarSelectCampanhas() {
       try {
         const res = await fetch('/disparos/api/listar');
@@ -534,8 +522,7 @@
     }
 
     // ============================================================
-    // HELPERS
-    // ============================================================
+    // Helpers
     function setMsgAcao(texto, cor) {
       const el = document.getElementById('msg-acao');
       const cores = { red:'text-red-600', green:'text-green-600', gray:'text-gray-500', yellow:'text-yellow-600', orange:'text-orange-500' };
