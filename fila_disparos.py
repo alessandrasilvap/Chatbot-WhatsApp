@@ -98,7 +98,7 @@ def executar_disparo(disparo_id: int, template_nome: str, numero_id: str = None)
     Args:
         disparo_id: ID do disparo na tabela disparos
         template_nome: nome exato do template aprovado na Meta
-        numero_id: phone_number_id (opcional, usa o do .env se não informar)
+        numero_id: phone_number_id
     """
     print(f"🚀 Iniciando disparo ID {disparo_id}...")
 
