@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, session, redirect, render_template
 from menusSubmenus3 import texto_menu_principal, texto_submenu, texto_sub_submenu, obter_script, texto_opcoes_pos_script
 from bd3 import (
-    criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento,
+    criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento, assumir_atendimento,
     obter_status_atendimento, obter_sessao, salvar_sessao, apagar_sessao, get_conn, validar_login, contar_fila_espera_humana
 )
 from disparos import (
