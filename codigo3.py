@@ -304,6 +304,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         # Offline (depois de salvar)
         if not em_horario_comercial(agora):
             finalizar(atendimento_id)
+            apagar_sessao(telefone)
             
             return (
                 "⏰ *Nosso atendimento está offline no momento.*\n\n"
@@ -375,6 +376,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
     # Offline (depois de salvar)
     if not em_horario_comercial(agora):
         finalizar(atendimento_id)
+        apagar_sessao(telefone)
         
         return (
             "⏰ *Nosso atendimento está offline no momento.*\n\n"
