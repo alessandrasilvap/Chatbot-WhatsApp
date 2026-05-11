@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, session, redirect, render_template
+from flask_socketio import SocketIO
 from menusSubmenus3 import texto_menu_principal, texto_submenu, texto_sub_submenu, obter_script, texto_opcoes_pos_script
 from bd3 import (
     criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento, assumir_atendimento,
@@ -64,6 +65,7 @@ def is_duplicada_redis(message_id: str, prefix="msg") -> bool:
 # APP / ENV
 # ============================================================
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 WA_VERIFY_TOKEN = os.getenv("WA_VERIFY_TOKEN", "")
 WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")  # Pode ficar vazio (modo dev)
@@ -601,6 +603,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         if not sessao.get("resumo_handoff_salvo"):
             registrar_evento(atendimento_id, "resumo_handoff", mensagem)
             atualizar_atendimento(atendimento_id, status="aguardando")
+            socketio.emit('fila_atualizada', {})
             
             posicao_fila = contar_fila_espera_humana()
             
@@ -1080,4 +1083,4 @@ def api_respostas():
         return jsonify({"respostas": []})
 
 if __name__ == "__main__":
-    app.run(debug=False, port=5000)
+    socketio.run(app, debug=False, port=5000)
