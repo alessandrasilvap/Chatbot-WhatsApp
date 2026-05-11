@@ -5,6 +5,7 @@
   <title>Painel de Atendimento - Canal I</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" href="../static/logo-comlurb.png" type="image/png">
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="flex h-screen">
@@ -317,8 +318,22 @@
             }
         });
 
-        setInterval(atualizarFila, 5000); 
-        atualizarFila();
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('✅ WebSocket conectado');
+            atualizarFila(); // Carrega a fila na primeira conexão
+        });
+        
+        socket.on('fila_atualizada', () => {
+            console.log('🔔 Fila atualizada pelo servidor');
+            atualizarFila(); // Só roda quando o servidor avisar
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('⚠️ WebSocket desconectado, tentando reconectar...');
+            // O Socket.IO já tenta reconectar automaticamente
+        });
     </script>
 </body>
 </html>
