@@ -67,6 +67,26 @@ def is_duplicada_redis(message_id: str, prefix="msg") -> bool:
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
+def escutar_redis_pubsub():
+    """Roda em background: escuta o Redis e emite para os painéis conectados."""
+    try:
+        pubsub = redis_conn.pubsub()
+        pubsub.subscribe('canal_painel')
+        print("📡 Listener Redis Pub/Sub iniciado.")
+        for mensagem in pubsub.listen():
+            if mensagem['type'] == 'message':
+                dado = mensagem['data']
+                if isinstance(dado, bytes):
+                    dado = dado.decode('utf-8')
+                if dado == 'fila_atualizada':
+                    socketio.emit('fila_atualizada', {})
+                    print("🔔 Evento 'fila_atualizada' emitido para os painéis.")
+    except Exception as e:
+        print(f"❌ Erro no listener Redis Pub/Sub: {e}")
+
+# Inicia o listener em background quando o servidor sobe
+socketio.start_background_task(escutar_redis_pubsub)
+
 WA_VERIFY_TOKEN = os.getenv("WA_VERIFY_TOKEN", "")
 WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")  # Pode ficar vazio (modo dev)
 WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN", "")
@@ -603,7 +623,7 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         if not sessao.get("resumo_handoff_salvo"):
             registrar_evento(atendimento_id, "resumo_handoff", mensagem)
             atualizar_atendimento(atendimento_id, status="aguardando")
-            socketio.emit('fila_atualizada', {})
+            notificar_fila_atualizada()
             
             posicao_fila = contar_fila_espera_humana()
             
@@ -763,6 +783,14 @@ def webhook():
             
         # O FLASK RETORNA 200 OK IMEDIATAMENTE PARA A META, 
         return "OK", 200
+
+def notificar_fila_atualizada():
+    """Publica um evento no Redis para que o servidor Flask notifique os painéis."""
+    try:
+        if redis_conn:
+            redis_conn.publish('canal_painel', 'fila_atualizada')
+    except Exception as e:
+        print(f"⚠️ Erro ao publicar evento no Redis: {e}")
 
 # ============================================================
 # ADMIN - BLINDADO COM VERIFICAÇÃO DE SESSÃO
