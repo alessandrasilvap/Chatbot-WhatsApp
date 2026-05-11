@@ -87,6 +87,23 @@ def escutar_redis_pubsub():
 # Inicia o listener em background quando o servidor sobe
 socketio.start_background_task(escutar_redis_pubsub)
 
+def notificar_fila_atualizada():
+    """Publica um evento no Redis para que o servidor Flask notifique os painéis."""
+    try:
+        if redis_conn:
+            redis_conn.publish('canal_painel', 'fila_atualizada')
+    except Exception as e:
+        print(f"⚠️ Erro ao publicar evento no Redis: {e}")
+
+
+
+
+
+
+
+
+
+
 WA_VERIFY_TOKEN = os.getenv("WA_VERIFY_TOKEN", "")
 WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")  # Pode ficar vazio (modo dev)
 WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN", "")
@@ -208,7 +225,6 @@ def extract_status_updates(payload: dict) -> list:
                 if wamid and status_bd:
                     results.append({"wamid": wamid, "status": status_bd})
     return results
-
 
 def atualizar_status_por_wamid(wamid: str, status: str):
     """
@@ -783,15 +799,6 @@ def webhook():
             
         # O FLASK RETORNA 200 OK IMEDIATAMENTE PARA A META, 
         return "OK", 200
-
-def notificar_fila_atualizada():
-    """Publica um evento no Redis para que o servidor Flask notifique os painéis."""
-    try:
-        if redis_conn:
-            redis_conn.publish('canal_painel', 'fila_atualizada')
-    except Exception as e:
-        print(f"⚠️ Erro ao publicar evento no Redis: {e}")
-
 # ============================================================
 # ADMIN - BLINDADO COM VERIFICAÇÃO DE SESSÃO
 # ============================================================
