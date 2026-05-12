@@ -72,7 +72,7 @@
                     class="flex-1 border rounded-lg p-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
                     placeholder="Digite uma mensagem..." />
             
-                <button onclick="enviarMensagem()"
+                <button onclick="enviarMensagem()" id="btn-enviar"
                     class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg shadow font-semibold transition">
                     Enviar
                 </button>
@@ -81,25 +81,15 @@
     </div>
 
     <!-- MODAL SCRIPTS -->
-    <div id="modal-scripts"
-        class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
-    
+    <div id="modal-scripts" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
         <div class="bg-white w-[400px] max-h-[500px] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-    
             <div class="flex justify-between items-center p-4 border-b">
-                <h2 class="font-bold text-gray-700 text-lg">
-                    📄 Scripts Rápidos
-                </h2>
+                <h2 class="font-bold text-gray-700 text-lg">📄 Scripts Rápidos</h2>
     
-                <button onclick="fecharScripts()"
-                    class="text-gray-500 hover:text-red-500 text-xl">
-                    ✕
-                </button>
+                <button onclick="fecharScripts()" class="text-gray-500 hover:text-red-500 text-xl">✕</button>
             </div>
     
-            <div id="lista-scripts" class="p-3 flex flex-col gap-2 overflow-y-auto">
-            </div>
-    
+            <div id="lista-scripts" class="p-3 flex flex-col gap-2 overflow-y-auto"></div>
         </div>
     </div>
     
@@ -278,46 +268,46 @@
         }
 
         async function enviarMensagem() {
-          const input = document.getElementById('msg-input');
-          const btn = document.querySelector("#input-area button"); 
+            const input = document.getElementById('msg-input');
+            const btn = document.querySelector('btn-enviar'); 
           
-          if (!input.value || !atendimentoSelecionado) return;
+            if (!input.value || !atendimentoSelecionado) return;
       
-          const textoEnviado = input.value;
+            const textoEnviado = input.value;
           
-          input.disabled = true; // Trava o campo de texto
-          btn.disabled = true;   // Trava o botão
-          const textoOriginalBtn = btn.innerText;
-          btn.innerText = "Enviando..."; // Muda o texto do botão
-          btn.style.opacity = "0.5";
+            input.disabled = true; // Trava o campo de texto
+            btn.disabled = true;   // Trava o botão
+            const textoOriginalBtn = btn.innerText;
+            btn.innerText = "Enviando..."; // Muda o texto do botão
+            btn.style.opacity = "0.5";
       
-          try {
-              const response = await fetch('/admin/mensagem', {
-                  method: 'POST',
-                  headers: {'Content-Type': 'application/json'},
-                  body: JSON.stringify({
-                      atendimento_id: atendimentoSelecionado,
-                      telefone: telefoneSelecionado, 
-                      texto: textoEnviado
-                  })
-              });
-      
-              if (response.ok) {
-                  input.value = ''; // Limpa o campo se deu certo
-                  carregarMensagens(atendimentoSelecionado); // Atualiza o chat
-              } else {
-                  alert("Erro ao enviar. Tente novamente.");
-              }
-          } catch (error) {
-              console.error("Erro na requisição:", error);
-          } finally {
-              input.disabled = false;
-              btn.disabled = false;
-              btn.innerText = textoOriginalBtn;
-              btn.style.opacity = "1";
-              input.focus(); // Coloca o cursor de volta no campo
-          }
-      }
+            try {
+                const response = await fetch('/admin/mensagem', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        atendimento_id: atendimentoSelecionado,
+                        telefone: telefoneSelecionado, 
+                        texto: textoEnviado
+                    })
+                });
+        
+                if (response.ok) {
+                    input.value = ''; // Limpa o campo se deu certo
+                    carregarMensagens(atendimentoSelecionado); // Atualiza o chat
+                } else {
+                    alert("Erro ao enviar. Tente novamente.");
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+            } finally {
+                input.disabled = false;
+                btn.disabled = false;
+                btn.innerText = textoOriginalBtn;
+                btn.style.opacity = "1";
+                input.focus(); // Coloca o cursor de volta no campo
+            }
+        }
 
         async function encerrarAtendimento() {
             if (!atendimentoSelecionado) return;
@@ -388,54 +378,51 @@
             }
         ];
 
-function abrirScripts() {
-    const modal = document.getElementById('modal-scripts');
-    const lista = document.getElementById('lista-scripts');
+        function abrirScripts() {
+            const modal = document.getElementById('modal-scripts');
+            const lista = document.getElementById('lista-scripts');
 
-    lista.innerHTML = '';
+            lista.innerHTML = '';
 
-    scriptsRapidos.forEach(script => {
+            scriptsRapidos.forEach(script => {
 
-        const div = document.createElement('div');
+                const div = document.createElement('div');
 
-        div.className =
-            "border border-gray-200 rounded-xl p-3 hover:bg-gray-50 cursor-pointer transition";
+                div.className = "border border-gray-200 rounded-xl p-3 hover:bg-gray-50 cursor-pointer transition";
 
-        div.innerHTML = `
-            <div class="font-bold text-sm text-gray-700 mb-1">
-                ${script.titulo}
-            </div>
+                div.innerHTML = `
+                    <div class="font-bold text-sm text-gray-700 mb-1">
+                        ${script.titulo}
+                    </div>
 
-            <div class="text-xs text-gray-500">
-                ${script.texto}
-            </div>
-        `;
+                    <div class="text-xs text-gray-500">
+                        ${script.texto}
+                    </div>
+                `;
 
-          div.onclick = () => usarScript(script.texto);
+                div.onclick = () => usarScript(script.texto);
 
-          lista.appendChild(div);
-      });
+                lista.appendChild(div);
+            });
 
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-  }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
 
-  function fecharScripts() {
-  
-      const modal = document.getElementById('modal-scripts');
-  
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-  }
+        function fecharScripts() {
+            const modal = document.getElementById('modal-scripts');
+        
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
 
-  function usarScript(texto) {
-  
-      document.getElementById('msg-input').value = texto;
-  
-      fecharScripts();
-  
-      document.getElementById('msg-input').focus();
-  }
+        function usarScript(texto) {
+            document.getElementById('msg-input').value = texto;
+        
+            fecharScripts();
+        
+            document.getElementById('msg-input').focus();
+        }
     </script>
 </body>
 </html>
