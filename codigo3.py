@@ -1,3 +1,5 @@
+import eventlet
+eventlet.monkey_patch()
 from flask import Flask, request, jsonify, session, redirect, render_template
 from flask_socketio import SocketIO
 from menusSubmenus3 import texto_menu_principal, texto_submenu, texto_sub_submenu, obter_script, texto_opcoes_pos_script
