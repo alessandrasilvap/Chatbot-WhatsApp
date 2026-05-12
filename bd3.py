@@ -1,6 +1,7 @@
 import os
-import mysql.connector
-from mysql.connector import pooling, Error
+import pymysql
+import pymysql.pool
+from pymysql import Error
 from dotenv import load_dotenv
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
@@ -17,11 +18,9 @@ DB_CONFIG = {
 }
 
 try:
-    db_pool = pooling.MySQLConnectionPool(
-        pool_size=32, # Aumentado para suportar picos de concorrência (Escalabilidade)
-        pool_name="comlurb_pool",
-        pool_reset_session=True,
-        connect_timeout=5,
+    db_pool = pymysql.pool.ConnectionPool(
+        size=32,
+        name="comlurb_pool",
         **DB_CONFIG
     )
     print("✅ Pool de banco de dados iniciado com sucesso.")
@@ -29,16 +28,11 @@ except Error as e:
     print(f"❌ ERRO CRÍTICO ao criar o pool de conexões: {e}")
     raise
 
-# Warm-up do pool (abre conexões antes do primeiro usuário)
-for _ in range(5):
-    conn = db_pool.get_connection()
-    conn.close()
-
 def get_conn():
     """Pega uma conexão já aberta do Pool instantaneamente."""
     try:
         return db_pool.get_connection()
-    except Error as e:
+    except Exception as e:
         print(f"❌ Erro ao obter conexão do pool: {e}")
         raise
 
