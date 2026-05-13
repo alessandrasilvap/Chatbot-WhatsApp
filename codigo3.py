@@ -99,15 +99,6 @@ def notificar_fila_atualizada():
     except Exception as e:
         print(f"⚠️ Erro ao publicar evento no Redis: {e}")
 
-
-
-
-
-
-
-
-
-
 WA_VERIFY_TOKEN = os.getenv("WA_VERIFY_TOKEN", "")
 WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")  # Pode ficar vazio (modo dev)
 WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN", "")
@@ -824,7 +815,8 @@ def admin_fila():
         cursor.execute('''
             SELECT id, telefone, nome, matricula, status, DATE_FORMAT(data_inicio, '%Y-%m-%d %H:%i:%s') as data_inicio
             FROM atendimentos
-            WHERE status IN ('aguardando', 'em_atendimento_humano', 'encerrado', 'finalizado')
+            WHERE status IN ('aguardando', 'em_atendimento_humano')
+                OR (status IN ('encerrado', 'finalizado') AND atendente_chamado = 1)
                 AND MONTH(data_inicio) = MONTH(CURRENT_DATE()) 
                 AND YEAR(data_inicio) = YEAR(CURRENT_DATE())
             ORDER BY 
