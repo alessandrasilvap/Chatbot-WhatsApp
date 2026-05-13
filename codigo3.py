@@ -544,6 +544,16 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
 
         # Se a resposta for a palavra mágica, chama o humano
         if script == "HANDOFF":
+            # Bloqueia transferência fora do horário comercial
+            if not em_horario_comercial(agora):
+                registrar_evento(atendimento_id, "handoff_bloqueado_horario")
+                return (
+                    "👥 *Atendimento humano indisponível no momento.*\n\n"
+                    "Nossa equipe atende de *segunda a sexta, das 08:00 às 17:00* (exceto feriados).\n\n"
+                    "O chatbot continua disponível para te ajudar! 😊\n\n"
+                    + texto_sub_submenu(menu_id, sub_id)
+                )
+        
             marcar_handoff(atendimento_id)
             registrar_evento(atendimento_id, "handoff")
             salvar_sessao(
