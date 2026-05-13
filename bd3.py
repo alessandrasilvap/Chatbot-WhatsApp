@@ -175,7 +175,7 @@ def assumir_atendimento(atendimento_id: int, atendente_nome: str) -> bool:
                    atendente_chamado=1,
                    atendente_nome=%s,
                    assumido_em=NOW()
-             WHERE id=%s AND status='handoff'
+             WHERE id=%s AND status IN ('handoff', 'aguardando')
         """, (atendente_nome, atendimento_id))
         conn.commit()
         return cur.rowcount > 0
