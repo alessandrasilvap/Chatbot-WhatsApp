@@ -212,13 +212,16 @@
                 
                 const chatBox = document.getElementById('chat-box');
                 chatBox.innerHTML = `<div class="text-center text-gray-500 text-xs mb-4 w-full bg-white/80 p-1 rounded-full w-max mx-auto shadow-sm">Histórico do Atendimento #${id}</div>`;
-                
+                let ultimaMensagemUsuario = null;
+                let ultimaMensagem = null;
                 data.mensagens.forEach(m => {
+                    ultimaMensagem = m;
                     const wrapper = document.createElement('div');
                     wrapper.className = "flex w-full mb-1";
                     const balao = document.createElement('div');
 
                     if (m.tipo_evento === 'msg_usuario' || m.tipo_evento === 'resumo_handoff') {
+                        ultimaMensagemUsuario = m;
                         balao.className = "p-3 rounded-lg max-w-[75%] bg-white shadow-sm text-gray-800 rounded-tl-none border border-gray-100";
                         balao.innerHTML = `<span class="text-xs text-blue-500 font-bold block mb-1">Cliente</span>${m.valor.replace(/\n/g, '<br>')}`;
                         wrapper.appendChild(balao);
@@ -231,6 +234,25 @@
                     }
                     chatBox.appendChild(wrapper);
                 });
+                if (ultimaMensagem && ultimaMensagem.tipo_evento === 'msg_usuario' && ultimaMensagem.data_evento) {
+                    const agora = new Date();
+                    const ultimaData = new Date(
+                        ultimaMensagem.data_evento.replace(" ", "T")
+                    );
+                
+                    const diffMinutos = Math.floor((agora - ultimaData) / 60000);
+        
+                    if (diffMinutos >= 20) {
+                        const aviso = document.createElement('div');
+                        aviso.className =
+                            "bg-yellow-100 border border-yellow-300 text-yellow-800 p-3 rounded-lg text-sm text-center shadow-sm mx-auto my-3";
+                        aviso.innerHTML = `
+                            ⚠️ Usuário sem responder há ${diffMinutos} minutos.<br>
+                            Envie uma nova mensagem ou finalize o atendimento se necessário.
+                        `;
+                        chatBox.appendChild(aviso);
+                    }
+                }
                 
                 chatBox.scrollTop = chatBox.scrollHeight;
             } catch (error) {
@@ -370,15 +392,23 @@
             },
             {
                 titulo: "Aguarde",
-                texto: "Só um momento enquanto verifico seu agendamento."
+                texto: "Só um momento enquanto verifico sua solicitação."
             },
             {
                 titulo: "Mídia não identificada",
-                texto: "Nosso chatbot e painel não visualizam documentos, áudios, figurinhas ou emojis. Por favor, apenas digite"
+                texto: "Nosso chatbot e painel não visualizam documentos, áudios, figurinhas ou emojis. Por favor, apenas solicitações em texto."
             },
             {
-                titulo: "Encerramento",
-                texto: "Atendimento encerrado. Tenha um ótimo dia!"
+                titulo: "Usuário sem responder",
+                texto: `Olá! Estamos aguardando seu retorno para continuar o atendimento.
+            
+            Caso ainda precise de ajuda, basta responder esta mensagem.`
+            },
+            {
+                titulo: "Aviso antes de encerrar",
+                texto: `Como não tivemos retorno, este atendimento será encerrado no momento.
+            
+            Caso ainda precise de ajuda, basta entrar em contato novamente.`
             }
         ];
 
