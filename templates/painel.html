@@ -134,6 +134,10 @@
                 // Se tiverem o mesmo status (ex: dois 'aguardando'), ordena pela data (mais antigo primeiro)
                 const dataA = new Date(a.data_inicio.replace(" ", "T"));
                 const dataB = new Date(b.data_inicio.replace(" ", "T"));
+
+                // Aguardando/em atendimento: mais antigo primeiro
+                // Encerrado/finalizado: mais recente primeiro
+                if (pesoA <= 2) return dataA - dataB;
                 return dataA - dataB;
             });
         
