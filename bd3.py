@@ -1,7 +1,7 @@
 import os
 import pymysql
-import pymysql.pool
 from pymysql import Error
+from dbutils.pooled_db import PooledDB
 from dotenv import load_dotenv
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
@@ -18,20 +18,28 @@ DB_CONFIG = {
 }
 
 try:
-    db_pool = pymysql.pool.ConnectionPool(
-        size=32,
-        name="comlurb_pool",
-        **DB_CONFIG
+    db_pool = PooledDB(
+        creator=pymysql,
+        maxconnections=32,
+        mincached=5,
+        blocking=True,
+        connect_timeout=5,
+        host=os.getenv("DB_HOST", ""),
+        port=int(os.getenv("DB_PORT", 3306)),
+        user=os.getenv("DB_USER", ""),
+        password=os.getenv("DB_PASSWORD", ""),
+        database=os.getenv("DB_NAME", ""),
+        charset='utf8mb4'
     )
     print("✅ Pool de banco de dados iniciado com sucesso.")
-except Error as e:
+except Exception as e:
     print(f"❌ ERRO CRÍTICO ao criar o pool de conexões: {e}")
     raise
 
 def get_conn():
     """Pega uma conexão já aberta do Pool instantaneamente."""
     try:
-        return db_pool.get_connection()
+        return db_pool.connection()
     except Exception as e:
         print(f"❌ Erro ao obter conexão do pool: {e}")
         raise
