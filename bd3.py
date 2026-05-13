@@ -147,7 +147,7 @@ def registrar_evento(atendimento_id: int, tipo_evento: str, valor=None, external
 
 def listar_fila_handoff(limit=50):
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(pymysql.cursors.DictCursor)
     # Busca do .env, se não existir, usa uma data muito antiga para não quebrar nada
     data_corte = os.getenv("DATA_CORTE_PRODUCAO", "2000-01-01 00:00:00")
     try:
@@ -185,7 +185,7 @@ def assumir_atendimento(atendimento_id: int, atendente_nome: str) -> bool:
 
 def obter_sessao(telefone: str):
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(pymysql.cursors.DictCursor)
     try:
         cur.execute("SELECT * FROM sessao_usuario WHERE telefone=%s", (telefone,))
         return cur.fetchone()
@@ -245,7 +245,7 @@ def apagar_sessao(telefone: str):
 
 def validar_login(usuario_digitado, senha_digitada):
     conn = get_conn()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     try:
         cursor.execute(
             "SELECT senha, permissao, usuario FROM atendentes WHERE usuario = %s",
