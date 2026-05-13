@@ -334,21 +334,20 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             telefone_bot=telefone_bot
         )
 
-        # Offline (depois de salvar)
-        if not em_horario_comercial(agora):
-            finalizar(atendimento_id)
-            apagar_sessao(telefone)
-            
-            return (
-                "⏰ *Nosso atendimento está offline no momento.*\n\n"
-                "Funcionamos de segunda a sexta, das 08:00 às 17:00 (exceto feriados).\n"
-                "Por favor, envie sua mensagem novamente dentro desse período."
+        # Mensagem de boas-vindas — agora sempre inicia, independente do horário
+        if em_horario_comercial(agora):
+            aviso_horario = ""
+        else:
+            aviso_horario = (
+                "\n⚠️ *Aviso de horário:* Você está sendo atendido pelo chatbot fora do horário comercial. "
+                "Para falar com um atendente humano, entre em contato de segunda a sexta, das 08:00 às 17:00.\n"
             )
 
         return (
             "Olá! 👋 Sou a assistente virtual do Canal I da COMLURB.\n\n"
             "Estou aqui para ajudar a tirar suas dúvidas de forma rápida. Mas não se preocupe: se precisar, você poderá escolher falar com um atendente da equipe do Canal I.\n\n"
-            "⚠️ *Aviso:* Para agilizar o atendimento de todos, conversas sem interação por mias de 10 minutos são encerradas automaticamente.\n\n"
+            f"{aviso_horario}"
+            "⚠️ *Aviso:* Para agilizar o atendimento de todos, conversas sem interação por mais de 10 minutos são encerradas automaticamente.\n\n"
             "Para começarmos, digite o seu *nome*."
         )
 
@@ -404,17 +403,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
         return (
             "❌ *Formato não suportado.*\n\n"
             "Envie sua mensagem em texto para continuar."
-        )
-
-    # Offline (depois de salvar)
-    if not em_horario_comercial(agora):
-        finalizar(atendimento_id)
-        apagar_sessao(telefone)
-        
-        return (
-            "⏰ *Nosso atendimento está offline no momento.*\n\n"
-            "Funcionamos de segunda a sexta, das 08:00 às 17:00 (exceto feriados).\n"
-            "Por favor, envie sua mensagem novamente dentro desse período."
         )
 
     etapa = sessao["etapa"]
