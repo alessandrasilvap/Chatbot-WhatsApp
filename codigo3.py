@@ -1,5 +1,7 @@
 import eventlet
 eventlet.monkey_patch()
+import pymysql
+import pymysql.cursors
 from flask import Flask, request, jsonify, session, redirect, render_template
 from flask_socketio import SocketIO
 from menusSubmenus3 import texto_menu_principal, texto_submenu, texto_sub_submenu, obter_script, texto_opcoes_pos_script
@@ -817,7 +819,7 @@ def painel_admin():
 def admin_fila():
     try:
         conn = get_conn()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         
         cursor.execute('''
             SELECT id, telefone, nome, matricula, status, DATE_FORMAT(data_inicio, '%Y-%m-%d %H:%i:%s') as data_inicio
@@ -890,7 +892,7 @@ def admin_mensagem():
 @admin_required
 def admin_get_mensagens(atendimento_id):
     conn = get_conn()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
     try:
         cursor.execute("""
             SELECT tipo_evento, valor, data_evento 
@@ -965,7 +967,7 @@ def api_historico():
 
     try:
         conn = get_conn()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
         
         # Busca no passado sem limite de mês, apenas pelo intervalo escolhido
         sql = """
