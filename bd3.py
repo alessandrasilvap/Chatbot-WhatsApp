@@ -65,9 +65,19 @@ def criar_atendimento(telefone: str, telefone_bot: str = None) -> int:
         cur.close()
         conn.close()
 
+COLUNAS_PERMITIDAS = {
+    'nome', 'matricula', 'status', 'menu_id',
+    'sub_id', 'resposta_bot', 'atendente_nome'
+}
+
 def atualizar_atendimento(atendimento_id: int, **campos):
     if not campos:
         return
+    
+    # Bloqueia qualquer coluna que não esteja na lista permitida
+    for k in campos:
+        if k not in COLUNAS_PERMITIDAS:
+            raise ValueError(f"❌ Coluna não permitida: {k}")
     
     colunas = []
     valores = []
