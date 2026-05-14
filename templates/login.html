@@ -19,7 +19,8 @@
     </div>
     {% endif %}
 
-    <form action="/login" method="POST" class="space-y-4">
+    <form action="/login" method="POST" autocomplete="off" class="space-y-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <div>
         <label class="block text-gray-700 text-sm font-bold mb-2">Usuário</label>
         <input id="usuario" type="text" name="usuario" minlength="4" maxlength="128" autocomplete="off" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-50" required placeholder="Ex: admin">
