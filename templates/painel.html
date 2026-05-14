@@ -135,10 +135,13 @@
                 const dataA = new Date(a.data_inicio.replace(" ", "T"));
                 const dataB = new Date(b.data_inicio.replace(" ", "T"));
 
-                // Aguardando/em atendimento: mais antigo primeiro
-                // Encerrado/finalizado: mais recente primeiro
-                if (pesoA <= 2) return dataA - dataB;
-                return dataA - dataB;
+                if (pesoA <= 2) {
+                    // Aguardando/em atendimento → mais antigo primeiro
+                    return dataA - dataB;
+                }
+                
+                // Encerrado/finalizado → mais recente primeiro
+                return dataB - dataA;
             });
         
             // 2. DESENHA A LISTA
