@@ -117,7 +117,9 @@
                         </td>
                         <td class="p-4"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${at.status === 'finalizado' ? 'bg-gray-100 text-gray-600' : 'bg-green-100 text-green-700'}">${at.status}</span></td>
                         <td class="p-4 text-center">
-                            <button onclick="verConversa(${at.id}, '${at.nome || at.telefone}')" class="text-blue-600 hover:underline font-semibold">Ver Conversa</button>
+                            <button class="btn-ver-conversa text-blue-600 hover:underline font-semibold" data-id="${at.id}" data-nome="${(at.nome || at.telefone || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}">
+                                Ver Conversa
+                            </button>
                         </td>
                     `;
                     corpo.appendChild(tr);
@@ -166,6 +168,15 @@
         function fecharModal() {
             document.getElementById('modal-conversa').classList.add('hidden');
         }
+
+        // Captura clique nos botões "Ver Conversa" de forma segura
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-ver-conversa')) {
+                const id = e.target.dataset.id;
+                const nome = e.target.dataset.nome;
+                verConversa(id, nome);
+            }
+        });
     </script>
 </body>
 </html>
