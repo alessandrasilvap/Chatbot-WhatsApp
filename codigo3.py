@@ -362,36 +362,62 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             ultimo_contato=agora,
             telefone_bot=telefone_bot
         )
-
+        
         # Mensagem de boas-vindas — agora sempre inicia, independente do horário
         if em_horario_comercial(agora):
-            aviso_horario = ""
-        else:
-            aviso_horario = (
-                "\n⚠️ *Aviso de horário:* Você está sendo atendido pelo chatbot fora do horário comercial. "
-                "Para falar com um atendente humano, entre em contato de segunda a sexta, das 08:00 às 17:00.\n"
+            mensagem_boas_vindas = (
+                "Olá! 👋 Sou a assistente virtual do Canal I da COMLURB.\n\n"
+            
+                "Estou aqui para ajudar a tirar suas dúvidas de forma rápida. "
+                "Mas não se preocupe: se precisar, você poderá escolher falar "
+                "com um atendente da equipe do Canal I.\n\n"
+            
+                "⚠️ *Aviso:* Conversas sem interação por mais de 10 minutos "
+                "são encerradas automaticamente.\n\n"
+            
+                "Para começarmos, digite o seu *nome*."
             )
-
-        return (
-            "Olá! 👋 Sou a assistente virtual do Canal I da COMLURB.\n\n"
-            "Estou aqui para ajudar a tirar suas dúvidas de forma rápida. Mas não se preocupe: se precisar, você poderá escolher falar com um atendente da equipe do Canal I.\n\n"
-            f"{aviso_horario}"
-            "⚠️ *Aviso:* Para agilizar o atendimento de todos, conversas sem interação por mais de 10 minutos são encerradas automaticamente.\n\n"
-            "Para começarmos, digite o seu *nome*."
-        )
+        
+        else:
+            mensagem_boas_vindas = (
+                "Olá! 👋 Sou a assistente virtual do Canal I da COMLURB.\n\n"
+            
+                "Estou aqui para ajudar a tirar suas dúvidas de forma rápida.\n\n"
+            
+                "🕒 Atendimento com a equipe do Canal I, apenas de segunda a sexta, "
+                "das 08:00 às 17:00 (exceto feriados).\n\n"
+            
+                "⚠️ *Aviso:* Conversas sem interação por mais de 10 minutos "
+                "são encerradas automaticamente.\n\n"
+            
+                "Para começarmos, digite o seu *nome*."
+            )
+        
+        return mensagem_boas_vindas
 
     atendimento_id = sessao["atendimento_id"]
 
     # DEDUPE + REGISTRO
-    if message_id:
-        try:
-            registrar_evento(atendimento_id, "msg_usuario", mensagem, external_message_id=message_id)
-        except Exception as e:
-            if "duplicate" in str(e).lower():
-                return "✅ (dedupe-db) mensagem já processada"
-            raise
-    else:
-        registrar_evento(atendimento_id, "msg_usuario", mensagem)
+    registrar_msg_usuario = not (
+        sessao["etapa"] == "handoff"
+        and not sessao.get("resumo_handoff_salvo")
+    )
+    
+    if registrar_msg_usuario:
+        if message_id:
+            try:
+                registrar_evento(
+                    atendimento_id,
+                    "msg_usuario",
+                    mensagem,
+                    external_message_id=message_id
+                )
+            except Exception as e:
+                if "duplicate" in str(e).lower():
+                    return "✅ (dedupe-db) mensagem já processada"
+                raise
+        else:
+            registrar_evento(atendimento_id, "msg_usuario", mensagem)
 
     # Atualiza sessão
     salvar_sessao(
@@ -584,7 +610,9 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
                 )
         
             marcar_handoff(atendimento_id)
+            notificar_fila_atualizada()
             registrar_evento(atendimento_id, "handoff")
+            
             salvar_sessao(
                 telefone=telefone, atendimento_id=atendimento_id,
                 etapa="handoff", ultimo_contato=agora,
