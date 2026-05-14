@@ -60,7 +60,7 @@
         </div>
     </div>
 
-    <div id="modal-conversa" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-50 p-4">
+    <div id="modal-conversa" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white w-full max-w-2xl h-[80vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
             <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
                 <div>
@@ -135,6 +135,7 @@
             document.getElementById('modal-titulo').innerText = `Conversa com ${nome}`;
             document.getElementById('modal-subtitulo').innerText = `Protocolo ID #${id}`;
             document.getElementById('modal-conversa').classList.remove('hidden');
+            document.getElementById('modal-conversa').classList.add('flex');
             chatBox.innerHTML = '<p class="text-center text-gray-500">Carregando mensagens...</p>';
 
             try {
@@ -167,6 +168,7 @@
 
         function fecharModal() {
             document.getElementById('modal-conversa').classList.add('hidden');
+            document.getElementById('modal-conversa').classList.remove('flex');
         }
 
         // Captura clique nos botões "Ver Conversa" de forma segura
