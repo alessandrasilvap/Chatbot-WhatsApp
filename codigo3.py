@@ -24,18 +24,7 @@ import requests
 from dotenv import load_dotenv
 from functools import wraps
 from utils_tempo import em_horario_comercial, get_tipo_periodo
-
-
-
-
 from flask_wtf.csrf import CSRFProtect
-csrf = CSRFProtect(app)
-
-
-
-
-
-
 
 # Carrega variáveis do .env
 load_dotenv()
@@ -82,6 +71,12 @@ def is_duplicada_redis(message_id: str, prefix="msg") -> bool:
 # ============================================================
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+csrf = CSRFProtect(app)
+
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=8)
 
 def escutar_redis_pubsub():
     """Roda em background: escuta o Redis e emite para os painéis conectados."""
@@ -118,12 +113,6 @@ WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID", "")
 WA_API_VERSION = os.getenv("WA_API_VERSION", "v24.0")
 app.secret_key = ""
 
-
-
-
-
-
-
 @app.after_request
 def no_cache(response):
     if request.path.startswith('/admin') or request.path == '/login':
@@ -131,14 +120,6 @@ def no_cache(response):
         response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"
     return response
-
-
-
-
-
-
-
-
 
 def login_required(f):
     @wraps(f)
@@ -153,11 +134,18 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         if 'usuario_logado' not in session:
             return redirect('/login')
+
         permissao = session.get('permissao')
         painel = session.get('painel')
-        if permissao not in ['admin', 'chat'] and painel != 'chat':
+
+        if painel != 'chat':
+            return "❌ Painel inválido.", 403
+
+        if permissao not in ['admin', 'chat']:
             return "❌ Acesso Negado.", 403
+
         return f(*args, **kwargs)
+
     return decorated_function
 
 def disparo_required(f):
@@ -165,11 +153,18 @@ def disparo_required(f):
     def decorated_function(*args, **kwargs):
         if 'usuario_logado' not in session:
             return redirect('/login')
+
         permissao = session.get('permissao')
         painel = session.get('painel')
-        if permissao not in ['admin', 'disparo'] and painel != 'disparo':
+
+        if painel != 'disparo':
+            return "❌ Painel inválido.", 403
+
+        if permissao not in ['admin', 'disparo']:
             return "❌ Acesso Negado.", 403
+
         return f(*args, **kwargs)
+        
     return decorated_function
 
 def verify_signature(req) -> bool:
@@ -729,6 +724,7 @@ def tela_login():
                 session['usuario_logado'] = resultado["usuario"]
                 session['permissao'] = permissao
                 session['painel'] = painel
+                session.permanent = True
 
                 if painel == 'disparo':
                     return redirect('/disparos')
@@ -781,14 +777,7 @@ def processar_mensagem_background(m):
             print(f"❌ Erro no processamento em background: {e}")
             
 @app.route("/webhook", methods=["GET", "POST"])
-
-
-
 @csrf.exempt
-
-
-
-
 def webhook():
     # A Meta usa GET apenas uma vez para verificar se a URL é sua
     if request.method == "GET":
@@ -855,15 +844,6 @@ def admin_fila():
         cursor.execute('''
             SELECT id, telefone, nome, matricula, status, DATE_FORMAT(data_inicio, '%Y-%m-%d %H:%i:%s') as data_inicio
             FROM atendimentos
-
-
-
-
-
-
-
-
-            
             WHERE (
                 status IN ('aguardando', 'em_atendimento_humano')
                 OR (status IN ('encerrado', 'finalizado') AND atendente_chamado = 1)
@@ -878,18 +858,6 @@ def admin_fila():
                 END, 
                 data_inicio ASC
             LIMIT 100
-
-
-
-
-
-
-
-
-
-
-
-            
         ''')
         fila = cursor.fetchall()
         cursor.close()
@@ -913,40 +881,23 @@ def admin_fila():
         return jsonify({"fila": [], "qtd_aguardando": 0, "qtd_em_atendimento": 0})
     
 @app.post("/admin/assumir")
-@admin_required
-
-
 @csrf.exempt
-
-
-
-
+@admin_required
 def admin_assumir():
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
+    
     if atendimento_id:
         nome_atendente = session['usuario_logado']
         assumir_atendimento(atendimento_id, nome_atendente)
         registrar_evento(atendimento_id, "assumido_por_humano")
-
-
-
         notificar_fila_atualizada()
 
-
-
-
-    
     return jsonify({"ok": True})
 
 @app.post("/admin/mensagem")
-@admin_required
-
-
 @csrf.exempt
-
-
-
+@admin_required
 def admin_mensagem():
     dados = request.get_json(force=True) or {}
     atendimento_id = int(dados.get("atendimento_id", 0))
@@ -979,16 +930,12 @@ def admin_get_mensagens(atendimento_id):
             ORDER BY data_evento ASC
         """, (atendimento_id,))
         msgs = cursor.fetchall()
-
-
-
         
         for m in msgs:
             if m.get('data_evento'):
                 m['data_evento'] = m['data_evento'].strftime('%Y-%m-%d %H:%M:%S')
+                
         return jsonify({"mensagens": msgs})
-
-    
     except Exception as e:
         print("Erro ao buscar mensagens:", e)
         return jsonify({"mensagens": []})
@@ -996,43 +943,9 @@ def admin_get_mensagens(atendimento_id):
         cursor.close()
         conn.close()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @app.post("/admin/encerrar")
-@admin_required
-
-
-
 @csrf.exempt
-
-
-
+@admin_required
 def admin_encerrar_rota():
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
@@ -1053,15 +966,8 @@ def admin_encerrar_rota():
                 WHERE id = %s
             """, (nome_atendente, atendimento_id))
             conn.commit()
-
-
-
-            notificar_fila_atualizada()
-
-
-
-
             
+            notificar_fila_atualizada()
 
             cursor.execute(
                 "SELECT telefone FROM sessao_usuario WHERE atendimento_id = %s",
@@ -1080,29 +986,6 @@ def admin_encerrar_rota():
             conn.close()
 
     return jsonify({"ok": True})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @app.route('/admin/historico')
 @admin_required
@@ -1157,12 +1040,7 @@ def api_historico():
 # SIMULADO
 # ============================================================
 @app.post("/simulated/incoming")
-
-
 @csrf.exempt
-
-
-
 def simulated_incoming():
     agora = datetime.now()
     payload = request.get_json(force=True) or {}
@@ -1186,7 +1064,6 @@ def health():
 # ============================================================
 # PAINEL DE DISPAROS
 # ============================================================
-
 @app.route('/disparos')
 @disparo_required
 def painel_disparos():
@@ -1213,15 +1090,8 @@ def api_detalhar_disparo(disparo_id):
         return jsonify({})
 
 @app.post('/disparos/api/criar')
-@disparo_required
-
-
-
 @csrf.exempt
-
-
-
-
+@disparo_required
 def api_criar_disparo():
     try:
         dados = request.get_json(force=True) or {}
@@ -1237,15 +1107,8 @@ def api_criar_disparo():
         return jsonify({"ok": False, "erro": str(e)})
 
 @app.post('/disparos/api/iniciar/<int:disparo_id>')
-@disparo_required
-
-
-
 @csrf.exempt
-
-
-
-
+@disparo_required
 def api_iniciar_disparo(disparo_id):
     try:
         dados = request.get_json(force=True) or {}
@@ -1257,14 +1120,8 @@ def api_iniciar_disparo(disparo_id):
         return jsonify({"ok": False, "erro": str(e)})
 
 @app.post('/disparos/api/pausar/<int:disparo_id>')
-@disparo_required
-
-
-
 @csrf.exempt
-
-
-
+@disparo_required
 def api_pausar_disparo(disparo_id):
     try:
         pausar_disparo(disparo_id)
@@ -1273,15 +1130,8 @@ def api_pausar_disparo(disparo_id):
         return jsonify({"ok": False, "erro": str(e)})
 
 @app.post('/disparos/api/retomar/<int:disparo_id>')
-@disparo_required
-
-
-
 @csrf.exempt
-
-
-
-
+@disparo_required
 def api_retomar_disparo(disparo_id):
     try:
         dados = request.get_json(force=True) or {}
@@ -1293,17 +1143,8 @@ def api_retomar_disparo(disparo_id):
         return jsonify({"ok": False, "erro": str(e)})
 
 @app.post('/disparos/api/reenviar/<int:disparo_id>')
-@disparo_required
-
-
-
-
 @csrf.exempt
-
-
-
-
-
+@disparo_required
 def api_reenviar_erros(disparo_id):
     try:
         dados = request.get_json(force=True) or {}
