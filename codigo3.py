@@ -25,6 +25,18 @@ from dotenv import load_dotenv
 from functools import wraps
 from utils_tempo import em_horario_comercial, get_tipo_periodo
 
+
+
+
+from flask_wtf.csrf import CSRFProtect
+csrf = CSRFProtect(app)
+
+
+
+
+
+
+
 # Carrega variáveis do .env
 load_dotenv()
 
@@ -105,6 +117,28 @@ WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN", "")
 WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID", "")
 WA_API_VERSION = os.getenv("WA_API_VERSION", "v24.0")
 app.secret_key = ""
+
+
+
+
+
+
+
+@app.after_request
+def no_cache(response):
+    if request.path.startswith('/admin') or request.path == '/login':
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
+
+
+
+
+
+
+
 
 def login_required(f):
     @wraps(f)
@@ -747,6 +781,14 @@ def processar_mensagem_background(m):
             print(f"❌ Erro no processamento em background: {e}")
             
 @app.route("/webhook", methods=["GET", "POST"])
+
+
+
+@csrf.exempt
+
+
+
+
 def webhook():
     # A Meta usa GET apenas uma vez para verificar se a URL é sua
     if request.method == "GET":
@@ -813,10 +855,21 @@ def admin_fila():
         cursor.execute('''
             SELECT id, telefone, nome, matricula, status, DATE_FORMAT(data_inicio, '%Y-%m-%d %H:%i:%s') as data_inicio
             FROM atendimentos
-            WHERE status IN ('aguardando', 'em_atendimento_humano')
+
+
+
+
+
+
+
+
+            
+            WHERE (
+                status IN ('aguardando', 'em_atendimento_humano')
                 OR (status IN ('encerrado', 'finalizado') AND atendente_chamado = 1)
-                AND MONTH(data_inicio) = MONTH(CURRENT_DATE()) 
-                AND YEAR(data_inicio) = YEAR(CURRENT_DATE())
+            )
+            AND MONTH(data_inicio) = MONTH(CURRENT_DATE())
+            AND YEAR(data_inicio) = YEAR(CURRENT_DATE())
             ORDER BY 
                 CASE status 
                     WHEN 'aguardando' THEN 1 
@@ -825,6 +878,18 @@ def admin_fila():
                 END, 
                 data_inicio ASC
             LIMIT 100
+
+
+
+
+
+
+
+
+
+
+
+            
         ''')
         fila = cursor.fetchall()
         cursor.close()
@@ -849,6 +914,13 @@ def admin_fila():
     
 @app.post("/admin/assumir")
 @admin_required
+
+
+@csrf.exempt
+
+
+
+
 def admin_assumir():
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
@@ -856,10 +928,25 @@ def admin_assumir():
         nome_atendente = session['usuario_logado']
         assumir_atendimento(atendimento_id, nome_atendente)
         registrar_evento(atendimento_id, "assumido_por_humano")
+
+
+
+        notificar_fila_atualizada()
+
+
+
+
+    
     return jsonify({"ok": True})
 
 @app.post("/admin/mensagem")
 @admin_required
+
+
+@csrf.exempt
+
+
+
 def admin_mensagem():
     dados = request.get_json(force=True) or {}
     atendimento_id = int(dados.get("atendimento_id", 0))
@@ -892,7 +979,16 @@ def admin_get_mensagens(atendimento_id):
             ORDER BY data_evento ASC
         """, (atendimento_id,))
         msgs = cursor.fetchall()
+
+
+
+        
+        for m in msgs:
+            if m.get('data_evento'):
+                m['data_evento'] = m['data_evento'].strftime('%Y-%m-%d %H:%M:%S')
         return jsonify({"mensagens": msgs})
+
+    
     except Exception as e:
         print("Erro ao buscar mensagens:", e)
         return jsonify({"mensagens": []})
@@ -900,43 +996,113 @@ def admin_get_mensagens(atendimento_id):
         cursor.close()
         conn.close()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @app.post("/admin/encerrar")
 @admin_required
+
+
+
+@csrf.exempt
+
+
+
 def admin_encerrar_rota():
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
-    
-    # Pegamos o nome de quem está logado agora
     nome_atendente = session.get('usuario_logado', 'Desconhecido')
 
     if atendimento_id:
         registrar_evento(atendimento_id, "finalizar", valor=f"Encerrado por {nome_atendente}")
-        
+
         conn = get_conn()
         cursor = conn.cursor()
-        sql_update = """
-            UPDATE atendimentos 
-            SET status = 'finalizado', 
-                atendente_chamado = 1,
-                atendente_nome = %s, 
-                data_fim = NOW() 
-            WHERE id = %s
-        """
-        cursor.execute(sql_update, (nome_atendente, atendimento_id))
-        conn.commit() 
+        try:
+            cursor.execute("""
+                UPDATE atendimentos 
+                SET status = 'finalizado', 
+                    atendente_chamado = 1,
+                    atendente_nome = %s, 
+                    data_fim = NOW() 
+                WHERE id = %s
+            """, (nome_atendente, atendimento_id))
+            conn.commit()
 
-        # Código de apagar sessão e enviar WhatsApp continua igual...
-        cursor.execute("SELECT telefone FROM sessao_usuario WHERE atendimento_id = %s", (atendimento_id,))
-        res = cursor.fetchone()
-        if res:
-            telefone = res[0] # Se não for dictionary=True, usa índice
-            apagar_sessao(telefone)
-            send_whatsapp_text(telefone, "✅ Atendimento finalizado.\n\nA equipe do Canal I agradece o seu contato! Sempre que precisar, estamos à disposição!")
+
+
+            notificar_fila_atualizada()
+
+
+
+
             
-        cursor.close()
-        conn.close()
-        
+
+            cursor.execute(
+                "SELECT telefone FROM sessao_usuario WHERE atendimento_id = %s",
+                (atendimento_id,)
+            )
+            res = cursor.fetchone()
+            if res:
+                telefone = res[0]
+                apagar_sessao(telefone)
+                send_whatsapp_text(
+                    telefone,
+                    "✅ Atendimento finalizado.\n\nA equipe do Canal I agradece o seu contato! Sempre que precisar, estamos à disposição!"
+                )
+        finally:
+            cursor.close()
+            conn.close()
+
     return jsonify({"ok": True})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @app.route('/admin/historico')
 @admin_required
@@ -991,6 +1157,12 @@ def api_historico():
 # SIMULADO
 # ============================================================
 @app.post("/simulated/incoming")
+
+
+@csrf.exempt
+
+
+
 def simulated_incoming():
     agora = datetime.now()
     payload = request.get_json(force=True) or {}
@@ -1042,6 +1214,14 @@ def api_detalhar_disparo(disparo_id):
 
 @app.post('/disparos/api/criar')
 @disparo_required
+
+
+
+@csrf.exempt
+
+
+
+
 def api_criar_disparo():
     try:
         dados = request.get_json(force=True) or {}
@@ -1058,6 +1238,14 @@ def api_criar_disparo():
 
 @app.post('/disparos/api/iniciar/<int:disparo_id>')
 @disparo_required
+
+
+
+@csrf.exempt
+
+
+
+
 def api_iniciar_disparo(disparo_id):
     try:
         dados = request.get_json(force=True) or {}
@@ -1070,6 +1258,13 @@ def api_iniciar_disparo(disparo_id):
 
 @app.post('/disparos/api/pausar/<int:disparo_id>')
 @disparo_required
+
+
+
+@csrf.exempt
+
+
+
 def api_pausar_disparo(disparo_id):
     try:
         pausar_disparo(disparo_id)
@@ -1079,6 +1274,14 @@ def api_pausar_disparo(disparo_id):
 
 @app.post('/disparos/api/retomar/<int:disparo_id>')
 @disparo_required
+
+
+
+@csrf.exempt
+
+
+
+
 def api_retomar_disparo(disparo_id):
     try:
         dados = request.get_json(force=True) or {}
@@ -1091,6 +1294,16 @@ def api_retomar_disparo(disparo_id):
 
 @app.post('/disparos/api/reenviar/<int:disparo_id>')
 @disparo_required
+
+
+
+
+@csrf.exempt
+
+
+
+
+
 def api_reenviar_erros(disparo_id):
     try:
         dados = request.get_json(force=True) or {}
