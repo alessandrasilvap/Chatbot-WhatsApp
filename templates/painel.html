@@ -261,27 +261,19 @@
         }
 
         async function selecionarAtendimento(id, telefone, nome, status) {
-            atendimentoSelecionado = id;
-            telefoneSelecionado = telefone; 
-            
             const isEncerrado = (status === "encerrado" || status === "finalizado");
 
-            document.getElementById('chat-header').querySelector('span').innerHTML = `Atendendo: <strong>${nome || telefone}</strong> ${isEncerrado ? "<span class='text-red-500 font-bold ml-2 text-sm'>(Somente Leitura)</span>" : ""}`;
-            document.getElementById('chat-box').innerHTML = "<div class='text-center mt-10 text-gray-500'>Carregando histórico...</div>";
-            
-            if (isEncerrado) {
-                document.getElementById('input-area').classList.add('hidden');
-                document.getElementById('btn-encerrar').classList.add('hidden');
-            } else {
-                document.getElementById('input-area').classList.remove('hidden');
-                document.getElementById('btn-encerrar').classList.remove('hidden');
-                
+            // Só chama /assumir se for um atendimento DIFERENTE do que já está aberto
+            if (id !== atendimentoSelecionado && !isEncerrado) {
                 await fetch('/admin/assumir', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ atendimento_id: id, atendente_nome: atendenteNome })
+                    body: JSON.stringify({ atendimento_id: id })
                 });
             }
+        
+            atendimentoSelecionado = id;
+            telefoneSelecionado = telefone;
             
             atualizarFila();
             carregarMensagens(id);
