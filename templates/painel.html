@@ -62,7 +62,7 @@
                 </div>
             </div>
 
-            <div id="input-area" class="p-4 bg-gray-100 border-t gap-2 hidden flex">
+            <div id="input-area" class="p-4 bg-gray-100 border-t gap-2 hidden">
                 <button onclick="abrirScripts()"
                     class="bg-white border border-gray-300 hover:bg-gray-100 px-4 rounded-lg shadow-sm text-sm">
                     📄 Scripts
@@ -262,8 +262,12 @@
 
         async function selecionarAtendimento(id, telefone, nome, status) {
             const isEncerrado = (status === "encerrado" || status === "finalizado");
-
-            // Só chama /assumir se for um atendimento DIFERENTE do que já está aberto
+        
+            const inputArea = document.getElementById('input-area');
+            const btnEncerrar = document.getElementById('btn-encerrar');
+            const headerSpan = document.getElementById('chat-header').querySelector('span');
+        
+            // Só chama /assumir se for atendimento DIFERENTE
             if (id !== atendimentoSelecionado && !isEncerrado) {
                 await fetch('/admin/assumir', {
                     method: 'POST',
@@ -274,12 +278,28 @@
         
             atendimentoSelecionado = id;
             telefoneSelecionado = telefone;
-            
+        
+            // Atualiza o header
+            headerSpan.innerHTML = isEncerrado
+                ? `Atendendo: <strong>${nome || telefone}</strong> <span class='text-red-500 font-bold ml-2 text-sm'>(Somente Leitura)</span>`
+                : `Atendendo: <strong>${nome || telefone}</strong>`;
+        
+            // Mostra ou esconde a área de input
+            if (isEncerrado) {
+                inputArea.classList.add('hidden');
+                inputArea.classList.remove('flex');
+                btnEncerrar.classList.add('hidden');
+            } else {
+                inputArea.classList.remove('hidden');
+                inputArea.classList.add('flex');
+                btnEncerrar.classList.remove('hidden');
+            }
+        
             atualizarFila();
             carregarMensagens(id);
-
-            if(loopMensagens) clearInterval(loopMensagens);
-            
+        
+            if (loopMensagens) clearInterval(loopMensagens);
+        
             if (!isEncerrado) {
                 loopMensagens = setInterval(() => carregarMensagens(id), 3000);
             }
@@ -342,6 +362,7 @@
             if(loopMensagens) clearInterval(loopMensagens); 
             
             document.getElementById('input-area').classList.add('hidden');
+            document.getElementById('input-area').classList.remove('flex');
             document.getElementById('btn-encerrar').classList.add('hidden');
             
             document.getElementById('chat-header').querySelector('span').innerHTML += " <span class='text-red-500 font-bold ml-2 text-sm'>(Encerrado)</span>";
