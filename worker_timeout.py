@@ -1,3 +1,4 @@
+import pymysql
 import os
 import time
 from datetime import datetime
@@ -35,7 +36,7 @@ def enviar_mensagem_whatsapp(telefone_destino, texto):
 def varrer_inativos():
     """Varre inativos que estão nos menus do bot. Ignora quem está na fila (aguardando) ou com atendente."""
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(pymysql.cursors.DictCursor)
     try:
         # Pega inativos que NÃO estão aguardando e NÃO estão em atendimento humano
         cur.execute("""
@@ -74,7 +75,7 @@ def varrer_inativos():
 def limpar_fila_fim_expediente():
     """Roda às 17h para limpar a fila de quem não foi atendido."""
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(pymysql.cursors.DictCursor)
     try:
         # Busca quem está com status 'aguardando'
         cur.execute("""
