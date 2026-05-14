@@ -112,22 +112,21 @@ def limpar_fila_fim_expediente():
 if __name__ == "__main__":
     print("🚀 Worker Automático iniciado! Monitorando inatividade e horário comercial...")
     
-    ja_limpou_fila_hoje = False
+    ultima_limpeza = None  # Guarda a DATA da última limpeza, não só True/False
 
     while True:
         agora = datetime.now()
         
-        # 1. Rotina de Inatividade (Roda sempre a cada minuto)
+        # Rotina de Inatividade (roda sempre a cada minuto)
         varrer_inativos()
         
-        # 2. Rotina de Fim de Expediente (Roda só às 17:01, dias de semana)
-        if agora.weekday() < 5:
-            if agora.hour == 17 and agora.minute == 1:
-                if not ja_limpou_fila_hoje:
-                    limpar_fila_fim_expediente()
-                    ja_limpou_fila_hoje = True
-            
-            if agora.hour == 18:
-                ja_limpou_fila_hoje = False
-
+        # Rotina de Fim de Expediente (roda só às 17:01, dias de semana)
+        # Compara a DATA de hoje com a data da última limpeza
+        # Mesmo que o worker reinicie, não vai rodar duas vezes no mesmo dia
+        if agora.weekday() < 5 and agora.hour == 17 and agora.minute == 1:
+            if ultima_limpeza != agora.date():
+                limpar_fila_fim_expediente()
+                ultima_limpeza = agora.date()
+                print(f"✅ Limpeza de fim de expediente concluída em {ultima_limpeza}")
+    
         time.sleep(60)
