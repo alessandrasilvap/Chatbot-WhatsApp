@@ -846,7 +846,7 @@ def webhook():
                 print(f"⚠️ Mensagem duplicada ignorada (Redis): {msg_id}")
                 continue
         
-            fila_zap.enqueue('codigo3.processar_mensagem_background', m)
+            fila_zap.enqueue('codigo3.processar_mensagem_background', m, job_timeout=30, ttl=300)
             print(f">>> Mensagem de {m.get('from')} enfileirada no Redis com sucesso!")
             
         # O FLASK RETORNA 200 OK IMEDIATAMENTE PARA A META, 
