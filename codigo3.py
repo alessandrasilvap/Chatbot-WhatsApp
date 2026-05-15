@@ -76,7 +76,8 @@ csrf = CSRFProtect(app)
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=8)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=4)
+app.config['SESSION_REFRESH_EACH_REQUEST'] = False
 
 def escutar_redis_pubsub():
     """Roda em background: escuta o Redis e emite para os painéis conectados."""
