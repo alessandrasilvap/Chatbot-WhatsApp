@@ -70,7 +70,12 @@ def is_duplicada_redis(message_id: str, prefix="msg") -> bool:
 # APP / ENV
 # ============================================================
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*",
+    async_mode='eventlet',
+    message_queue='redis://localhost:6379'
+)
 csrf = CSRFProtect(app)
 
 app.config['SESSION_COOKIE_HTTPONLY'] = True
@@ -841,16 +846,29 @@ def webhook():
 
         # Joga a mensagem na Fila do Redis instantaneamente
         for m in msgs:
+        
             msg_id = m.get("id")
         
             if is_duplicada_redis(msg_id, "msg"):
                 print(f"⚠️ Mensagem duplicada ignorada (Redis): {msg_id}")
                 continue
         
-            fila_zap.enqueue('codigo3.processar_mensagem_background', m, job_timeout=30, ttl=300)
-            print(f">>> Mensagem de {m.get('from')} enfileirada no Redis com sucesso!")
-            
-        # O FLASK RETORNA 200 OK IMEDIATAMENTE PARA A META, 
+            try:
+        
+                fila_zap.enqueue(
+                    'codigo3.processar_mensagem_background',
+                    m,
+                    job_timeout=30,
+                    ttl=300
+                )
+        
+                print(f">>> Mensagem de {m['from']} enfileirada no Redis com sucesso!")
+        
+            except Exception as e:
+        
+                print(f"❌ Redis/RQ indisponível: {e}")
+        
+        # SEMPRE responder 200 para Meta
         return "OK", 200
 # ============================================================
 # ADMIN - BLINDADO COM VERIFICAÇÃO DE SESSÃO
