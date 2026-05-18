@@ -238,7 +238,7 @@
                     chatBox.appendChild(wrapper);
                 });
               
-                if (ultimaMensagem && ultimaMensagem.data_evento) {
+                if (data.status === 'em_atendimento' && ultimaMensagem && ultimaMensagem.data_evento) {
                     const agora = new Date();
                     const ultimaData = new Date(
                         ultimaMensagem.data_evento.replace(" ", "T")
