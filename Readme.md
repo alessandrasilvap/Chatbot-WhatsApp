@@ -1,4 +1,4 @@
-<img width="800" height="500" alt="Design sem nome (1)" src="https://github.com/user-attachments/assets/c0b524b1-bb2b-4600-a5bb-8bea88e8c52f" />
+<img width="1365" height="598" alt="Captura de tela 2026-05-20 005721" src="https://github.com/user-attachments/assets/9651d775-d1c9-4faf-9627-79afd7f5e5e0" />
 
 # 🤖 Chatbot WhatsApp
 
