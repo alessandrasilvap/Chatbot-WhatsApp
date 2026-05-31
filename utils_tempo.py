@@ -13,7 +13,7 @@ HORA_FIM = time(17, 0)
 feriados_rj = holidays.BR(state='RJ')
 
 # Recessos (ponto facultativo)
-recessos_comlurb = ["2026-04-02", "2026-04-24"]
+recessos_comlurb = ["2026-04-02", "2026-04-24", "2026-05-05"]
 
 
 def em_horario_comercial(agora: datetime) -> bool:
