@@ -4,7 +4,7 @@ from pymysql import Error
 from dbutils.pooled_db import PooledDB
 from dotenv import load_dotenv
 from werkzeug.security import check_password_hash, generate_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from utils_tempo import em_horario_comercial, get_tipo_periodo
 
 load_dotenv()  # Carrega variáveis do arquivo .env
@@ -258,18 +258,82 @@ def validar_login(usuario_digitado, senha_digitada):
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     try:
         cursor.execute(
-            "SELECT senha, permissao, usuario FROM atendentes WHERE usuario = %s",
+            """
+            SELECT
+                senha,
+                permissao,
+                usuario,
+                tentativas_login,
+                bloqueado_ate
+            FROM atendentes
+            WHERE usuario = %s
+            """,
             (usuario_digitado,)
         )
         resultado = cursor.fetchone()
 
         if resultado:
+            # Conta bloqueada?
+            if resultado["bloqueado_ate"]:
+                if datetime.now() < resultado["bloqueado_ate"]:
+                    return {
+                        "autenticado": False,
+                        "bloqueado": True,
+                        "permissao": None,
+                        "usuario": None
+                    }
+        
             if check_password_hash(resultado['senha'], senha_digitada):
+                cursor.execute("""
+                    UPDATE atendentes
+                    SET tentativas_login = 0,
+                        bloqueado_ate = NULL
+                    WHERE usuario = %s
+                """, (usuario_digitado,))
+            
+                conn.commit()
+            
                 return {
                     "autenticado": True,
                     "permissao": resultado["permissao"],
                     "usuario": resultado["usuario"]
                 }
+
+            novas_tentativas = resultado["tentativas_login"] + 1
+
+            if novas_tentativas >= 5:
+                bloqueio = datetime.now() + timedelta(minutes=15)
+                cursor.execute("""
+                    UPDATE atendentes
+                    SET tentativas_login = %s,
+                        bloqueado_ate = %s
+                    WHERE usuario = %s
+                """, (
+                    novas_tentativas,
+                    bloqueio,
+                    usuario_digitado
+                ))
+            
+                conn.commit()
+            
+                return {
+                    "autenticado": False,
+                    "bloqueado": True,
+                    "permissao": None,
+                    "usuario": None
+                }
+            
+            # CASO NÃO TENHA CHEGADO A 5
+            cursor.execute("""
+                UPDATE atendentes
+                SET tentativas_login = %s
+                WHERE usuario = %s
+            """, (
+                novas_tentativas,
+                usuario_digitado
+            ))
+            
+            conn.commit()
 
         return {"autenticado": False, "permissao": None, "usuario": None}
 
