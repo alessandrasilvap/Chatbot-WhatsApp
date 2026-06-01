@@ -744,6 +744,12 @@ def tela_login():
 
         resultado = validar_login(usuario, senha)
 
+        if resultado.get("bloqueado"):
+            return render_template(
+                'login.html',
+                erro="⛔ Conta bloqueada temporariamente. Tente novamente em 15 minutos."
+            )
+
         if resultado["autenticado"]:
             permissao = resultado["permissao"]
 
