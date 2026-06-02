@@ -930,7 +930,7 @@ SCRIPTS = {
         "- Pela sua gerência de lotação (via comunicação interna para a GGP - Gerência de Pagamento); ou\n"
         "- Presencialmente na CAE – Central de Atendimento ao Empregado na Rua Major Ávila, 358 – Tijuca (com agendamento prévio pelo Canal I).\n\n"
         "📅 Para agendar um atendimento:\n"
-        "Volte ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
+        "Você precisa voltar ao menu anterior e selecionar *Falar com atendente* para agendar um atendimento na CAE (Central de Atendimento ao Empregado), na sede da Comlurb na Rua Major Ávila, 358 – Tijuca."
     ),
     ("2", "6", "4"): (
         "A Comlurb oferece plano odontológico para empregados e dependentes, com custo totalmente pago pela empresa.\n\n"
