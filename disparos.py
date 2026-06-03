@@ -5,6 +5,7 @@ from bd3 import get_conn
 from fila_disparos import executar_disparo, reenviar_erros
 import os
 from dotenv import load_dotenv
+import pymysql
 load_dotenv()
 
 NUMERO_ID_DISPAROS = os.getenv("WA_PHONE_NUMBER_ID_DISPAROS")
@@ -128,7 +129,7 @@ def iniciar_reenvio_erros(disparo_id: int, template_nome: str, numero_id: str = 
 def listar_disparos() -> list:
     """Lista todos os disparos com resumo de status."""
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(pymysql.cursors.DictCursor)
     try:
         cur.execute("""
             SELECT
@@ -151,7 +152,7 @@ def listar_disparos() -> list:
 def detalhar_disparo(disparo_id: int) -> dict:
     """Retorna detalhes completos de um disparo incluindo contatos."""
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(pymysql.cursors.DictCursor)
     try:
         cur.execute("""
             SELECT * FROM disparos WHERE id = %s
@@ -180,7 +181,7 @@ def listar_respostas(disparo_id: int = None) -> list:
     Se disparo_id for informado, filtra por campanha.
     """
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(pymysql.cursors.DictCursor)
     try:
         if disparo_id:
             cur.execute("""
