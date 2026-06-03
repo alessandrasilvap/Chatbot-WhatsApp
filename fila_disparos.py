@@ -2,6 +2,7 @@ import time
 import json
 from datetime import datetime
 from bd3 import get_conn
+import pymysql
 from envio_whatsapp import enviar_template
 
 # Delay entre cada mensagem (em segundos) — evita bloqueio da Meta
@@ -10,7 +11,7 @@ DELAY_ENTRE_MENSAGENS = 2
 def buscar_contatos_pendentes(disparo_id: int) -> list:
     """Busca todos os contatos com status pendente de um disparo."""
     conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = conn.cursor(pymysql.cursors.DictCursor)
     try:
         cur.execute("""
             SELECT id, nome, telefone, variaveis_json
