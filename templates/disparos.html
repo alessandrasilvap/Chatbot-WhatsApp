@@ -5,6 +5,7 @@
   <title>Disparos em Massa - Canal I</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" href="../static/logo-comlurb.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
   <nav class="bg-slate-800 text-white p-4 shadow-md">
@@ -258,27 +259,52 @@
 
       try {
         const texto = await file.text();
-        const linhas = texto.trim().split('\n');
-        const cabecalho = linhas[0].split(',').map(c => c.trim().toLowerCase().replace(/\r/g,''));
-
+        const linhas = texto
+          .trim()
+          .split(/\r?\n/)
+          .filter(l => l.trim());
+        
+        // Detecta automaticamente ; ou ,
+        const separador = linhas[0].includes(';') ? ';' : ',';
+        
+        const cabecalho = linhas[0]
+            .split(separador)
+            .map(c => c.trim().toLowerCase().replace(/\r/g,''));
+        
         contatosImportados = linhas.slice(1).map(linha => {
-          const cols = linha.split(',').map(c => c.trim().replace(/\r/g,''));
-          const obj = {};
-          cabecalho.forEach((h, i) => obj[h] = cols[i] || '');
-
-          // Monta variaveis_json com tudo exceto nome e telefone
-          const variaveis = {};
-          cabecalho.forEach(h => {
-            if (h !== 'nome' && h !== 'telefone') variaveis[h] = obj[h];
-          });
-
-          return { nome: obj['nome'], telefone: obj['telefone'], variaveis_json: variaveis };
+            const cols = linha
+                .split(separador)
+                .map(c => c.trim().replace(/\r/g,''));
+        
+            const obj = {};
+        
+            cabecalho.forEach((h, i) => {
+                obj[h] = cols[i] || '';
+            });
+        
+            // Monta variaveis_json com tudo exceto nome e telefone
+            const variaveis = {};
+        
+            cabecalho.forEach(h => {
+                if (h !== 'nome' && h !== 'telefone') {
+                    variaveis[h] = obj[h];
+                }
+            });
+        
+            return {
+                nome: obj['nome'],
+                telefone: obj['telefone'],
+                variaveis_json: variaveis
+            };
+        
         }).filter(c => c.nome && c.telefone);
-
+        
         info.textContent = `✅ ${contatosImportados.length} contatos carregados.`;
+        
         atualizarPreview();
       } catch(e) {
-        info.textContent = '❌ Erro ao ler o arquivo. Use CSV com vírgula.';
+          console.error(e);
+          info.textContent = '❌ Erro ao ler o arquivo.';
       }
     });
 
