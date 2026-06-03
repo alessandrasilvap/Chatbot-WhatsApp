@@ -129,7 +129,13 @@ def executar_disparo(disparo_id: int, template_nome: str, numero_id: str = None)
         else:
             variaveis_dict = variaveis_raw or {}
 
-        variaveis_lista = list(variaveis_dict.values())
+        variaveis_lista = [
+            contato["nome"],
+            variaveis_dict.get("etapa", ""),
+            variaveis_dict.get("data", ""),
+            variaveis_dict.get("horario", ""),
+            variaveis_dict.get("local", "")
+        ]
 
         # Formata o telefone (garante que tem DDI 55)
         telefone = contato["telefone"].strip().replace(" ", "").replace("-", "")
@@ -137,6 +143,25 @@ def executar_disparo(disparo_id: int, template_nome: str, numero_id: str = None)
             telefone = "55" + telefone
 
         print(f"📤 Enviando para {contato['nome']} ({telefone})...")
+
+        print("VARIAVEIS:", variaveis_lista)
+        print("TOTAL:", len(variaveis_lista))
+        
+        if len(variaveis_lista) != 5:
+            raise Exception(
+                f"Template espera 5 variáveis mas recebeu {len(variaveis_lista)}"
+            )
+            
+        if not all(variaveis_lista):
+            print(f"❌ Variáveis inválidas: {variaveis_lista}")
+        
+            atualizar_status_contato(
+                contato_id=contato["id"],
+                status="erro",
+                erro_msg="Variáveis obrigatórias não preenchidas"
+            )
+        
+            continue
 
         resultado = enviar_template(
             telefone=telefone,
