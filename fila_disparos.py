@@ -129,13 +129,13 @@ def executar_disparo(disparo_id: int, template_nome: str, numero_id: str = None)
         else:
             variaveis_dict = variaveis_raw or {}
 
-        variaveis_lista = [
-            contato["nome"],
-            variaveis_dict.get("etapa", ""),
-            variaveis_dict.get("data", ""),
-            variaveis_dict.get("horario", ""),
-            variaveis_dict.get("local", "")
-        ]
+        variaveis_lista = []
+
+        for chave in sorted(
+            variaveis_dict.keys(),
+            key=lambda x: int(x.replace("var", "")) if x.startswith("var") else 9999
+        ):
+            variaveis_lista.append(str(variaveis_dict[chave]))
 
         # Formata o telefone (garante que tem DDI 55)
         telefone = contato["telefone"].strip().replace(" ", "").replace("-", "")
@@ -147,10 +147,8 @@ def executar_disparo(disparo_id: int, template_nome: str, numero_id: str = None)
         print("VARIAVEIS:", variaveis_lista)
         print("TOTAL:", len(variaveis_lista))
         
-        if len(variaveis_lista) != 5:
-            raise Exception(
-                f"Template espera 5 variáveis mas recebeu {len(variaveis_lista)}"
-            )
+        if not variaveis_lista:
+            raise Exception("Nenhuma variável encontrada")
             
         if not all(variaveis_lista):
             print(f"❌ Variáveis inválidas: {variaveis_lista}")
