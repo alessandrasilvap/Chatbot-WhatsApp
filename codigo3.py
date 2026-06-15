@@ -241,7 +241,23 @@ def extract_status_updates(payload: dict) -> list:
             value = c.get("value", {}) or {}
             for s in (value.get("statuses", []) or []):
                 wamid = s.get("id", "")
-                status_meta = s.get("status", "")  # sent, delivered, read, failed
+                status_meta = s.get("status", "")
+
+                erro_msg = None
+            
+                if status_meta == "failed":
+                    erros = s.get("errors", [])
+            
+                    if erros:
+                        erro = erros[0]
+            
+                        codigo = erro.get("code")
+                        titulo = erro.get("title")
+                        detalhe = erro.get("message")
+            
+                        erro_msg = (
+                            f"Código {codigo} - {titulo} - {detalhe}"
+                        )
 
                 # Mapeia status da Meta para o nosso banco
                 mapa = {
@@ -253,10 +269,10 @@ def extract_status_updates(payload: dict) -> list:
                 status_bd = mapa.get(status_meta)
 
                 if wamid and status_bd:
-                    results.append({"wamid": wamid, "status": status_bd})
+                    results.append({"wamid": wamid, "status": status_bd, "erro_msg": erro_msg})
     return results
 
-def atualizar_status_por_wamid(wamid: str, status: str):
+def atualizar_status_por_wamid(wamid: str, status: str, erro_msg: str = None):
     """
     Atualiza o status de um contato de disparo pelo wamid.
     """
@@ -265,9 +281,9 @@ def atualizar_status_por_wamid(wamid: str, status: str):
     try:
         cur.execute("""
             UPDATE disparos_contatos
-            SET status = %s, data_status_update = NOW()
+            SET status = %s, erro_msg = %s, data_status_update = NOW()
             WHERE wamid = %s
-        """, (status, wamid))
+        """, (status, erro_msg, wamid))
         conn.commit()
         if cur.rowcount > 0:
             print(f"✅ Status atualizado via webhook: {wamid} → {status}")
@@ -845,7 +861,7 @@ def webhook():
         # Processa atualizações de status dos disparos
         status_updates = extract_status_updates(payload)
         for s in status_updates:
-            atualizar_status_por_wamid(s["wamid"], s["status"])
+            atualizar_status_por_wamid(s["wamid"], s["status"], s.get("erro_msg"))
 
         msgs = extract_text_messages(payload)
         print(">>> Mensagens extraidas:", msgs)
