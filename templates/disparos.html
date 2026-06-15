@@ -326,7 +326,7 @@
 
       if (primeiro) {
         const vars = primeiro.variaveis_json;
-        const texto = `Olá, ${primeiro.nome}! 🎉\n\nVocê foi aprovado(a) para a próxima etapa!\n\n📋 Etapa: ${vars.etapa || '—'}\n📅 Data: ${vars.data || '—'}\n🕐 Horário: ${vars.horario || '—'}\n📍 Local: ${vars.local || '—'}\n\nEquipe de Recrutamento`;
+        const texto = `*Companhia Municipal de Limpeza Urbana - COMLURB*\n\n Olá ${primeiro.nome}, Você está sendo convocado(a) para a entrega da documentação referente ao processo seletivo de Gari Temporário da COMLURB.\n\n *Data:* ${vars.data || '—'}\n *Horário:* ${vars.horario || '—'}\n *Local:* ${vars.local || '—'}\n *Endereço:* ${vars.endereco || '—'}\n *Ponto de referência:* ${vars.referencia || '—'}\n *Transporte público:* ${vars.transporte || '—'}\n\n *Conforme o item 9 do edital, compareça com originais e cópias dos documentos relacionados no link abaixo:*\n *Diário Oficial do Município do Rio do dia 11/06/2026 (páginas 63 à 67)*\n https://doweb.rio.rj.gov.br/portal/visualizacoes/pdf/14823#/p:63/e:14823?find=comprobat%C3%B3ria \n\n Disparo automático, por favor, não responda.\n\n *Qualquer dúvida solicitamos entrar em contato através do e-mail: selecao.comlurb@prefeitura.rio*`;
         document.getElementById('preview-texto').textContent = texto;
       }
     }
