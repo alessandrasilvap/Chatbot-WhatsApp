@@ -189,6 +189,7 @@ def listar_respostas(disparo_id: int = None) -> list:
                     dc.nome,
                     dc.telefone,
                     dc.status,
+                    dc.data_status_update,
                     d.nome_campanha,
                     d.template_nome
                 FROM disparos_contatos dc
@@ -202,6 +203,7 @@ def listar_respostas(disparo_id: int = None) -> list:
                     dc.nome,
                     dc.telefone,
                     dc.status,
+                    dc.data_status_update,
                     d.nome_campanha,
                     d.template_nome
                 FROM disparos_contatos dc
