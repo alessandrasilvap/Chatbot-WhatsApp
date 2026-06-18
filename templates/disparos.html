@@ -477,8 +477,17 @@
         badge.className = `text-xs font-bold px-2 py-1 rounded-full ${badges[d.status] || 'bg-gray-100 text-gray-600'}`;
 
         if (d.status === 'finalizado' && loopAcompanhamento) {
-          clearInterval(loopAcompanhamento);
-          setMsgAcao('🏁 Disparo finalizado!', 'green');
+            clearInterval(loopAcompanhamento);
+        
+            const taxa = (d.resumo?.taxa_sucesso || 0)
+                .toFixed(2)
+                .replace('.', ',');
+        
+            setMsgAcao(
+                `🏁 Disparo finalizado!<br>
+                 📈 Taxa de sucesso: ${taxa}%`,
+                'green'
+            );
         }
 
         const painelErros = document.getElementById('painel-erros');
@@ -632,8 +641,8 @@
     function setMsgAcao(texto, cor) {
       const el = document.getElementById('msg-acao');
       const cores = { red:'text-red-600', green:'text-green-600', gray:'text-gray-500', yellow:'text-yellow-600', orange:'text-orange-500' };
-      el.className = `text-sm mt-3 font-semibold ${cores[cor] || 'text-gray-500'}`;
-      el.textContent = texto;
+      el.className = `text-base mt-3 font-bold ${cores[cor] || 'text-gray-500'}`;
+      el.innerHTML = texto;
     }
 
     // Atualiza preview ao digitar
