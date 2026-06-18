@@ -64,8 +64,7 @@
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4">
         <h2 class="font-bold text-gray-700 text-base mb-1">2. Importar Lista de Contatos</h2>
         <p class="text-xs text-gray-500 mb-4">
-          O arquivo deve ter as colunas: <strong>nome</strong>, <strong>telefone</strong> e as variáveis do template 
-          (<strong>etapa</strong>, <strong>data</strong>, <strong>horario</strong>, <strong>local</strong>).
+          O arquivo deve ter as colunas: <strong>nome</strong>, <strong>telefone</strong> e as <strong>variáveis do template</strong>.
         </p>
         <input id="arquivo-csv" type="file" accept=".csv,.xlsx"
           class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-green-50 file:text-green-700 file:font-semibold hover:file:bg-green-100 cursor-pointer border border-gray-300 rounded-lg">
@@ -167,6 +166,26 @@
         <div class="mt-4 flex items-center gap-2">
           <span class="text-xs text-gray-500">Status:</span>
           <span id="badge-status" class="text-xs font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600">—</span>
+        </div>
+  
+        <div id="painel-erros" class="mt-4 hidden">
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <h3 class="font-bold text-red-700 mb-2">⚠️ Resumo dos erros</h3>
+        
+                <div id="resumo-erros" class="text-sm text-gray-700 space-y-1"></div>
+        
+                <button
+                    id="btn-detalhes-erros"
+                    class="mt-3 text-sm text-blue-600 hover:underline hidden"
+                    onclick="toggleDetalhesErros()">
+                    Ver detalhes
+                </button>
+        
+                <div
+                    id="detalhes-erros"
+                    class="hidden mt-3 p-3 bg-white rounded border text-xs font-mono whitespace-pre-line">
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -418,6 +437,21 @@
         if (!d.id) return;
 
         const contatos = d.contatos || [];
+        const erros = contatos.filter(c => c.status === 'erro');
+        const agrupados = {};
+        const detalhes = {};
+
+        erros.forEach(c => {
+            const motivo = traduzirErro(c.erro_msg);
+        
+            agrupados[motivo] = (agrupados[motivo] || 0) + 1;
+        
+            if (!detalhes[motivo])
+                detalhes[motivo] = [];
+        
+            detalhes[motivo].push(c.telefone);
+        });
+        
         const cnt = { pendente:0, enviado:0, entregue:0, lido:0, erro:0 };
         contatos.forEach(c => { if (cnt[c.status] !== undefined) cnt[c.status]++; });
 
@@ -445,6 +479,44 @@
         if (d.status === 'finalizado' && loopAcompanhamento) {
           clearInterval(loopAcompanhamento);
           setMsgAcao('🏁 Disparo finalizado!', 'green');
+        }
+
+        const painelErros = document.getElementById('painel-erros');
+        const resumoErros = document.getElementById('resumo-erros');
+        const detalhesErros = document.getElementById('detalhes-erros');
+        const btnDetalhes = document.getElementById('btn-detalhes-erros');
+        
+        if (erros.length > 0) {
+            painelErros.classList.remove('hidden');
+        
+            resumoErros.innerHTML = '';
+        
+            Object.entries(agrupados).forEach(([motivo, qtd]) => {
+                resumoErros.innerHTML += `
+                    <div>
+                        <strong>${motivo}: ${qtd}</strong>
+                    </div>
+                `;
+            });
+        
+            let textoDetalhes = '';
+        
+            Object.entries(detalhes).forEach(([motivo, numeros]) => {
+                textoDetalhes += `${motivo}\n\n`;
+        
+                numeros.forEach(n => {
+                    textoDetalhes += `${n}\n`;
+                });
+        
+                textoDetalhes += '\n-------------------------\n\n';
+            });
+        
+            detalhesErros.textContent = textoDetalhes;
+        
+            btnDetalhes.classList.remove('hidden');
+        
+        } else {
+            painelErros.classList.add('hidden');
         }
       } catch(e) { console.error('Erro acompanhamento:', e); }
     }
@@ -567,6 +639,26 @@
     // Atualiza preview ao digitar
     document.getElementById('nome-campanha').addEventListener('input', atualizarPreview);
     document.getElementById('template-nome').addEventListener('input', atualizarPreview);
+
+    function traduzirErro(erro) {
+        if (!erro) return "Erro desconhecido";
+    
+        if (erro.includes("131026"))
+            return "Número sem WhatsApp";
+    
+        if (erro.includes("131048"))
+            return "Limite diário da Meta atingido";
+    
+        if (erro.includes("Variáveis obrigatórias"))
+            return "Variáveis obrigatórias não preenchidas";
+    
+        return erro;
+    }
+    
+    function toggleDetalhesErros() {
+        const div = document.getElementById('detalhes-erros');
+        div.classList.toggle('hidden');
+    }
   </script>
 </body>
 </html>
