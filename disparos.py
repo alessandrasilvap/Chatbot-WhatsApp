@@ -170,6 +170,31 @@ def detalhar_disparo(disparo_id: int) -> dict:
         """, (disparo_id,))
         disparo["contatos"] = cur.fetchall()
 
+        contatos = disparo["contatos"]
+
+        total = len(contatos)
+        
+        enviados = sum(1 for c in contatos if c["status"] == "enviado")
+        entregues = sum(1 for c in contatos if c["status"] == "entregue")
+        lidos = sum(1 for c in contatos if c["status"] == "lido")
+        erros = sum(1 for c in contatos if c["status"] == "erro")
+        
+        sucessos = enviados + entregues + lidos
+        
+        taxa_sucesso = round(
+            (sucessos / total) * 100,
+            2
+        ) if total > 0 else 0
+        
+        disparo["resumo"] = {
+            "total": total,
+            "enviados": enviados,
+            "entregues": entregues,
+            "lidos": lidos,
+            "erros": erros,
+            "taxa_sucesso": taxa_sucesso
+        }
+
         return disparo
     finally:
         cur.close()
