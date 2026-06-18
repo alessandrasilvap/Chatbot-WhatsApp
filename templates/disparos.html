@@ -641,7 +641,7 @@
     function setMsgAcao(texto, cor) {
       const el = document.getElementById('msg-acao');
       const cores = { red:'text-red-600', green:'text-green-600', gray:'text-gray-500', yellow:'text-yellow-600', orange:'text-orange-500' };
-      el.className = `text-base mt-3 font-bold ${cores[cor] || 'text-gray-500'}`;
+      el.className = `text-sm mt-3 font-bold ${cores[cor] || 'text-gray-500'}`;
       el.innerHTML = texto;
     }
 
