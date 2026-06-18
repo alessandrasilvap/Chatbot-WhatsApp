@@ -118,6 +118,7 @@ WA_ACCESS_TOKEN = os.getenv("WA_ACCESS_TOKEN", "")
 WA_PHONE_NUMBER_ID = os.getenv("WA_PHONE_NUMBER_ID", "")
 WA_API_VERSION = os.getenv("WA_API_VERSION", "v24.0")
 app.secret_key = ""
+WA_WABA_ID = os.getenv("WA_WABA_ID", "")
 
 @app.after_request
 def no_cache(response):
@@ -1233,6 +1234,48 @@ def api_respostas():
         return jsonify({"respostas": resultado})
     except Exception as e:
         return jsonify({"respostas": []})
+
+@app.get('/disparos/api/template-preview')
+@disparo_required
+def api_template_preview():
+    try:
+        nome_template = request.args.get("nome")
+
+        if not nome_template:
+            return jsonify({"texto": ""})
+
+        waba_id = WA_WABA_ID
+
+        url = (
+            f"https://graph.facebook.com/"
+            f"{WA_API_VERSION}/"
+            f"{waba_id}/message_templates"
+        )
+
+        headers = {
+            "Authorization": f"Bearer {WA_ACCESS_TOKEN}"
+        }
+
+        response = requests.get(url, headers=headers, timeout=15)
+        data = response.json()
+
+        for template in data.get("data", []):
+
+            if template.get("name") == nome_template:
+
+                for componente in template.get("components", []):
+
+                    if componente.get("type") == "BODY":
+
+                        return jsonify({
+                            "texto": componente.get("text", "")
+                        })
+
+        return jsonify({"texto": ""})
+
+    except Exception as e:
+        print("Erro preview template:", e)
+        return jsonify({"texto": ""})
 
 if __name__ == "__main__":
     socketio.run(app, debug=False, port=5000)
