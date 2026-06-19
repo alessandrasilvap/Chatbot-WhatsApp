@@ -346,10 +346,35 @@
       document.getElementById('preview-template').textContent = template;
       document.getElementById('preview-campanha').textContent = nome;
 
-      if (primeiro) {
-        const vars = primeiro.variaveis_json;
-        const texto = `*Companhia Municipal de Limpeza Urbana - COMLURB*\n\n Olá ${primeiro.nome}, Você está sendo convocado(a) para a entrega da documentação referente ao processo seletivo de Gari Temporário da COMLURB.\n\n *Data:* ${vars.data || '—'}\n *Horário:* ${vars.horario || '—'}\n *Local:* ${vars.local || '—'}\n *Endereço:* ${vars.endereco || '—'}\n *Ponto de referência:* ${vars.referencia || '—'}\n *Transporte público:* ${vars.transporte || '—'}\n\n *Conforme o item 9 do edital, compareça com originais e cópias dos documentos relacionados no link abaixo:*\n *Diário Oficial do Município do Rio do dia 11/06/2026 (páginas 63 à 67)*\n https://doweb.rio.rj.gov.br/portal/visualizacoes/pdf/14823#/p:63/e:14823?find=comprobat%C3%B3ria \n\n Disparo automático, por favor, não responda.\n\n *Qualquer dúvida solicitamos entrar em contato através do e-mail: selecao.comlurb@prefeitura.rio*`;
+      if (primeiro && template !== '—') {
+          carregarPreviewTemplate(template, primeiro);
+      }
+    }
+
+    async function carregarPreviewTemplate(nomeTemplate, contato) {
+      try {
+        const response = await fetch(
+            `/disparos/api/template-preview?nome=${nomeTemplate}`
+        );
+
+        const data = await response.json();
+        let texto = data.texto || '';
+
+        const vars = Object.values(
+            contato.variaveis_json || {}
+        );
+
+        vars.forEach((valor, index) => {
+            texto = texto.replaceAll(
+                `{{${index + 1}}}`,
+                valor || '—'
+            );
+        });
+
         document.getElementById('preview-texto').textContent = texto;
+      } catch (e) {
+        console.error(e)
+        document.getElementById('preview-texto').textContent = 'Erro ao carregar template';
       }
     }
 
@@ -647,7 +672,7 @@
 
     // Atualiza preview ao digitar
     document.getElementById('nome-campanha').addEventListener('input', atualizarPreview);
-    document.getElementById('template-nome').addEventListener('input', atualizarPreview);
+    document.getElementById('template-nome').addEventListener('change', atualizarPreview);
 
     function traduzirErro(erro) {
         if (!erro) return "Erro desconhecido";
