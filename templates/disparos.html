@@ -359,16 +359,14 @@
 
         const data = await response.json();
         let texto = data.texto || '';
-
-        const vars = Object.values(
-            contato.variaveis_json || {}
-        );
+        const vars = Object.values(contato.variaveis_json || {});
 
         vars.forEach((valor, index) => {
-            texto = texto.replaceAll(
-                `{{${index + 1}}}`,
-                valor || '—'
-            );
+          const placeholder = '{{' + (index + 1) + '}}';
+          texto = texto.replaceAll(
+            placeholder,
+            valor || ''
+          );
         });
 
         document.getElementById('preview-texto').textContent = texto;
