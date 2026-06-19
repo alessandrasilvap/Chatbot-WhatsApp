@@ -28,6 +28,7 @@ from flask_wtf.csrf import CSRFProtect
 import time
 from rq import Worker
 import subprocess
+import psutil
 
 # Carrega variáveis do .env
 load_dotenv()
@@ -1169,7 +1170,6 @@ def painel_sistema():
 @app.get('/api/sistema/status')
 @sistema_required
 def api_status_sistema():
-
     resultado = {}
 
     # MYSQL
@@ -1294,6 +1294,21 @@ def api_status_sistema():
 
         resultado["meta"] = {
             "status": "offline",
+            "erro": str(e)
+        }
+
+    # SERVIDOR
+    try:
+    
+        resultado["servidor"] = {
+            "cpu": psutil.cpu_percent(interval=1),
+            "ram": psutil.virtual_memory().percent,
+            "disco": psutil.disk_usage("/").percent
+        }
+    
+    except Exception as e:
+    
+        resultado["servidor"] = {
             "erro": str(e)
         }
 
