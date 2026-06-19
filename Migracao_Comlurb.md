@@ -112,6 +112,7 @@ Tabelas: *atendentes, atendimento_eventos, atendimentos, disparos, disparos_cont
 - bot-worker.service
 
   - Worker responsável por tarefas automáticas, timeouts e manutenção de atendimentos.
+  - É um processo Python independente.
 
 ### Serviços de Infraestrutura
 
