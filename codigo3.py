@@ -27,6 +27,7 @@ from utils_tempo import em_horario_comercial, get_tipo_periodo
 from flask_wtf.csrf import CSRFProtect
 import time
 from rq import Worker
+import subprocess
 
 # Carrega variáveis do .env
 load_dotenv()
