@@ -2,59 +2,180 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Status do Sistema</title>
+  <title>Saúde do Sistema</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="../static/logo-comlurb.png" type="image/png">
 </head>
-<body class="bg-gray-100 p-8">
-  <div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6">🩺 Saúde do Sistema</h1>
-    
-    <div id="status" class="grid grid-cols-2 gap-4"></div>
+<body class="bg-slate-100 min-h-screen">
+  <!-- TOPO -->
+  <div class="bg-[#0f172a] shadow-lg">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div>
+              <h1 class="text-2xl font-bold text-white">🩺 Saúde do Sistema</h1>
+              <p class="text-slate-300 text-sm">Monitoramento em tempo real dos serviços</p>
+          </div>
+  
+          <div class="flex items-center gap-4">
+              <div class="text-right">
+                  <div class="text-white text-sm font-semibold">Painel Operacional</div>  
+                  <div id="ultima-atualizacao" class="text-slate-300 text-xs">--</div>
+              </div>
+  
+              <a href="/logout"class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Sair</a>
+          </div>
+      </div>
+  </div>
+  
+  <div class="max-w-7xl mx-auto p-6">
+      <!-- STATUS GERAL -->
+      <div id="status-geral" mclass="bg-white rounded-xl shadow-md p-5 mb-6 border-l-4 border-green-500">
+          <div class="text-lg font-bold">🟢 Sistema Operacional</div>
+  
+          <div class="text-sm text-gray-500 mt-1">Todos os serviços funcionando normalmente.</div>
+      </div>
+
+      <!-- CARDS -->
+      <div id="status" class="grid md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
   </div>
   
   <script>
-    async function carregarStatus(){
-      const res = await fetch('/api/sistema/status');
-      const data = await res.json();
-  
-      document.getElementById('status').innerHTML = `
-        <div class="bg-white rounded shadow p-4">
-            <h2>🗄️ Banco</h2>
-            <p>${data.mysql.status}</p>
-            <p>${data.mysql.tempo || '-'} ms</p>
-        </div>
+    function badge(status){
+        if(status === "online"){
+            return `
+            <span class="bg-green-100 text-green-700
+                         px-3 py-1 rounded-full
+                         text-xs font-bold">
+                🟢 ONLINE
+            </span>`;
+        }
     
-        <div class="bg-white rounded shadow p-4">
-            <h2>🔥 Redis</h2>
-            <p>${data.redis.status}</p>
-            <p>${data.redis.tempo || '-'} ms</p>
-        </div>
-    
-        <div class="bg-white rounded shadow p-4">
-            <h2>⚙️ Worker RQ</h2>
-            <p>${data.rq.status}</p>
-            <p>${data.rq.workers || 0} workers</p>
-        </div>
-
-        <div class="bg-white rounded shadow p-4">
-            <h2>🤖 Worker Automático</h2>
-            <p>${data.worker_auto.status}</p>
-        </div>
-    
-        <div class="bg-white rounded shadow p-4">
-            <h2>📱 Meta API</h2>
-            <p>${data.meta.status}</p>
-            <p>${data.meta.tempo || '-'} ms</p>
-        </div>
-
-        <div class="bg-white rounded shadow p-4">
-            <h2>🖥️ Servidor</h2>
-            <p>CPU: ${data.servidor?.cpu ?? '-'}%</p>
-            <p>RAM: ${data.servidor?.ram ?? '-'}%</p>
-            <p>Disco: ${data.servidor?.disco ?? '-'}%</p>
-        </div>
-        `;
+        return `
+        <span class="bg-red-100 text-red-700
+                     px-3 py-1 rounded-full
+                     text-xs font-bold">
+            🔴 OFFLINE
+        </span>`;
     }
+    
+    async function carregarStatus(){
+        try{
+            const res = await fetch('/api/sistema/status');
+            const data = await res.json();
+    
+            document.getElementById('ultima-atualizacao').textContent = new Date().toLocaleString('pt-BR');
+    
+            const servicos = [
+                {
+                    nome:'Banco',
+                    emoji:'🗄️',
+                    status:data.mysql.status,
+                    detalhe:`${data.mysql.tempo || '-'} ms`
+                },
+                {
+                    nome:'Redis',
+                    emoji:'🔥',
+                    status:data.redis.status,
+                    detalhe:`${data.redis.tempo || '-'} ms`
+                },
+                {
+                    nome:'Worker RQ',
+                    emoji:'⚙️',
+                    status:data.rq.status,
+                    detalhe:`${data.rq.workers || 0} workers`
+                },
+                {
+                    nome:'Worker Automático',
+                    emoji:'🤖',
+                    status:data.worker_auto.status,
+                    detalhe:'Monitorando atendimentos'
+                },
+                {
+                    nome:'Meta API',
+                    emoji:'📱',
+                    status:data.meta.status,
+                    detalhe:`${data.meta.tempo || '-'} ms`
+                }
+            ];
+    
+            let html = '';
+            let offline = 0;
+    
+            servicos.forEach(servico => {
+                if(servico.status !== 'online'){
+                    offline++;
+                }
+    
+                html += `
+                <div class="bg-white rounded-xl shadow-md p-5 hover:shadow-lg transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="font-bold text-lg">
+                                ${servico.emoji} ${servico.nome}
+                            </h2>
+    
+                            <div class="mt-3">
+                                ${badge(servico.status)}
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="mt-4 text-sm text-gray-500">${servico.detalhe}</div>
+                </div>
+                `;
+            });
+    
+            html += `
+            <div class="bg-white rounded-xl shadow-md p-5 hover:shadow-lg transition">
+                <h2 class="font-bold text-lg">🖥️ Servidor</h2>
+    
+                <div class="mt-4 space-y-2">
+                    <div>CPU: <strong>${data.servidor?.cpu ?? '-'}%</strong></div>
+    
+                    <div>RAM: <strong>${data.servidor?.ram ?? '-'}%</strong></div>
+    
+                    <div>Disco: <strong>${data.servidor?.disco ?? '-'}%</strong></div>
+                </div>
+            </div>
+            `;
+    
+            document.getElementById('status').innerHTML = html;
+            const painel = document.getElementById('status-geral');
+    
+            if(offline > 0){
+                painel.className = 'bg-white rounded-xl shadow-md p-5 mb-6 border-l-4 border-red-500';
+    
+                painel.innerHTML = `
+                    <div class="text-lg font-bold">
+                        🔴 Atenção
+                    </div>
+    
+                    <div class="text-sm text-gray-500 mt-1">
+                        ${offline} serviço(s) offline.
+                    </div>
+                `;
+            } else {
+                painel.className = 'bg-white rounded-xl shadow-md p-5 mb-6 border-l-4 border-green-500';
+    
+                painel.innerHTML = `
+                    <div class="text-lg font-bold">
+                        🟢 Sistema Operacional
+                    </div>
+    
+                    <div class="text-sm text-gray-500 mt-1">
+                        Todos os serviços funcionando normalmente.
+                    </div>
+                `;
+            }
+    
+        } catch(e){
+            document.getElementById('status').innerHTML = `
+            <div class="bg-red-100 text-red-700 p-5 rounded-lg">
+                Erro ao carregar status do sistema.
+            </div>
+            `;
+        }
+    }
+    
     carregarStatus();
     
     setInterval(carregarStatus, 30000);
