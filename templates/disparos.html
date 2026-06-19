@@ -79,7 +79,7 @@
           <div class="bg-[#efeae2] rounded-xl p-4 w-72 shadow-inner" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-color: rgba(255,255,255,0.7);">
             <div class="bg-white rounded-lg p-3 shadow text-sm text-gray-800 max-w-xs">
               <p class="text-xs font-bold text-gray-400 mb-1">PROCESSO SELETIVO</p>
-              <div id="preview-texto" class="whitespace-pre-line text-sm"></div>
+              <div id="preview-texto" class="whitespace-pre-line text-sm" style="white-space: pre-line; word-break: break-word; overflow-wrap: break-word;"></div>
               <div class="mt-2 pt-2 border-t border-gray-100 flex flex-col gap-1">
                 <button class="w-full text-center text-green-600 text-xs font-semibold py-1 bg-green-50 rounded">✅ Confirmo presença</button>
                 <button class="w-full text-center text-red-500 text-xs font-semibold py-1 bg-red-50 rounded">❌ Não poderei comparecer</button>
@@ -337,13 +337,15 @@
 
     function atualizarPreview() {
       const nome = document.getElementById('nome-campanha').value || '—';
-      const template = document.getElementById('template-nome').value || '—';
+      const selectTemplate = document.getElementById('template-nome');
+      const template = selectTemplate.value || '—';
+      const templateBonito = selectTemplate.selectedIndex > 0 ? selectTemplate.options[selectTemplate.selectedIndex].text.trim() : '—';
       const primeiro = contatosImportados[0];
 
       document.getElementById('painel-preview').classList.remove('hidden');
       document.getElementById('preview-total').textContent = contatosImportados.length;
       document.getElementById('preview-primeiro').textContent = primeiro ? primeiro.nome : '—';
-      document.getElementById('preview-template').textContent = template;
+      document.getElementById('preview-template').textContent = templateBonito;
       document.getElementById('preview-campanha').textContent = nome;
 
       if (primeiro && template !== '—') {
@@ -555,6 +557,18 @@
 
     // ============================================================
     // Histórico
+    function nomeBonitoTemplate(nome) {
+        const mapa = {
+            'atualizacao_etapa_processo_v1':
+                'Etapa: Entrega da documentação',
+    
+            'atualizacao_processo_v2':
+                'Etapa: Assinatura do contrato'
+        };
+    
+        return mapa[nome] || nome;
+    }
+        
     async function carregarHistorico() {
       const corpo = document.getElementById('tabela-historico');
       corpo.innerHTML = '<tr><td colspan="8" class="p-10 text-center text-blue-500">Carregando...</td></tr>';
@@ -573,7 +587,7 @@
           tr.className = 'hover:bg-blue-50 transition';
           tr.innerHTML = `
             <td class="p-4 font-semibold">${d.nome_campanha}</td>
-            <td class="p-4 text-xs font-mono text-gray-500">${d.template_nome}</td>
+            <td class="p-4 text-xs text-gray-500">${nomeBonitoTemplate(d.template_nome)}</td>
             <td class="p-4 text-center">${d.total_contatos}</td>
             <td class="p-4 text-center text-green-700 font-bold">${d.enviados}</td>
             <td class="p-4 text-center text-red-600 font-bold">${d.erros}</td>
