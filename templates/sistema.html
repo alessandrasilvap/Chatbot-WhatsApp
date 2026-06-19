@@ -1,1 +1,51 @@
-
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Status do Sistema</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">🩺 Saúde do Sistema</h1>
+    
+    <div id="status" class="grid grid-cols-2 gap-4"></div>
+  </div>
+  
+  <script>
+    async function carregarStatus(){
+      const res = await fetch('/api/sistema/status');
+      const data = await res.json();
+  
+      document.getElementById('status').innerHTML = `
+        <div class="bg-white rounded shadow p-4">
+            <h2>🗄️ Banco</h2>
+            <p>${data.mysql.status}</p>
+            <p>${data.mysql.tempo || '-'} ms</p>
+        </div>
+    
+        <div class="bg-white rounded shadow p-4">
+            <h2>🔥 Redis</h2>
+            <p>${data.redis.status}</p>
+            <p>${data.redis.tempo || '-'} ms</p>
+        </div>
+    
+        <div class="bg-white rounded shadow p-4">
+            <h2>⚙️ Worker RQ</h2>
+            <p>${data.rq.status}</p>
+            <p>${data.rq.workers || 0} workers</p>
+        </div>
+    
+        <div class="bg-white rounded shadow p-4">
+            <h2>📱 Meta API</h2>
+            <p>${data.meta.status}</p>
+            <p>${data.meta.tempo || '-'} ms</p>
+        </div>
+        `;
+    }
+    carregarStatus();
+    
+    setInterval(carregarStatus, 30000);
+  </script>
+</body>
+</html>
