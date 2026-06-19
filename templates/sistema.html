@@ -137,6 +137,38 @@
                 </div>
             </div>
             `;
+
+            html += `
+            <div class="bg-white rounded-xl shadow-md p-5 hover:shadow-lg transition">
+                <h2 class="font-bold text-lg mb-4">🛠️ Serviços da VM</h2>
+            
+                ${Object.entries(data.servicos || {}).map(([nome, status]) => `
+                    <div class="flex justify-between border-b py-2">
+                        <span>${nome}</span>
+            
+                        <span class="${
+                            status === 'active'
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        } font-bold">
+                            ${
+                                status === 'active'
+                                ? '🟢 Online'
+                                : '🔴 Offline'
+                            }
+                        </span>
+                    </div>
+                `).join('')}
+            </div>
+            `;
+
+            html += `
+            <div class="bg-white rounded-xl shadow-md p-5 hover:shadow-lg transition">
+                <h2 class="font-bold text-lg">⏳ Tempo Online</h2>
+            
+                <div class="mt-4 text-xl font-bold text-blue-700">${data.uptime || '-'}</div>
+            </div>
+            `;
     
             document.getElementById('status').innerHTML = html;
             const painel = document.getElementById('status-geral');
