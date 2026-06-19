@@ -25,6 +25,8 @@ from dotenv import load_dotenv
 from functools import wraps
 from utils_tempo import em_horario_comercial, get_tipo_periodo
 from flask_wtf.csrf import CSRFProtect
+import time
+from rq import Worker
 
 # Carrega variáveis do .env
 load_dotenv()
@@ -149,6 +151,20 @@ def admin_required(f):
             return "❌ Painel inválido.", 403
 
         if permissao not in ['admin', 'chat']:
+            return "❌ Acesso Negado.", 403
+
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+def sistema_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+
+        if 'usuario_logado' not in session:
+            return redirect('/login')
+
+        if session.get('permissao') != 'admin':
             return "❌ Acesso Negado.", 403
 
         return f(*args, **kwargs)
@@ -777,6 +793,9 @@ def tela_login():
                 (permissao == 'disparo' and painel == 'disparo')
             )
 
+            if painel == "sistema" and permissao != "admin":
+                tem_acesso = False
+
             if tem_acesso:
                 session['usuario_logado'] = resultado["usuario"]
                 session['permissao'] = permissao
@@ -785,6 +804,10 @@ def tela_login():
 
                 if painel == 'disparo':
                     return redirect('/disparos')
+                
+                elif painel == 'sistema':
+                    return redirect('/sistema')
+                
                 else:
                     return redirect('/admin')
             else:
@@ -1130,6 +1153,130 @@ def simulated_incoming():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+# ============================================================
+# PAINEL DE SAÚDE DO SISTEMA
+# ============================================================
+@app.route('/sistema')
+@sistema_required
+def painel_sistema():
+    return render_template(
+        'sistema.html',
+        usuario=session['usuario_logado']
+    )
+
+@app.get('/api/sistema/status')
+@sistema_required
+def api_status_sistema():
+
+    resultado = {}
+
+    # MYSQL
+    try:
+        inicio = time.time()
+
+        conn = get_conn()
+        cur = conn.cursor()
+
+        cur.execute("SELECT 1")
+
+        tempo = round(
+            (time.time() - inicio) * 1000,
+            2
+        )
+
+        cur.close()
+        conn.close()
+
+        resultado["mysql"] = {
+            "status": "online",
+            "tempo": tempo
+        }
+
+    except Exception as e:
+
+        resultado["mysql"] = {
+            "status": "offline",
+            "erro": str(e)
+        }
+
+    # REDIS
+    try:
+        inicio = time.time()
+
+        redis_conn.ping()
+
+        tempo = round(
+            (time.time() - inicio) * 1000,
+            2
+        )
+
+        resultado["redis"] = {
+            "status": "online",
+            "tempo": tempo
+        }
+
+    except Exception as e:
+
+        resultado["redis"] = {
+            "status": "offline",
+            "erro": str(e)
+        }
+
+    # WORKERS
+    try:
+
+        workers = Worker.all(
+            connection=redis_conn
+        )
+
+        resultado["rq"] = {
+            "status": "online" if len(workers) > 0 else "offline",
+            "workers": len(workers)
+        }
+
+    except Exception as e:
+
+        resultado["rq"] = {
+            "status": "offline",
+            "erro": str(e)
+        }
+
+    # META
+    try:
+
+        inicio = time.time()
+
+        r = requests.get(
+            f"https://graph.facebook.com/{WA_API_VERSION}/me",
+            headers={
+                "Authorization":
+                f"Bearer {WA_ACCESS_TOKEN}"
+            },
+            timeout=10
+        )
+
+        tempo = round(
+            (time.time() - inicio) * 1000,
+            2
+        )
+
+        resultado["meta"] = {
+            "status":
+                "online"
+                if r.status_code == 200
+                else "offline",
+            "tempo": tempo
+        }
+
+    except Exception as e:
+
+        resultado["meta"] = {
+            "status": "offline",
+            "erro": str(e)
+        }
+
+    return jsonify(resultado)
 
 # ============================================================
 # PAINEL DE DISPAROS
