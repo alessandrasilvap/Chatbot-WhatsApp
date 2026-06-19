@@ -1242,6 +1242,26 @@ def api_status_sistema():
             "erro": str(e)
         }
 
+    # WORKER AUTOMÁTICO
+    try:
+        status_worker = subprocess.check_output(
+            ["systemctl", "is-active", "bot-worker"],
+            text=True
+        ).strip()
+    
+        resultado["worker_auto"] = {
+            "status":
+                "online"
+                if status_worker == "active"
+                else "offline"
+        }
+    
+    except Exception as e:
+        resultado["worker_auto"] = {
+            "status": "offline",
+            "erro": str(e)
+        }
+
     # META
     try:
 
