@@ -1291,7 +1291,6 @@ def api_status_sistema():
         }
 
     except Exception as e:
-
         resultado["meta"] = {
             "status": "offline",
             "erro": str(e)
@@ -1299,7 +1298,6 @@ def api_status_sistema():
 
     # SERVIDOR
     try:
-    
         resultado["servidor"] = {
             "cpu": psutil.cpu_percent(interval=1),
             "ram": psutil.virtual_memory().percent,
@@ -1307,10 +1305,34 @@ def api_status_sistema():
         }
     
     except Exception as e:
-    
         resultado["servidor"] = {
             "erro": str(e)
         }
+
+    # SERVIÇOS DA VM
+    servicos = [
+        "bot-webhook",
+        "bot-fila",
+        "bot-worker",
+        "mysql",
+        "redis-server",
+        "nginx"
+    ]
+    
+    resultado["servicos"] = {}
+    
+    for servico in servicos:
+        try:
+    
+            status = subprocess.check_output(
+                ["systemctl", "is-active", servico],
+                text=True
+            ).strip()
+    
+            resultado["servicos"][servico] = status
+    
+        except Exception:
+            resultado["servicos"][servico] = "offline"
 
     return jsonify(resultado)
 
