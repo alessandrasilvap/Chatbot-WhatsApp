@@ -1334,6 +1334,18 @@ def api_status_sistema():
         except Exception:
             resultado["servicos"][servico] = "offline"
 
+    # UPTIME
+    try:
+        uptime = subprocess.check_output(
+            ["uptime", "-p"],
+            text=True
+        ).strip()
+    
+        resultado["uptime"] = uptime
+    
+    except Exception:
+        resultado["uptime"] = "-"
+
     return jsonify(resultado)
 
 # ============================================================
