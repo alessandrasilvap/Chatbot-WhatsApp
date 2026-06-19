@@ -46,6 +46,13 @@
             <p>${data.meta.status}</p>
             <p>${data.meta.tempo || '-'} ms</p>
         </div>
+
+        <div class="bg-white rounded shadow p-4">
+            <h2>🖥️ Servidor</h2>
+            <p>CPU: ${data.servidor?.cpu ?? '-'}%</p>
+            <p>RAM: ${data.servidor?.ram ?? '-'}%</p>
+            <p>Disco: ${data.servidor?.disco ?? '-'}%</p>
+        </div>
         `;
     }
     carregarStatus();
