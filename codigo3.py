@@ -832,6 +832,13 @@ def processar_mensagem_background(m):
     Esta função é o 'motor' que a fila chama. 
     Ela recebe a mensagem e executa a lógica do bot.
     """
+
+    CHATBOT_ATIVO = False
+
+    if not CHATBOT_ATIVO:
+        print("⛔ Chatbot desativado temporariamente.")
+        return
+
     with app.app_context():
         try:
             telefone = m.get('from')
