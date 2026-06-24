@@ -311,10 +311,6 @@
             carregarMensagens(id);
         
             if (loopMensagens) clearInterval(loopMensagens);
-        
-            if (!isEncerrado) {
-                loopMensagens = setInterval(() => carregarMensagens(id), 3000);
-            }
         }
 
         async function enviarMensagem() {
@@ -403,6 +399,10 @@
         socket.on('fila_atualizada', () => {
             console.log('🔔 Fila atualizada pelo servidor');
             atualizarFila(); // Só roda quando o servidor avisar
+          
+            if (atendimentoSelecionado) {
+                carregarMensagens(atendimentoSelecionado);
+            }
         });
         
         socket.on('disconnect', () => {
