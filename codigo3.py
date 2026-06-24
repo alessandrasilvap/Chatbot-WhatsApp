@@ -1461,8 +1461,15 @@ def api_respostas():
     try:
         disparo_id = request.args.get('disparo_id', type=int)
         resultado = listar_respostas(disparo_id)
+        for resposta in resultado:
+            if resposta.get("data_status_update"):
+                resposta["data_status_update"] = resposta[
+                    "data_status_update"
+                ].strftime("%d/%m/%Y %H:%M:%S")
         return jsonify({"respostas": resultado})
+        
     except Exception as e:
+        print("Erro ao listar respostas:", e)
         return jsonify({"respostas": []})
 
 @app.get('/disparos/api/template-preview')
