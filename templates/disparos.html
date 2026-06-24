@@ -706,14 +706,8 @@
         div.classList.toggle('hidden');
     }
 
-    function formatarData(data) {
-        if (!data) return '—';
-    
-        const d = new Date(data);
-    
-        return d.toLocaleString('pt-BR', {
-            timeZone: 'America/Sao_Paulo'
-        });
+    function formatarData(data){
+        return data || '—';
     }
   </script>
 </body>
