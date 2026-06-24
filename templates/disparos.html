@@ -582,7 +582,7 @@
         corpo.innerHTML = '';
         data.disparos.forEach(d => {
           const badges = { ativo:'bg-green-100 text-green-700', pausado:'bg-yellow-100 text-yellow-700', finalizado:'bg-gray-100 text-gray-600' };
-          const data_fmt = d.data_criacao ? new Date(d.data_criacao).toLocaleString('pt-BR') : '—';
+          const data_fmt = formatarData(d.data_criacao);
           const tr = document.createElement('tr');
           tr.className = 'hover:bg-blue-50 transition';
           tr.innerHTML = `
@@ -658,7 +658,7 @@
         data.respostas.forEach(r => {
           const tr = document.createElement('tr');
           tr.className = 'hover:bg-blue-50 transition';
-          const atualizado = r.data_status_update ? new Date(r.data_status_update).toLocaleString('pt-BR') : '—';
+          const atualizado = formatarData(r.data_status_update);
           tr.innerHTML = `
             <td class="p-4 font-semibold">${r.nome}</td>
             <td class="p-4 text-xs font-mono text-gray-500">${r.telefone}</td>
@@ -704,6 +704,16 @@
     function toggleDetalhesErros() {
         const div = document.getElementById('detalhes-erros');
         div.classList.toggle('hidden');
+    }
+
+    function formatarData(data) {
+        if (!data) return '—';
+    
+        const d = new Date(data);
+    
+        return d.toLocaleString('pt-BR', {
+            timeZone: 'America/Sao_Paulo'
+        });
     }
   </script>
 </body>
