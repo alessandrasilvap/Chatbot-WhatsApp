@@ -404,6 +404,13 @@
                 carregarMensagens(atendimentoSelecionado);
             }
         });
+
+        socket.on('nova_mensagem', (data) => {
+            console.log('💬 Nova mensagem para atendimento', data.atendimento_id);
+            if (atendimentoSelecionado && String(data.atendimento_id) === String(atendimentoSelecionado)) {
+                carregarMensagens(atendimentoSelecionado);
+            }
+        });
         
         socket.on('disconnect', () => {
             console.log('⚠️ WebSocket desconectado, tentando reconectar...');
