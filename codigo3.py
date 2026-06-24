@@ -99,6 +99,7 @@ def escutar_redis_pubsub():
         pubsub.subscribe('canal_painel', 'canal_mensagens')
         print("📡 Listener Redis Pub/Sub iniciado.")
         for mensagem in pubsub.listen():
+            if mensagem['type'] == 'message':
                 canal = mensagem['channel']
                 if isinstance(canal, bytes):
                     canal = canal.decode('utf-8')
