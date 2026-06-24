@@ -1025,10 +1025,20 @@ def admin_get_mensagens(atendimento_id):
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     try:
         cursor.execute("""
-            SELECT tipo_evento, valor, data_evento 
-            FROM atendimento_eventos 
-            WHERE atendimento_id = %s 
-              AND tipo_evento IN ('msg_usuario', 'msg_atendente', 'resumo_handoff')
+            SELECT
+                tipo_evento,
+                valor,
+                data_evento
+            FROM atendimento_eventos
+            WHERE atendimento_id = %s
+              AND tipo_evento IN (
+                    'msg_usuario',
+                    'msg_atendente',
+                    'resumo_handoff',
+                    'menu_escolhido',
+                    'submenu_escolhido',
+                    'sub_submenu_escolhido'
+              )
             ORDER BY data_evento ASC
         """, (atendimento_id,))
         msgs = cursor.fetchall()
