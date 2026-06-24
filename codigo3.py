@@ -4,10 +4,14 @@ import pymysql
 import pymysql.cursors
 from flask import Flask, request, jsonify, session, redirect, render_template
 from flask_socketio import SocketIO
-from menusSubmenus3 import texto_menu_principal, texto_submenu, texto_sub_submenu, obter_script, texto_opcoes_pos_script
+from menusSubmenus3 import (
+    texto_menu_principal, texto_submenu, texto_sub_submenu, obter_script, texto_opcoes_pos_script, 
+    MENU_PRINCIPAL, SUBMENUS, SUBSUBMENUS
+)
 from bd3 import (
     criar_atendimento, atualizar_atendimento, marcar_handoff, finalizar, registrar_evento, assumir_atendimento,
-    obter_status_atendimento, obter_sessao, salvar_sessao, apagar_sessao, get_conn, validar_login, contar_fila_espera_humana
+    obter_status_atendimento, obter_sessao, salvar_sessao, apagar_sessao, get_conn, validar_login, 
+    contar_fila_espera_humana
 )
 from disparos import (
     criar_disparo, iniciar_disparo, pausar_disparo,
@@ -1092,6 +1096,11 @@ def admin_get_mensagens(atendimento_id):
                     })
         
             else:
+                if (
+                    m["tipo_evento"] == "msg_usuario"
+                    and str(m["valor"]).isdigit()
+                ):
+                    continue
                 novas_msgs.append(m)
         
         msgs = novas_msgs
