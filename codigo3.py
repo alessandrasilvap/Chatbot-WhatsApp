@@ -1368,7 +1368,13 @@ def painel_disparos():
 def api_listar_disparos():
     try:
         resultado = listar_disparos()
+        for disparo in resultado:
+            if disparo.get("data_criacao"):
+                disparo["data_criacao"] = disparo["data_criacao"].strftime(
+                    "%d/%m/%Y %H:%M:%S"
+                )
         return jsonify({"disparos": resultado})
+        
     except Exception as e:
         print("Erro ao listar disparos:", e)
         return jsonify({"disparos": []})
