@@ -1042,6 +1042,59 @@ def admin_get_mensagens(atendimento_id):
             ORDER BY data_evento ASC
         """, (atendimento_id,))
         msgs = cursor.fetchall()
+        novas_msgs = []
+        
+        for m in msgs:
+            if m["tipo_evento"] == "menu_escolhido":
+                menu = m["valor"]
+                texto = MENU_PRINCIPAL.get(menu)
+        
+                if texto:
+                    novas_msgs.append({
+                        "tipo_evento": "msg_usuario",
+                        "valor": f"{menu} - {texto}",
+                        "data_evento": m["data_evento"]
+                    })
+                    
+            elif m["tipo_evento"] == "submenu_escolhido":
+                partes = m["valor"].split(":")
+                if len(partes) == 2:
+                    menu, submenu = partes
+                else:
+                    novas_msgs.append(m)
+                    continue
+                texto = SUBMENUS.get(menu, {}).get(submenu)
+        
+                if texto:
+                    novas_msgs.append({
+                        "tipo_evento": "msg_usuario",
+                        "valor": f"{submenu} - {texto}",
+                        "data_evento": m["data_evento"]
+                    })
+        
+            elif m["tipo_evento"] == "sub_submenu_escolhido":
+                partes = m["valor"].split(":")
+                if len(partes) == 3:
+                    menu, submenu, subsubmenu = partes
+                else:
+                    novas_msgs.append(m)
+                    continue
+                texto = SUBSUBMENUS.get(
+                    (menu, submenu),
+                    {}
+                ).get(subsubmenu)
+        
+                if texto:
+                    novas_msgs.append({
+                        "tipo_evento": "msg_usuario",
+                        "valor": f"{subsubmenu} - {texto}",
+                        "data_evento": m["data_evento"]
+                    })
+        
+            else:
+                novas_msgs.append(m)
+        
+        msgs = novas_msgs
         
         for m in msgs:
             if m.get('data_evento'):
