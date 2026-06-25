@@ -312,6 +312,10 @@
             carregarMensagens(id);
         
             if (loopMensagens) clearInterval(loopMensagens);
+
+            if (!isEncerrado) {
+                loopMensagens = setInterval(() => carregarMensagens(id), 3000);
+            }
         }
 
         async function enviarMensagem() {
@@ -391,26 +395,10 @@
         });
 
         const socket = io();
-
-        socket.on('connect', () => {
-            console.log('✅ WebSocket conectado');
-            atualizarFila(); // Carrega a fila na primeira conexão
-        });
         
         socket.on('fila_atualizada', () => {
             console.log('🔔 Fila atualizada pelo servidor');
             atualizarFila(); // Só roda quando o servidor avisar
-          
-            if (atendimentoSelecionado) {
-                carregarMensagens(atendimentoSelecionado);
-            }
-        });
-
-        socket.on('nova_mensagem', (data) => {
-            console.log('💬 Nova mensagem para atendimento', data.atendimento_id);
-            if (atendimentoSelecionado && String(data.atendimento_id) === String(atendimentoSelecionado)) {
-                carregarMensagens(atendimentoSelecionado);
-            }
         });
         
         socket.on('disconnect', () => {
