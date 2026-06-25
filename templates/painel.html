@@ -209,6 +209,7 @@
 
         async function carregarMensagens(id) {
             if (id !== atendimentoSelecionado) return;
+
             try {
                 const res = await fetch(`/admin/mensagens/${id}`);
                 const data = await res.json();
