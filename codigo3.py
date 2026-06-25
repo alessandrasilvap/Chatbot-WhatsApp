@@ -96,26 +96,17 @@ def escutar_redis_pubsub():
     """Roda em background: escuta o Redis e emite para os painéis conectados."""
     try:
         pubsub = redis_conn.pubsub()
-        pubsub.subscribe('canal_painel', 'canal_mensagens')
+        pubsub.subscribe('canal_painel')
         print("📡 Listener Redis Pub/Sub iniciado.")
         for mensagem in pubsub.listen():
             if mensagem['type'] == 'message':
-                canal = mensagem['channel']
-                if isinstance(canal, bytes):
-                    canal = canal.decode('utf-8')
-
                 dado = mensagem['data']
                 if isinstance(dado, bytes):
                     dado = dado.decode('utf-8')
-
-                if canal == 'canal_painel' and dado == 'fila_atualizada':
+                if dado == 'fila_atualizada':
                     socketio.emit('fila_atualizada', {})
                     print("🔔 Evento 'fila_atualizada' emitido para os painéis.")
 
-                elif canal == 'canal_mensagens':
-                    socketio.emit('nova_mensagem', {'atendimento_id': dado})
-                    print(f"💬 Evento 'nova_mensagem' emitido (atendimento {dado}).")
-                    
     except Exception as e:
         print(f"❌ Erro no listener Redis Pub/Sub: {e}")
 
@@ -129,14 +120,6 @@ def notificar_fila_atualizada():
             redis_conn.publish('canal_painel', 'fila_atualizada')
     except Exception as e:
         print(f"⚠️ Erro ao publicar evento no Redis: {e}")
-
-def notificar_nova_mensagem(atendimento_id):
-    """Publica no Redis para avisar o painel que chegou mensagem nova nesse atendimento."""
-    try:
-        if redis_conn:
-            redis_conn.publish('canal_mensagens', str(atendimento_id))
-    except Exception as e:
-        print(f"⚠️ Erro ao publicar nova mensagem no Redis: {e}")
 
 WA_VERIFY_TOKEN = os.getenv("WA_VERIFY_TOKEN", "")
 WA_APP_SECRET = os.getenv("WA_APP_SECRET", "")  # Pode ficar vazio (modo dev)
@@ -501,8 +484,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
     status_bd = obter_status_atendimento(atendimento_id)
 
     if status_bd == "em_atendimento_humano":
-        notificar_nova_mensagem(atendimento_id)
-
         if mensagem == "3":
             registrar_evento(atendimento_id, "finalizar")
             finalizar(atendimento_id)
@@ -754,7 +735,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             registrar_evento(atendimento_id, "resumo_handoff", mensagem)
             atualizar_atendimento(atendimento_id, status="aguardando")
             notificar_fila_atualizada()
-            notificar_nova_mensagem(atendimento_id)
             
             posicao_fila = contar_fila_espera_humana()
             
@@ -786,7 +766,6 @@ def handle_incoming(telefone: str, mensagem: str, agora: datetime, message_id: s
             )
             return msg_espera
             
-        notificar_nova_mensagem(atendimento_id)
         return "📞 Você está aguardando um atendente da equipe do Canal I. Se quiser, digite 3 para finalizar."
 
     return "Algo inesperado aconteceu 😅"
@@ -1036,7 +1015,6 @@ def admin_mensagem():
 
     # Registra no banco de dados o que o atendente digitou com o nome real dele
     registrar_evento(atendimento_id, "msg_atendente", f"{atendente_nome}: {texto}")
-    notificar_nova_mensagem(atendimento_id)
     
     # Dispara para o WhatsApp real do cliente
     if telefone:
