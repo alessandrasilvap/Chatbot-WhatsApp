@@ -858,7 +858,7 @@ def processar_mensagem_background(m):
     Ela recebe a mensagem e executa a lógica do bot.
     """
 
-    CHATBOT_ATIVO = False
+    CHATBOT_ATIVO = True
 
     if not CHATBOT_ATIVO:
         print("⛔ Chatbot desativado temporariamente.")
