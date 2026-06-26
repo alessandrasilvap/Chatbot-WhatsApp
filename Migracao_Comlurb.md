@@ -81,7 +81,7 @@ Tabelas: *atendentes, atendimento_eventos, atendimentos, disparos, disparos_cont
   - Finalidade: Registrar todo o histórico operacional dos atendimentos. Funciona como trilha de auditoria do sistema, armazenando mensagens, transferências para atendente, encerramentos, identificação do usuário e demais eventos ocorridos durante o atendimento.
   - Observação: É a tabela com maior potencial de crescimento, pois registra todas as interações realizadas no sistema.
   - Registros Hoje: 2175
-- **atendimentos**: id, telefone, telefone_bot, nome, matricula, menu_id, sub_id, sub_sub_id, resposta_bot, status, atendente_nome, assumido_em, tipo_periodo;
+- **atendimentos**: id, telefone, telefone_bot, nome, matricula, menu_id, sub_id, sub_sub_id, resposta_bot, status, atendente_id, assumido_em, tipo_periodo;
   - Finalidade: Representa o atendimento principal do usuário. Armazena o estado atual da conversa, responsável pelo atendimento, informações do usuário e status operacional do atendimento.
   - Registros Hoje: 251
 - **disparos**: id, numero_id, template_nome, total_contatos, enviados, erros, data_criacao, status;
