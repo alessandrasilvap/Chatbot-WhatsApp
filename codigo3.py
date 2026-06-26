@@ -995,8 +995,8 @@ def admin_assumir():
     atendimento_id = dados.get("atendimento_id")
     
     if atendimento_id:
-        nome_atendente = session['usuario_logado']
-        assumir_atendimento(atendimento_id, nome_atendente)
+        atendente_id = session['usuario_id']
+        assumir_atendimento(atendimento_id, atendente_id)
         registrar_evento(atendimento_id, "assumido_por_humano")
         notificar_fila_atualizada()
 
@@ -1124,7 +1124,7 @@ def admin_get_mensagens(atendimento_id):
 def admin_encerrar_rota():
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
-    nome_atendente = session.get('usuario_logado', 'Desconhecido')
+    atendente_id = session.get('usuario_id')
 
     if atendimento_id:
         registrar_evento(atendimento_id, "finalizar", valor=f"Encerrado por {nome_atendente}")
@@ -1136,7 +1136,7 @@ def admin_encerrar_rota():
                 UPDATE atendimentos 
                 SET status = 'finalizado', 
                     atendente_chamado = 1,
-                    atendente_nome = %s, 
+                    atendente_id = %s,
                     data_fim = NOW() 
                 WHERE id = %s
             """, (nome_atendente, atendimento_id))
