@@ -175,7 +175,7 @@ def listar_fila_handoff(limit=50):
         cur.close()
         conn.close()
 
-def assumir_atendimento(atendimento_id: int, atendente_nome: str) -> bool:
+def assumir_atendimento(atendimento_id: int, atendente_id: int) -> bool:
     conn = get_conn()
     cur = conn.cursor()
     try:
@@ -183,7 +183,7 @@ def assumir_atendimento(atendimento_id: int, atendente_nome: str) -> bool:
             UPDATE atendimentos
                SET status='em_atendimento_humano',
                    atendente_chamado=1,
-                   atendente_nome=%s,
+                   atendente_id=%s,
                    assumido_em=NOW()
              WHERE id=%s AND status IN ('handoff', 'aguardando')
         """, (atendente_nome, atendimento_id))
