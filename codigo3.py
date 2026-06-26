@@ -803,6 +803,7 @@ def tela_login():
                 tem_acesso = False
 
             if tem_acesso:
+                session['usuario_id'] = resultado["id"]
                 session['usuario_logado'] = resultado["usuario"]
                 session['permissao'] = permissao
                 session['painel'] = painel
