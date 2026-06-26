@@ -1128,7 +1128,7 @@ def admin_encerrar_rota():
     atendente_id = session.get("usuario_id")
 
     if atendimento_id:
-        registrar_evento(atendimento_id, "finalizar", valor=f"Encerrado por {nome_atendente}")
+        registrar_evento(atendimento_id, "finalizar", valor=f"Encerrado por {atendente_nome}")
 
         conn = get_conn()
         cursor = conn.cursor()
@@ -1186,17 +1186,32 @@ def api_historico():
         
         # Busca no passado sem limite de mês, apenas pelo intervalo escolhido
         sql = """
-            SELECT id, telefone, nome, matricula, status, data_inicio, atendente_nome
-            FROM atendimentos
-            WHERE data_inicio BETWEEN %s AND %s
+        SELECT
+            a.id,
+            a.telefone,
+            a.nome,
+            a.matricula,
+            a.status,
+            a.data_inicio,
+            t.usuario AS atendente_nome
+        FROM atendimentos a
+        LEFT JOIN atendentes t
+            ON a.atendente_id = t.id
+        WHERE a.data_inicio BETWEEN %s AND %s
         """
         params = [f"{data_de} 00:00:00", f"{data_ate} 23:59:59"]
 
         if busca:
-            sql += " AND (nome LIKE %s OR telefone LIKE %s OR matricula LIKE %s)"
+            sql += """
+            AND (
+                a.nome LIKE %s
+                OR a.telefone LIKE %s
+                OR a.matricula LIKE %s
+            )
+            """
             params.extend([f"%{busca}%", f"%{busca}%", f"%{busca}%"])
         
-        sql += " ORDER BY data_inicio DESC LIMIT 500"
+        sql += " ORDER BY a.data_inicio DESC LIMIT 500"
         
         cursor.execute(sql, params)
         resultados = cursor.fetchall()
