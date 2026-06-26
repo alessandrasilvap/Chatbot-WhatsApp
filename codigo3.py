@@ -1124,7 +1124,8 @@ def admin_get_mensagens(atendimento_id):
 def admin_encerrar_rota():
     dados = request.get_json(force=True) or {}
     atendimento_id = dados.get("atendimento_id")
-    atendente_id = session.get('usuario_id')
+    atendente_nome = session.get("usuario_logado", "Desconhecido")
+    atendente_id = session.get("usuario_id")
 
     if atendimento_id:
         registrar_evento(atendimento_id, "finalizar", valor=f"Encerrado por {nome_atendente}")
@@ -1139,7 +1140,7 @@ def admin_encerrar_rota():
                     atendente_id = %s,
                     data_fim = NOW() 
                 WHERE id = %s
-            """, (nome_atendente, atendimento_id))
+            """, (atendente_id, atendimento_id))
             conn.commit()
             
             notificar_fila_atualizada()
