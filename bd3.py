@@ -260,6 +260,7 @@ def validar_login(usuario_digitado, senha_digitada):
         cursor.execute(
             """
             SELECT
+                id,
                 senha,
                 permissao,
                 usuario,
@@ -295,6 +296,7 @@ def validar_login(usuario_digitado, senha_digitada):
             
                 return {
                     "autenticado": True,
+                    "id": resultado["id"],
                     "permissao": resultado["permissao"],
                     "usuario": resultado["usuario"]
                 }
