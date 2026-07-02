@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Histórico de Atendimentos - Canal I</title>
+    <title>Histórico e Relatórios - Canal I</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="../static/logo-comlurb.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -19,24 +20,34 @@
         </div>
     </nav>
 
-    <div class="container mx-auto p-6">
-        
+    <div class="container mx-auto px-6 pt-6">
+        <div class="flex gap-2 border-b border-gray-300 mb-6">
+            <button onclick="trocarAbaPrincipal('historico')" id="aba-principal-historico" class="aba-principal-btn px-5 py-2 text-sm font-semibold rounded-t-lg border border-b-0 bg-white text-blue-700 border-gray-300">🗂️ Histórico</button>
+            <button onclick="trocarAbaPrincipal('relatorios')" id="aba-principal-relatorios" class="aba-principal-btn px-5 py-2 text-sm font-semibold rounded-t-lg border border-b-0 bg-gray-100 text-gray-500 border-gray-300">📊 Relatórios</button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+     PAINEL: HISTÓRICO (igual ao que já existia)
+     ============================================================ -->
+    <div id="painel-principal-historico" class="container mx-auto px-6 pb-6">
         <div class="bg-white p-6 rounded-xl shadow-sm mb-6 flex flex-wrap gap-4 items-end border border-gray-200">
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-bold text-gray-500 uppercase">De:</label>
                 <input type="date" id="data-de" class="border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
             </div>
+            
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-bold text-gray-500 uppercase">Até:</label>
                 <input type="date" id="data-ate" class="border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
             </div>
+            
             <div class="flex-1 flex flex-col gap-1">
                 <label class="text-xs font-bold text-gray-500 uppercase">Busca por Nome, Tel ou Matrícula:</label>
                 <input type="text" id="busca-texto" placeholder="Ex: 21999..." class="border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none w-full">
             </div>
-            <button onclick="buscarHistorico()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg font-bold shadow-md transition transform active:scale-95">
-                Pesquisar
-            </button>
+            
+            <button onclick="buscarHistorico()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-lg font-bold shadow-md transition transform active:scale-95">Pesquisar</button>
         </div>
 
         <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
@@ -60,6 +71,188 @@
         </div>
     </div>
 
+    <!-- ============================================================
+    PAINEL: RELATÓRIOS (com 4 sub-abas)
+    ============================================================ -->
+    <div id="painel-principal-relatorios" class="container mx-auto px-6 pb-6 hidden">
+
+        <div class="flex gap-2 border-b border-gray-200 mb-6">
+            <button onclick="trocarSubAba('operacional')" id="subaba-operacional" class="subaba-btn px-4 py-2 text-xs font-bold rounded-t-lg border border-b-0 bg-white text-green-700 border-gray-200">🟢 Operacional</button>
+            <button onclick="trocarSubAba('performance')" id="subaba-performance" class="subaba-btn px-4 py-2 text-xs font-bold rounded-t-lg border border-b-0 bg-gray-100 text-gray-500 border-gray-200">📈 Performance</button>
+            <button onclick="trocarSubAba('gestao')" id="subaba-gestao" class="subaba-btn px-4 py-2 text-xs font-bold rounded-t-lg border border-b-0 bg-gray-100 text-gray-500 border-gray-200">🗓️ Gestão</button>
+            <button onclick="trocarSubAba('analise')" id="subaba-analise" class="subaba-btn px-4 py-2 text-xs font-bold rounded-t-lg border border-b-0 bg-gray-100 text-gray-500 border-gray-200">🔍 Análise</button>
+        </div>
+
+        <!-- ============================ SUB-ABA: OPERACIONAL ============================ -->
+        <div id="sub-operacional">
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-xs text-gray-500">Atualiza automaticamente a cada 15 segundos · dados de hoje</p>
+                <span id="op-ultima-att" class="text-[11px] text-gray-400"></span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm text-center">
+                    <p class="text-xs text-gray-500 mb-1">Total hoje</p>
+                    <p id="op-total" class="text-2xl font-bold text-gray-700">—</p>
+                </div>
+                
+                <div class="bg-yellow-50 rounded-xl p-4 border border-yellow-100 shadow-sm text-center">
+                    <p class="text-xs text-yellow-600 mb-1">Aguardando</p>
+                    <p id="op-aguardando" class="text-2xl font-bold text-yellow-700">—</p>
+                </div>
+                
+                <div class="bg-blue-50 rounded-xl p-4 border border-blue-100 shadow-sm text-center">
+                    <p class="text-xs text-blue-600 mb-1">Em atendimento</p>
+                    <p id="op-em-atendimento" class="text-2xl font-bold text-blue-700">—</p>
+                </div>
+                
+                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 shadow-sm text-center">
+                    <p class="text-xs text-gray-500 mb-1">Finalizados</p>
+                    <p id="op-finalizados" class="text-2xl font-bold text-gray-700">—</p>
+                </div>
+                
+                <div class="bg-purple-50 rounded-xl p-4 border border-purple-100 shadow-sm text-center">
+                    <p class="text-xs text-purple-600 mb-1">Tempo médio espera</p>
+                    <p id="op-tempo-espera" class="text-2xl font-bold text-purple-700">—</p>
+                </div>
+                
+                <div class="bg-green-50 rounded-xl p-4 border border-green-100 shadow-sm text-center">
+                    <p class="text-xs text-green-600 mb-1">Tempo médio atend.</p>
+                    <p id="op-tempo-atendimento" class="text-2xl font-bold text-green-700">—</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================ SUB-ABA: PERFORMANCE ============================ -->
+        <div id="sub-performance" class="hidden">
+            <div class="bg-white p-4 rounded-xl shadow-sm mb-4 flex flex-wrap gap-4 items-end border border-gray-200">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-500 uppercase">De:</label>
+                    <input type="date" id="perf-de" class="border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Até:</label>
+                    <input type="date" id="perf-ate" class="border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <button onclick="carregarPerformance()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow-md transition text-sm">Filtrar</button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+                <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm text-center">
+                    <p class="text-xs text-gray-500 mb-1">Total no período</p>
+                    <p id="perf-total" class="text-2xl font-bold text-gray-700">—</p>
+                </div>
+                
+                <div class="bg-blue-50 rounded-xl p-4 border border-blue-100 shadow-sm text-center">
+                    <p class="text-xs text-blue-600 mb-1">Só bot</p>
+                    <p id="perf-so-bot" class="text-2xl font-bold text-blue-700">—</p>
+                </div>
+                
+                <div class="bg-green-50 rounded-xl p-4 border border-green-100 shadow-sm text-center">
+                    <p class="text-xs text-green-600 mb-1">Com atendente</p>
+                    <p id="perf-com-atendente" class="text-2xl font-bold text-green-700">—</p>
+                </div>
+                
+                <div class="bg-purple-50 rounded-xl p-4 border border-purple-100 shadow-sm text-center">
+                    <p class="text-xs text-purple-600 mb-1">Tempo médio espera</p>
+                    <p id="perf-tempo-espera" class="text-2xl font-bold text-purple-700">—</p>
+                </div>
+                
+                <div class="bg-orange-50 rounded-xl p-4 border border-orange-100 shadow-sm text-center">
+                    <p class="text-xs text-orange-600 mb-1">Tempo médio atend.</p>
+                    <p id="perf-tempo-atendimento" class="text-2xl font-bold text-orange-700">—</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <p class="text-xs font-bold text-gray-500 uppercase mb-2">Bot × Atendente</p>
+                <div class="max-w-md mx-auto">
+                    <canvas id="chart-performance"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================ SUB-ABA: GESTÃO ============================ -->
+        <div id="sub-gestao" class="hidden">
+            <div class="bg-white p-4 rounded-xl shadow-sm mb-4 flex flex-wrap gap-4 items-end border border-gray-200">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-500 uppercase">De:</label>
+                    <input type="date" id="gestao-de" class="border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Até:</label>
+                    <input type="date" id="gestao-ate" class="border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <button onclick="carregarGestao()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow-md transition text-sm">Filtrar</button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4" id="gestao-periodos"><!-- preenchido via JS --></div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">Atendimentos por dia da semana</p>
+                    <canvas id="chart-dia-semana"></canvas>
+                </div>
+                
+                <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                    <p class="text-xs font-bold text-gray-500 uppercase mb-2">Pico de atendimento por horário</p>
+                    <canvas id="chart-horario"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
+                        <tr>
+                            <th class="p-3">Atendente</th>
+                            <th class="p-3 text-center">Atendimentos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gestao-tabela-atendentes" class="divide-y divide-gray-100 text-gray-700">
+                        <tr><td colspan="2" class="p-6 text-center text-gray-400 italic">Filtre um período para carregar.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================ SUB-ABA: ANÁLISE ============================ -->
+        <div id="sub-analise" class="hidden">
+            <div class="bg-white p-4 rounded-xl shadow-sm mb-4 flex flex-wrap gap-4 items-end border border-gray-200">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-500 uppercase">De:</label>
+                    <input type="date" id="analise-de" class="border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Até:</label>
+                    <input type="date" id="analise-ate" class="border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <button onclick="carregarAnalise()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow-md transition text-sm">Filtrar</button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-50 border-b text-gray-600 text-xs uppercase">
+                        <tr>
+                            <th class="p-3">Menu</th>
+                            <th class="p-3">Submenu</th>
+                            <th class="p-3">Sub-submenu</th>
+                            <th class="p-3 text-center">Selecionado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="analise-tabela" class="divide-y divide-gray-100 text-gray-700">
+                        <tr><td colspan="4" class="p-6 text-center text-gray-400 italic">Filtre um período para carregar.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
     <div id="modal-conversa" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
         <div class="bg-white w-full max-w-2xl h-[80vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
             <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
@@ -67,23 +260,85 @@
                     <h3 id="modal-titulo" class="font-bold text-gray-800">Visualizar Conversa</h3>
                     <p id="modal-subtitulo" class="text-xs text-gray-500"></p>
                 </div>
+                
                 <button onclick="fecharModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
             </div>
-            <div id="modal-chat-box" class="flex-1 overflow-y-auto p-6 bg-[#efeae2] space-y-3" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-color: rgba(255,255,255,0.7);">
-                </div>
+            
+            <div id="modal-chat-box" class="flex-1 overflow-y-auto p-6 bg-[#efeae2] space-y-3" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-color: rgba(255,255,255,0.7);"></div>
             <div class="p-4 bg-gray-50 border-t text-right text-xs text-gray-400">
                 Visualização de Auditoria - Somente Leitura
             </div>
         </div>
     </div>
-
+    
     <script>
-        // Define as datas padrão (Início do mês até hoje)
+        // ============================================================
+        // Datas padrão
+        // ============================================================
         const hoje = new Date().toISOString().split('T')[0];
         const primeiroDia = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-        document.getElementById('data-de').value = primeiroDia;
-        document.getElementById('data-ate').value = hoje;
 
+        ['data-de', 'perf-de', 'gestao-de', 'analise-de'].forEach(id => document.getElementById(id).value = primeiroDia);
+        ['data-ate', 'perf-ate', 'gestao-ate', 'analise-ate'].forEach(id => document.getElementById(id).value = hoje);
+
+        // ============================================================
+        // Navegação: abas principais
+        // ============================================================
+        let loopOperacional = null;
+
+        function trocarAbaPrincipal(aba) {
+            ['historico', 'relatorios'].forEach(a => {
+                document.getElementById(`painel-principal-${a}`).classList.add('hidden');
+                const btn = document.getElementById(`aba-principal-${a}`);
+                btn.classList.remove('bg-white', 'text-blue-700');
+                btn.classList.add('bg-gray-100', 'text-gray-500');
+            });
+            document.getElementById(`painel-principal-${aba}`).classList.remove('hidden');
+            const btnAtivo = document.getElementById(`aba-principal-${aba}`);
+            btnAtivo.classList.add('bg-white', 'text-blue-700');
+            btnAtivo.classList.remove('bg-gray-100', 'text-gray-500');
+
+            if (aba === 'relatorios') {
+                trocarSubAba('operacional');
+            } else if (loopOperacional) {
+                clearInterval(loopOperacional);
+                loopOperacional = null;
+            }
+        }
+
+        // ============================================================
+        // Navegação: sub-abas de relatórios
+        // ============================================================
+        const subAbasCarregadas = { performance: false, gestao: false, analise: false };
+
+        function trocarSubAba(sub) {
+            ['operacional', 'performance', 'gestao', 'analise'].forEach(s => {
+                document.getElementById(`sub-${s}`).classList.add('hidden');
+                const btn = document.getElementById(`subaba-${s}`);
+                btn.classList.remove('bg-white', 'text-green-700');
+                btn.classList.add('bg-gray-100', 'text-gray-500');
+            });
+            document.getElementById(`sub-${sub}`).classList.remove('hidden');
+            const btnAtivo = document.getElementById(`subaba-${sub}`);
+            btnAtivo.classList.add('bg-white', 'text-green-700');
+            btnAtivo.classList.remove('bg-gray-100', 'text-gray-500');
+
+            if (sub === 'operacional') {
+                iniciarLoopOperacional();
+            } else if (loopOperacional) {
+                clearInterval(loopOperacional);
+                loopOperacional = null;
+            }
+
+            // Carrega sob demanda (só na primeira vez que abrir a sub-aba)
+            if (sub === 'performance' && !subAbasCarregadas.performance) { carregarPerformance(); subAbasCarregadas.performance = true; }
+            if (sub === 'gestao' && !subAbasCarregadas.gestao) { carregarGestao(); subAbasCarregadas.gestao = true; }
+            if (sub === 'analise' && !subAbasCarregadas.analise) { carregarAnalise(); subAbasCarregadas.analise = true; }
+        }
+
+        // ============================================================
+        // HISTÓRICO
+        // ============================================================
         async function buscarHistorico() {
             const de = document.getElementById('data-de').value;
             const ate = document.getElementById('data-ate').value;
@@ -111,8 +366,8 @@
                         <td class="p-4 font-bold">${at.nome || 'Não identificado'}</td>
                         <td class="p-4 text-xs font-mono">${at.telefone}</td>
                         <td class="p-4">
-                            ${(at.atendente_nome && at.atendente_nome !== 'None') 
-                                ? `<span class="font-semibold text-blue-700">${at.atendente_nome}</span>` 
+                            ${(at.atendente_nome && at.atendente_nome !== 'None')
+                                ? `<span class="font-semibold text-blue-700">${at.atendente_nome}</span>`
                                 : '<span class="text-gray-400 italic text-xs">Só Bot</span>'}
                         </td>
                         <td class="p-4"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${at.status === 'finalizado' ? 'bg-gray-100 text-gray-600' : 'bg-green-100 text-green-700'}">${at.status}</span></td>
@@ -171,7 +426,6 @@
             document.getElementById('modal-conversa').classList.remove('flex');
         }
 
-        // Captura clique nos botões "Ver Conversa" de forma segura
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('btn-ver-conversa')) {
                 const id = e.target.dataset.id;
@@ -179,6 +433,198 @@
                 verConversa(id, nome);
             }
         });
+
+        // ============================================================
+        // RELATÓRIO 1: OPERACIONAL (tempo real)
+        // ============================================================
+        function iniciarLoopOperacional() {
+            if (loopOperacional) clearInterval(loopOperacional);
+            carregarOperacional();
+            loopOperacional = setInterval(carregarOperacional, 15000);
+        }
+
+        function formatarMinutos(min) {
+            if (min === null || min === undefined) return '—';
+            return `${min} min`;
+        }
+
+        async function carregarOperacional() {
+            try {
+                const res = await fetch('/admin/api/relatorio/operacional');
+                const d = await res.json();
+
+                document.getElementById('op-total').textContent = d.total_hoje ?? '—';
+                document.getElementById('op-aguardando').textContent = d.aguardando_hoje ?? '—';
+                document.getElementById('op-em-atendimento').textContent = d.em_atendimento_hoje ?? '—';
+                document.getElementById('op-finalizados').textContent = d.finalizados_hoje ?? '—';
+                document.getElementById('op-tempo-espera').textContent = formatarMinutos(d.tempo_medio_espera);
+                document.getElementById('op-tempo-atendimento').textContent = formatarMinutos(d.tempo_medio_atendimento);
+
+                const agora = new Date();
+                document.getElementById('op-ultima-att').textContent =
+                    `Atualizado às ${agora.toLocaleTimeString('pt-BR')}`;
+            } catch (e) {
+                console.error('Erro relatório operacional:', e);
+            }
+        }
+
+        // ============================================================
+        // RELATÓRIO 2: PERFORMANCE
+        // ============================================================
+        let chartPerformance = null;
+
+        async function carregarPerformance() {
+            const de = document.getElementById('perf-de').value;
+            const ate = document.getElementById('perf-ate').value;
+            if (!de || !ate) return;
+
+            try {
+                const res = await fetch(`/admin/api/relatorio/performance?de=${de}&ate=${ate}`);
+                const d = await res.json();
+
+                document.getElementById('perf-total').textContent = d.total ?? '—';
+                document.getElementById('perf-so-bot').textContent = d.so_bot ?? '—';
+                document.getElementById('perf-com-atendente').textContent = d.com_atendente ?? '—';
+                document.getElementById('perf-tempo-espera').textContent = formatarMinutos(d.tempo_medio_espera);
+                document.getElementById('perf-tempo-atendimento').textContent = formatarMinutos(d.tempo_medio_atendimento);
+
+                const ctx = document.getElementById('chart-performance').getContext('2d');
+                if (chartPerformance) chartPerformance.destroy();
+                chartPerformance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Só bot', 'Com atendente'],
+                        datasets: [{
+                            data: [d.so_bot || 0, d.com_atendente || 0],
+                            backgroundColor: ['#3b82f6', '#22c55e']
+                        }]
+                    },
+                    options: { plugins: { legend: { position: 'bottom' } } }
+                });
+            } catch (e) {
+                console.error('Erro relatório performance:', e);
+            }
+        }
+
+        // ============================================================
+        // RELATÓRIO 3: GESTÃO
+        // ============================================================
+        let chartDiaSemana = null;
+        let chartHorario = null;
+
+        const NOMES_TIPO_PERIODO = {
+            horario_comercial: { label: '🟢 Horário comercial', cor: 'bg-green-50 border-green-100 text-green-700' },
+            fora_horario: { label: '🟡 Fora do horário', cor: 'bg-yellow-50 border-yellow-100 text-yellow-700' },
+            fim_de_semana: { label: '🔵 Fim de semana', cor: 'bg-blue-50 border-blue-100 text-blue-700' },
+            feriado: { label: '🔴 Feriado / recesso', cor: 'bg-red-50 border-red-100 text-red-700' }
+        };
+
+        const NOMES_DIA_SEMANA = { 1: 'Domingo', 2: 'Segunda', 3: 'Terça', 4: 'Quarta', 5: 'Quinta', 6: 'Sexta', 7: 'Sábado' };
+
+        async function carregarGestao() {
+            const de = document.getElementById('gestao-de').value;
+            const ate = document.getElementById('gestao-ate').value;
+            if (!de || !ate) return;
+
+            try {
+                const res = await fetch(`/admin/api/relatorio/gestao?de=${de}&ate=${ate}`);
+                const d = await res.json();
+
+                // Cards de tipo_periodo
+                const cardsDiv = document.getElementById('gestao-periodos');
+                cardsDiv.innerHTML = '';
+                const chaves = Object.keys(NOMES_TIPO_PERIODO);
+                const mapaValores = {};
+                (d.por_periodo || []).forEach(p => { mapaValores[p.tipo_periodo] = p.qtd; });
+
+                chaves.forEach(chave => {
+                    const info = NOMES_TIPO_PERIODO[chave];
+                    const qtd = mapaValores[chave] || 0;
+                    cardsDiv.innerHTML += `
+                        <div class="rounded-xl p-4 border shadow-sm text-center ${info.cor}">
+                            <p class="text-xs mb-1">${info.label}</p>
+                            <p class="text-2xl font-bold">${qtd}</p>
+                        </div>
+                    `;
+                });
+
+                // Gráfico dia da semana
+                const labelsDia = (d.por_dia_semana || []).map(x => NOMES_DIA_SEMANA[x.dia] || x.dia);
+                const valoresDia = (d.por_dia_semana || []).map(x => x.qtd);
+                const ctxDia = document.getElementById('chart-dia-semana').getContext('2d');
+                if (chartDiaSemana) chartDiaSemana.destroy();
+                chartDiaSemana = new Chart(ctxDia, {
+                    type: 'bar',
+                    data: { labels: labelsDia, datasets: [{ label: 'Atendimentos', data: valoresDia, backgroundColor: '#3b82f6' }] },
+                    options: { plugins: { legend: { display: false } } }
+                });
+
+                // Gráfico por horário
+                const labelsHora = (d.por_hora || []).map(x => `${x.hora}h`);
+                const valoresHora = (d.por_hora || []).map(x => x.qtd);
+                const ctxHora = document.getElementById('chart-horario').getContext('2d');
+                if (chartHorario) chartHorario.destroy();
+                chartHorario = new Chart(ctxHora, {
+                    type: 'bar',
+                    data: { labels: labelsHora, datasets: [{ label: 'Atendimentos', data: valoresHora, backgroundColor: '#f97316' }] },
+                    options: { plugins: { legend: { display: false } } }
+                });
+
+                // Tabela por atendente
+                const corpoAtendentes = document.getElementById('gestao-tabela-atendentes');
+                if (!d.por_atendente || d.por_atendente.length === 0) {
+                    corpoAtendentes.innerHTML = '<tr><td colspan="2" class="p-6 text-center text-gray-400 italic">Nenhum atendimento por humano no período.</td></tr>';
+                } else {
+                    corpoAtendentes.innerHTML = '';
+                    d.por_atendente.forEach(a => {
+                        corpoAtendentes.innerHTML += `
+                            <tr class="hover:bg-blue-50 transition">
+                                <td class="p-3 font-semibold">${a.atendente}</td>
+                                <td class="p-3 text-center">${a.qtd}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (e) {
+                console.error('Erro relatório gestão:', e);
+            }
+        }
+
+        // ============================================================
+        // RELATÓRIO 4: ANÁLISE
+        // ============================================================
+        async function carregarAnalise() {
+            const de = document.getElementById('analise-de').value;
+            const ate = document.getElementById('analise-ate').value;
+            if (!de || !ate) return;
+
+            const corpo = document.getElementById('analise-tabela');
+            corpo.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-blue-500">Carregando...</td></tr>';
+
+            try {
+                const res = await fetch(`/admin/api/relatorio/analise?de=${de}&ate=${ate}`);
+                const d = await res.json();
+
+                if (!d.topicos || d.topicos.length === 0) {
+                    corpo.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-400 italic">Nenhum tópico encontrado no período.</td></tr>';
+                    return;
+                }
+
+                corpo.innerHTML = '';
+                d.topicos.forEach(t => {
+                    corpo.innerHTML += `
+                        <tr class="hover:bg-blue-50 transition">
+                            <td class="p-3">${t.menu || '—'}</td>
+                            <td class="p-3">${t.submenu || '—'}</td>
+                            <td class="p-3">${t.sub_submenu || '—'}</td>
+                            <td class="p-3 text-center font-bold">${t.qtd}</td>
+                        </tr>
+                    `;
+                });
+            } catch (e) {
+                corpo.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-red-500">Erro ao carregar.</td></tr>';
+            }
+        }
     </script>
 </body>
 </html>
