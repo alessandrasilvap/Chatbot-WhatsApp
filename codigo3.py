@@ -17,6 +17,10 @@ from disparos import (
     criar_disparo, iniciar_disparo, pausar_disparo,
     retomar_disparo, iniciar_reenvio_erros, listar_disparos, detalhar_disparo, listar_respostas
 )
+from relatorios import (
+    relatorio_operacional, relatorio_performance, 
+    relatorio_gestao, relatorio_analise
+)
 from redis import Redis, ConnectionPool
 from rq import Queue
 import holidays
@@ -1226,6 +1230,54 @@ def api_historico():
     except Exception as e:
         print("Erro ao processar histórico:", e)
         return jsonify({"historico": []})
+
+@app.get("/admin/api/relatorio/operacional")
+@admin_required
+def api_relatorio_operacional():
+    try:
+        return jsonify(relatorio_operacional())
+    except Exception as e:
+        print("Erro relatório operacional:", e)
+        return jsonify({})
+
+@app.get("/admin/api/relatorio/performance")
+@admin_required
+def api_relatorio_performance():
+    de = request.args.get('de')
+    ate = request.args.get('ate')
+    if not de or not ate:
+        return jsonify({})
+    try:
+        return jsonify(relatorio_performance(de, ate))
+    except Exception as e:
+        print("Erro relatório performance:", e)
+        return jsonify({})
+
+@app.get("/admin/api/relatorio/gestao")
+@admin_required
+def api_relatorio_gestao():
+    de = request.args.get('de')
+    ate = request.args.get('ate')
+    if not de or not ate:
+        return jsonify({})
+    try:
+        return jsonify(relatorio_gestao(de, ate))
+    except Exception as e:
+        print("Erro relatório gestão:", e)
+        return jsonify({})
+
+@app.get("/admin/api/relatorio/analise")
+@admin_required
+def api_relatorio_analise():
+    de = request.args.get('de')
+    ate = request.args.get('ate')
+    if not de or not ate:
+        return jsonify({"topicos": []})
+    try:
+        return jsonify({"topicos": relatorio_analise(de, ate)})
+    except Exception as e:
+        print("Erro relatório análise:", e)
+        return jsonify({"topicos": []})
 
 # ============================================================
 # SIMULADO
