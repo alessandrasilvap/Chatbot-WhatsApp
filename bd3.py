@@ -67,7 +67,7 @@ def criar_atendimento(telefone: str, telefone_bot: str = None) -> int:
 
 COLUNAS_PERMITIDAS = {
     'nome', 'matricula', 'status', 'menu_id',
-    'sub_id', 'resposta_bot', 'atendente_id'
+    'sub_id', 'sub_sub_id', 'resposta_bot', 'atendente_id'
 }
 
 def atualizar_atendimento(atendimento_id: int, **campos):
