@@ -2,24 +2,6 @@ import pymysql
 from bd3 import get_conn
 from menusSubmenus3 import MENU_PRINCIPAL, SUBMENUS, SUBSUBMENUS
 
-"""
-Módulo de relatórios do painel administrativo (Canal I).
-
-Reúne as queries usadas pelas 4 sub-abas da tela de Relatórios:
-1. Operacional  -> tempo real (sempre HOJE)
-2. Performance  -> filtro de data
-3. Gestão       -> filtro de data
-4. Análise      -> filtro de data (tópicos mais selecionados)
-
-Reaproveita get_conn() do bd3.py e os dicionários de menus do
-menusSubmenus3.py (MENU_PRINCIPAL, SUBMENUS, SUBSUBMENUS) para traduzir
-os IDs em nomes legíveis no relatório de Análise.
-
-OBS: quando os menus forem migrados para uma tabela no banco, a função
-_traduzir_topico() é o único ponto que precisa mudar (troca os dicionários
-por um SELECT na tabela nova).
-"""
-
 def _traduzir_topico(menu_id, sub_id, sub_sub_id):
     nome_menu = MENU_PRINCIPAL.get(menu_id, f"Menu {menu_id}") if menu_id else None
     nome_sub = (
@@ -31,6 +13,7 @@ def _traduzir_topico(menu_id, sub_id, sub_sub_id):
         if menu_id and sub_id and sub_sub_id else None
     )
     return nome_menu, nome_sub, nome_subsub
+
 
 # ============================================================
 # 1. RELATÓRIO OPERACIONAL (tempo real, sempre HOJE)
@@ -50,17 +33,22 @@ def relatorio_operacional():
         """)
         contadores = cur.fetchone() or {}
 
+        # Tempo médio de espera = data_inicio -> assumido_em (sem view)
         cur.execute("""
-            SELECT AVG(espera_humano_min) AS tempo_espera
-            FROM vw_handoff_espera
-            WHERE DATE(data_inicio) = CURDATE()
+            SELECT AVG(TIMESTAMPDIFF(MINUTE, data_inicio, assumido_em)) AS tempo_espera
+            FROM atendimentos
+            WHERE assumido_em IS NOT NULL
+              AND DATE(data_inicio) = CURDATE()
         """)
         espera = cur.fetchone() or {}
 
+        # Tempo médio de atendimento humano = assumido_em -> data_fim (sem view)
         cur.execute("""
-            SELECT AVG(duracao_humano_min) AS tempo_atendimento
-            FROM vw_atendimentos_base
-            WHERE DATE(data_fim) = CURDATE()
+            SELECT AVG(TIMESTAMPDIFF(MINUTE, assumido_em, data_fim)) AS tempo_atendimento
+            FROM atendimentos
+            WHERE assumido_em IS NOT NULL
+              AND data_fim IS NOT NULL
+              AND DATE(data_fim) = CURDATE()
         """)
         atendimento = cur.fetchone() or {}
 
@@ -100,16 +88,19 @@ def relatorio_performance(de, ate):
         contadores = cur.fetchone() or {}
 
         cur.execute("""
-            SELECT AVG(espera_humano_min) AS tempo_espera
-            FROM vw_handoff_espera
-            WHERE DATE(data_inicio) BETWEEN %s AND %s
+            SELECT AVG(TIMESTAMPDIFF(MINUTE, data_inicio, assumido_em)) AS tempo_espera
+            FROM atendimentos
+            WHERE assumido_em IS NOT NULL
+              AND DATE(data_inicio) BETWEEN %s AND %s
         """, (de, ate))
         espera = cur.fetchone() or {}
 
         cur.execute("""
-            SELECT AVG(duracao_humano_min) AS tempo_atendimento
-            FROM vw_atendimentos_base
-            WHERE DATE(data_inicio) BETWEEN %s AND %s
+            SELECT AVG(TIMESTAMPDIFF(MINUTE, assumido_em, data_fim)) AS tempo_atendimento
+            FROM atendimentos
+            WHERE assumido_em IS NOT NULL
+              AND data_fim IS NOT NULL
+              AND DATE(data_inicio) BETWEEN %s AND %s
         """, (de, ate))
         atendimento = cur.fetchone() or {}
 
@@ -137,7 +128,6 @@ def relatorio_gestao(de, ate):
     conn = get_conn()
     cur = conn.cursor(pymysql.cursors.DictCursor)
     try:
-        # Fora do expediente / fim de semana / feriado / horário comercial
         cur.execute("""
             SELECT tipo_periodo, COUNT(*) AS qtd
             FROM atendimentos
@@ -146,7 +136,6 @@ def relatorio_gestao(de, ate):
         """, (de, ate))
         por_periodo = cur.fetchall()
 
-        # Atendimentos por dia da semana (1=domingo ... 7=sábado, padrão MySQL)
         cur.execute("""
             SELECT DAYOFWEEK(data_inicio) AS dia, COUNT(*) AS qtd
             FROM atendimentos
@@ -156,7 +145,6 @@ def relatorio_gestao(de, ate):
         """, (de, ate))
         por_dia_semana = cur.fetchall()
 
-        # Pico de atendimento por horário (0-23h)
         cur.execute("""
             SELECT HOUR(data_inicio) AS hora, COUNT(*) AS qtd
             FROM atendimentos
@@ -166,7 +154,6 @@ def relatorio_gestao(de, ate):
         """, (de, ate))
         por_hora = cur.fetchall()
 
-        # Atendimentos por atendente (via atendente_id -> atendentes.usuario)
         cur.execute("""
             SELECT t.usuario AS atendente, COUNT(*) AS qtd
             FROM atendimentos a
@@ -190,16 +177,20 @@ def relatorio_gestao(de, ate):
 # ============================================================
 # 4. RELATÓRIO DE ANÁLISE (tópicos mais selecionados)
 # ============================================================
+# que é o registro real de cada seleção feita pelo usuário — funciona
+# tanto para atendimentos novos quanto antigos, independente de
+# atendimentos.sub_sub_id estar ou não preenchida.
 def relatorio_analise(de, ate, limite=30):
     conn = get_conn()
     cur = conn.cursor(pymysql.cursors.DictCursor)
     try:
         cur.execute("""
-            SELECT menu_id, sub_id, sub_sub_id, COUNT(*) AS qtd
-            FROM atendimentos
-            WHERE DATE(data_inicio) BETWEEN %s AND %s
-              AND menu_id IS NOT NULL
-            GROUP BY menu_id, sub_id, sub_sub_id
+            SELECT valor, COUNT(*) AS qtd
+            FROM atendimento_eventos
+            WHERE tipo_evento = 'sub_submenu_escolhido'
+              AND DATE(data_evento) BETWEEN %s AND %s
+              AND valor IS NOT NULL
+            GROUP BY valor
             ORDER BY qtd DESC
             LIMIT %s
         """, (de, ate, limite))
@@ -207,9 +198,13 @@ def relatorio_analise(de, ate, limite=30):
 
         resultado = []
         for l in linhas:
-            nome_menu, nome_sub, nome_subsub = _traduzir_topico(
-                l["menu_id"], l["sub_id"], l["sub_sub_id"]
-            )
+            partes = (l["valor"] or "").split(":")
+            if len(partes) != 3:
+                continue  # ignora registros malformados
+
+            menu_id, sub_id, sub_sub_id = partes
+            nome_menu, nome_sub, nome_subsub = _traduzir_topico(menu_id, sub_id, sub_sub_id)
+
             resultado.append({
                 "menu": nome_menu,
                 "submenu": nome_sub,
