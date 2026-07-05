@@ -171,3 +171,12 @@ def obter_script(menu_id: str, sub_id: str, opcao_id: str):
     finally:
         cur.close()
         conn.close()
+
+def texto_opcoes_pos_script():
+    linhas = [
+        "\n*Posso ajudar em algo mais?*",
+        f"{EMOJIS_NUMEROS['0']} Voltar ao menu anterior",
+        f"{EMOJIS_NUMEROS['1']} Voltar ao menu principal",
+        f"{EMOJIS_NUMEROS['2']} Finalizar atendimento",
+    ]
+    return "\n".join(linhas)
