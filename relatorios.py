@@ -1,19 +1,32 @@
 import pymysql
 from bd3 import get_conn
-from menusSubmenus3 import MENU_PRINCIPAL, SUBMENUS, SUBSUBMENUS
+from chatbot_menu import (
+    obter_nome_menu,
+    obter_nome_submenu,
+    obter_nome_opcao
+)
 
 def _traduzir_topico(menu_id, sub_id, sub_sub_id):
-    nome_menu = MENU_PRINCIPAL.get(menu_id, f"Menu {menu_id}") if menu_id else None
+    nome_menu = (
+        obter_nome_menu(menu_id)
+        if menu_id else None
+    )
+
     nome_sub = (
-        SUBMENUS.get(menu_id, {}).get(sub_id, f"Submenu {sub_id}")
+        obter_nome_submenu(menu_id, sub_id)
         if menu_id and sub_id else None
     )
+
     nome_subsub = (
-        SUBSUBMENUS.get((menu_id, sub_id), {}).get(sub_sub_id, f"Opção {sub_sub_id}")
+        obter_nome_opcao(menu_id, sub_id, sub_sub_id)
         if menu_id and sub_id and sub_sub_id else None
     )
-    return nome_menu, nome_sub, nome_subsub
-
+    
+    return (
+        nome_menu or f"Menu {menu_id}",
+        nome_sub or f"Submenu {sub_id}",
+        nome_subsub or f"Opção {sub_sub_id}"
+    )
 
 # ============================================================
 # 1. RELATÓRIO OPERACIONAL (tempo real, sempre HOJE)
