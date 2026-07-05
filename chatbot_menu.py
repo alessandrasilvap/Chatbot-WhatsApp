@@ -180,3 +180,81 @@ def texto_opcoes_pos_script():
         f"{EMOJIS_NUMEROS['2']} Finalizar atendimento",
     ]
     return "\n".join(linhas)
+
+def obter_nome_menu(menu_id: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            SELECT nome
+            FROM canal_menu
+            WHERE ordem = %s
+              AND ativo = 1
+        """, (menu_id,))
+
+        resultado = cur.fetchone()
+
+        if resultado:
+            return resultado[0]
+
+        return None
+
+    finally:
+        cur.close()
+        conn.close()
+
+def obter_nome_submenu(menu_id: str, submenu_id: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            SELECT s.nome
+            FROM canal_submenu s
+            INNER JOIN canal_menu m
+                ON s.menu_id = m.id
+            WHERE m.ordem = %s
+              AND s.ordem = %s
+              AND s.ativo = 1
+        """, (menu_id, submenu_id))
+
+        resultado = cur.fetchone()
+
+        if resultado:
+            return resultado[0]
+
+        return None
+
+    finally:
+        cur.close()
+        conn.close()
+
+def obter_nome_opcao(menu_id: str, submenu_id: str, opcao_id: str):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            SELECT o.nome
+            FROM canal_opcao o
+            INNER JOIN canal_submenu s
+                ON o.submenu_id = s.id
+            INNER JOIN canal_menu m
+                ON s.menu_id = m.id
+            WHERE m.ordem = %s
+              AND s.ordem = %s
+              AND o.ordem = %s
+              AND o.ativo = 1
+        """, (menu_id, submenu_id, opcao_id))
+
+        resultado = cur.fetchone()
+
+        if resultado:
+            return resultado[0]
+
+        return None
+
+    finally:
+        cur.close()
+        conn.close()
