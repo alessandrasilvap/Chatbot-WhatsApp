@@ -1,13 +1,14 @@
 from bd3 import get_conn
 
 # Dicionário para transformar números em emojis
-EMOJIS_NUMEROS = {
-    "0": "0️⃣", "1": "1️⃣", "2": "2️⃣", "3": "3️⃣", "4": "4️⃣",
-    "5": "5️⃣", "6": "6️⃣", "7": "7️⃣", "8": "8️⃣", "9": "9️⃣",
-    "10": "🔟", "11": "1️⃣1️⃣", "12": "1️⃣2️⃣", "13": "1️⃣3️⃣",
-    "14": "1️⃣4️⃣", "15": "1️⃣5️⃣", "16": "1️⃣6️⃣", "17": "1️⃣7️⃣", 
-    "18": "1️⃣8️⃣", "19": "1️⃣9️⃣", "20": "2️⃣0️⃣"
-}
+def numero_para_emoji(numero):
+    numero = str(numero)
+
+    # O 10 já possui um emoji próprio
+    if numero == "10":
+        return "🔟"
+
+    return "".join(f"{n}\uFE0F\u20E3" for n in numero)
 
 def texto_menu_principal():
     conn = get_conn()
@@ -27,7 +28,7 @@ def texto_menu_principal():
 
         for ordem, nome in menus:
             ordem = str(ordem)
-            emoji = EMOJIS_NUMEROS.get(ordem, f"{ordem} -")
+            emoji = numero_para_emoji(ordem)
             linhas.append(f"{emoji} {nome}")
 
         return "\n".join(linhas)
@@ -74,11 +75,11 @@ def texto_menu_principal():
         linhas = [f"*{nome_menu}*\nEscolha uma opção:\n"]
 
         # Opção fixa
-        linhas.append(f"{EMOJIS_NUMEROS['0']} Voltar ao menu principal")
+        linhas.append(f"{numero_para_emoji(0)} Voltar ao menu principal")
 
         for ordem, nome in submenus:
             ordem = str(ordem)
-            emoji = EMOJIS_NUMEROS.get(ordem, f"{ordem} -")
+            emoji = numero_para_emoji(ordem)
             linhas.append(f"{emoji} {nome}")
 
         return "\n".join(linhas)
@@ -128,11 +129,11 @@ def texto_menu_principal():
         linhas = [f"*{nome_submenu}*\nEscolha uma opção:\n"]
 
         # Opção fixa
-        linhas.append(f"{EMOJIS_NUMEROS['0']} Voltar ao menu anterior")
+        linhas.append(f"{numero_para_emoji(0)} Voltar ao menu anterior")
 
         for ordem, nome in opcoes:
             ordem = str(ordem)
-            emoji = EMOJIS_NUMEROS.get(ordem, f"{ordem} -")
+            emoji = numero_para_emoji(ordem)
             linhas.append(f"{emoji} {nome}")
 
         return "\n".join(linhas)
@@ -175,9 +176,9 @@ def obter_script(menu_id: str, sub_id: str, opcao_id: str):
 def texto_opcoes_pos_script():
     linhas = [
         "\n*Posso ajudar em algo mais?*",
-        f"{EMOJIS_NUMEROS['0']} Voltar ao menu anterior",
-        f"{EMOJIS_NUMEROS['1']} Voltar ao menu principal",
-        f"{EMOJIS_NUMEROS['2']} Finalizar atendimento",
+        f"{numero_para_emoji(0)} Voltar ao menu anterior",
+        f"{numero_para_emoji(1)} Voltar ao menu principal",
+        f"{numero_para_emoji(2)} Finalizar atendimento",
     ]
     return "\n".join(linhas)
 
