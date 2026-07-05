@@ -1054,7 +1054,7 @@ def admin_get_mensagens(atendimento_id):
         for m in msgs:
             if m["tipo_evento"] == "menu_escolhido":
                 menu = m["valor"]
-                texto = MENU_PRINCIPAL.get(menu)
+                texto = obter_nome_menu(menu)
         
                 if texto:
                     novas_msgs.append({
@@ -1070,7 +1070,7 @@ def admin_get_mensagens(atendimento_id):
                 else:
                     novas_msgs.append(m)
                     continue
-                texto = SUBMENUS.get(menu, {}).get(submenu)
+                texto = obter_nome_submenu(menu, submenu)
         
                 if texto:
                     novas_msgs.append({
@@ -1086,10 +1086,7 @@ def admin_get_mensagens(atendimento_id):
                 else:
                     novas_msgs.append(m)
                     continue
-                texto = SUBSUBMENUS.get(
-                    (menu, submenu),
-                    {}
-                ).get(subsubmenu)
+                texto = obter_nome_opcao(menu, submenu, subsubmenu)
         
                 if texto:
                     novas_msgs.append({
