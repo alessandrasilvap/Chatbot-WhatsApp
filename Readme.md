@@ -4,7 +4,7 @@
 
 Este projeto é um chatbot integrado à API da Meta para atendimento automatizado via WhatsApp.
 
-Atualmente, o projeto já evoluiu incluindo um painel web simples, onde um atendente humano pode responder os usuários manualmente, já que a API não permite que o número conectado seja utilizado diretamente no WhatsApp.
+Atualmente, o projeto já evoluiu incluindo um painel web simples, onde um atendente humano pode responder os usuários manualmente, já que a API não permite que o número conectado seja utilizado diretamente no WhatsApp. E um outro painel web simples, onde é realizado os disparos de mensagens em massa.
 
 ---
 
@@ -14,6 +14,7 @@ Criar uma solução híbrida de atendimento:
 
 * 🤖 Chatbot automático para respostas rápidas
 * 👩‍💻 Interface web para atendimento humano
+* 📢 Interface web para isparos de mensagens em massa
 
 ---
 
@@ -24,6 +25,12 @@ Criar uma solução híbrida de atendimento:
 3. O chatbot processa a mensagem (Python + Flask)
 4. As mensagens poderão ser visualizadas em um painel web para resposta manual
 
+1. A coordenadoria separa em uma planilha os números dos receptores da mensagem
+2. É criado um template na API da Meta, esse template é o corpo da mensagem que será enviada
+3. A planilha para os disparos é criada com os números dos receptores e as variáveis que a API da Meta solicita dentro do template
+4. As informações no painel web são adicionados e a planilha para os disparos é anexada
+5. A mensagem é enviada para cada receptor e é possível visualizar os recebidos e erros dos disparos para cada receptor
+
 ---
 
 ## 🛠 Tecnologias utilizadas
@@ -32,7 +39,6 @@ Criar uma solução híbrida de atendimento:
 * API da Meta (WhatsApp Cloud API)
 * Front-end (HTML, CSS e JavaScript)
 * MySQL
-* Power BI (para análise de dados)
 * Google Cloud
 
 ---
@@ -79,28 +85,17 @@ python codigo3.py
 
 ## 🚧 Status do projeto
 
-🚧 Em teste
+🚧 Finalizado
 
 * [x] Integração com API da Meta
 * [x] Estrutura inicial do chatbot
 * [x] Interface web para atendimento humano
+* [x] Interface web para disparos de mensagens
 * [x] Integração com banco de dados completa
 * [x] Deploy no Google Cloud
 
 ---
 
-## 🤝 Contribuição
-
-Contribuições são bem-vindas!
-
-Sinta-se à vontade para:
-
-* Abrir issues
-* Sugerir melhorias
-* Criar pull requests
-
----
-
 ## 📌 Observações
 
-Este projeto está sendo desenvolvido para fins de aprendizado e evolução profissional.
+Este projeto foi desenvolvido para fins de aprendizado e evolução profissional.
