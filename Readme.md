@@ -14,7 +14,7 @@ Criar uma solução híbrida de atendimento:
 
 * 🤖 Chatbot automático para respostas rápidas
 * 👩‍💻 Interface web para atendimento humano
-* 📢 Interface web para isparos de mensagens em massa
+* 📢 Interface web para disparos de mensagens em massa
 
 ---
 
